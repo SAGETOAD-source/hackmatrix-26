@@ -27,6 +27,7 @@ async function registerUser({ name, email, password }) {
   return result.rows[0];
 }
 
+
 async function loginUser({ email, password }) {
   const query = `
     SELECT id, name, email, password_hash, role, created_at
@@ -42,6 +43,11 @@ async function loginUser({ email, password }) {
 
   const user = result.rows[0];
 
+  // Reject passwords exceeding bcrypt's 72-byte limit.
+  if (Buffer.byteLength(password, "utf8") > 72) {
+    return null;
+  }
+
   const passwordMatches = await bcrypt.compare(
     password,
     user.password_hash
@@ -51,7 +57,7 @@ async function loginUser({ email, password }) {
     return null;
   }
 
-  // Never expose the password hash to the controller.
+  // Never expose the password hash.
   const { password_hash, ...safeUser } = user;
 
   return safeUser;
