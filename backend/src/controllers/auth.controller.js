@@ -1,3 +1,4 @@
+const { generateToken } = require("../utils/jwt");
 const {
   registerUser,
   loginUser,
@@ -47,10 +48,17 @@ async function login(req, res) {
       });
     }
 
+    const token = generateToken(user);
+
     return res.status(200).json({
       success: true,
       message: "Login successful",
-      data: { user },
+      data: {
+        user,
+        token,
+        tokenType: "Bearer",
+        expiresIn: process.env.JWT_EXPIRES_IN || "15m",
+      },
     });
   } catch (error) {
     console.error("Login error:", error.message);
@@ -61,8 +69,43 @@ async function login(req, res) {
     });
   }
 }
+async function getMe(req, res) {
+  try {
+    const pool = require("../config/database");
 
+    const result = await pool.query(
+      `
+        SELECT id, name, email, role, created_at
+        FROM users
+        WHERE id = $1
+      `,
+      [req.user.id]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        user: result.rows[0],
+      },
+    });
+  } catch (error) {
+    console.error("Get profile error:", error.message);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+}
 module.exports = {
   register,
   login,
+  getMe,
 };
