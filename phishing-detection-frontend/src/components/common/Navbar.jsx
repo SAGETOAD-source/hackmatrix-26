@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { Shield, Sun, Moon, Menu, X, ArrowRight } from 'lucide-react'
+import { Shield, Sun, Moon, Menu, X, ArrowRight, Terminal } from 'lucide-react'
 import { useTheme } from '../../context/ThemeContext'
 
 export default function Navbar() {
@@ -9,82 +9,85 @@ export default function Navbar() {
   const location = useLocation()
 
   const navLinks = [
-    { name: 'Home', path: '/' },
-    { name: 'Features', path: '/#features' },
-    { name: 'How It Works', path: '/#how-it-works' },
+    { name: 'Overview', path: '/' },
     { name: 'Live Scanner', path: '/scanner' },
-    { name: 'SOC Dashboard', path: '/dashboard' },
+    { name: 'Security Analysis', path: '/security-analysis' },
+    { name: 'Scan History', path: '/history' },
+    { name: 'SOC Console', path: '/dashboard' },
   ]
 
   const isActive = (path) => {
     if (path === '/') return location.pathname === '/'
-    if (path.startsWith('/#')) return false
-    return location.pathname === path
+    return location.pathname === path || (path === '/security-analysis' && location.pathname === '/security')
   }
 
   return (
-    <nav className="sticky top-0 z-50 backdrop-blur-md border-b transition-colors duration-200 bg-[#080F1E]/90 light:bg-white/95 border-[#1C2D4A] light:border-[#E2E8F0]">
+    <nav className="sticky top-0 z-50 transition-colors duration-200 bg-[#080F1E]/95 light:bg-white/95 backdrop-blur-md border-b border-[#24344B] light:border-[#E2E8F0]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Brand Logo */}
           <Link to="/" className="flex items-center space-x-3 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#287FE9] via-[#1E6FD6] to-[#55B7FF] p-0.5 shadow-md shadow-[#287FE9]/20 group-hover:shadow-[#287FE9]/40 transition-all duration-300">
-              <div className="w-full h-full bg-[#080F1E] light:bg-white rounded-[10px] flex items-center justify-center">
-                <Shield className="w-5 h-5 text-[#55B7FF] light:text-[#2563EB] transition-transform group-hover:scale-110" />
-              </div>
+            <div className="w-9 h-9 rounded-lg bg-[#111E32] light:bg-[#F0F4FF] border border-[#24344B] light:border-[#D0E0FF] flex items-center justify-center transition-colors group-hover:border-[#287FE9]">
+              <Shield className="w-5 h-5 text-[#287FE9] light:text-[#2563EB]" />
             </div>
-            <div className="flex flex-col">
-              <span className="font-bold text-lg tracking-tight text-[#F1F5FF] light:text-[#172033]">
-                ThreatSentinel<span className="text-[#55B7FF] light:text-[#2563EB] font-extrabold">.ai</span>
+            <div className="flex items-center space-x-2">
+              <span className="font-bold text-base tracking-tight text-[#F1F5FF] light:text-[#172033]">
+                PhishGuard<span className="text-[#287FE9]">.SOC</span>
               </span>
-              <span className="text-[10px] tracking-wider uppercase font-semibold text-[#9EACC2] light:text-[#64748B] -mt-1">
-                Zero-Trust Detection
+              <span className="hidden sm:inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-medium bg-[#111E32] light:bg-slate-100 text-[#9EACC2] light:text-[#64748B] border border-[#24344B] light:border-[#E2E8F0]">
+                v2.4
               </span>
             </div>
           </Link>
 
           {/* Desktop Navigation Links */}
-          <div className="hidden md:flex items-center space-x-1 lg:space-x-2">
+          <div className="hidden md:flex items-center space-x-1">
             {navLinks.map((link) => {
               const active = isActive(link.path)
               return (
-                <a
+                <Link
                   key={link.name}
-                  href={link.path}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-150 ${
+                  to={link.path}
+                  className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                     active
-                      ? 'text-[#55B7FF] light:text-[#2563EB] bg-[#287FE9]/10 light:bg-blue-50 border border-[#287FE9]/30 light:border-blue-200 font-semibold shadow-xs'
-                      : 'text-[#9EACC2] light:text-[#64748B] hover:text-[#F1F5FF] light:hover:text-[#172033] hover:bg-[#111E32] light:hover:bg-slate-100'
+                      ? 'text-[#F1F5FF] light:text-[#172033] bg-[#111E32] light:bg-slate-100 border border-[#24344B] light:border-[#CBD5E1] font-semibold'
+                      : 'text-[#9EACC2] light:text-[#64748B] hover:text-[#F1F5FF] light:hover:text-[#172033] hover:bg-[#0D1728] light:hover:bg-slate-50'
                   }`}
                 >
                   {link.name}
-                </a>
+                </Link>
               )
             })}
           </div>
 
           {/* Right Action Buttons */}
           <div className="hidden md:flex items-center space-x-3">
-            {/* Theme Toggle Button */}
+            {/* Live Operational Status */}
+            <div className="hidden lg:flex items-center space-x-2 px-2.5 py-1 rounded-md bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0] text-[11px] font-mono text-[#9EACC2] light:text-[#64748B]">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+              <span>Engines Operational</span>
+            </div>
+
+            {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
               aria-label="Toggle Theme"
-              className="p-2 rounded-xl text-[#9EACC2] light:text-[#64748B] hover:text-[#F1F5FF] light:hover:text-[#172033] bg-[#111E32] light:bg-[#F5F7FC] hover:bg-[#15253F] light:hover:bg-slate-200 border border-[#1C2D4A] light:border-[#E2E8F0] transition-all duration-200 cursor-pointer"
+              className="p-1.5 rounded-md text-[#9EACC2] light:text-[#64748B] hover:text-[#F1F5FF] light:hover:text-[#172033] bg-[#111E32] light:bg-white hover:bg-[#15253F] light:hover:bg-slate-100 border border-[#24344B] light:border-[#E2E8F0] transition-colors cursor-pointer"
             >
               {isDark ? (
-                <Sun className="w-4 h-4 text-amber-400 transition-transform rotate-0 hover:rotate-45" />
+                <Sun className="w-4 h-4 text-amber-400" />
               ) : (
-                <Moon className="w-4 h-4 text-[#2563EB] transition-transform -rotate-12 hover:rotate-0" />
+                <Moon className="w-4 h-4 text-[#2563EB]" />
               )}
             </button>
 
-            {/* Launch Dashboard Button */}
+            {/* Launch Scanner Button */}
             <Link
-              to="/dashboard"
-              className="cyber-btn-primary text-sm font-semibold inline-flex items-center space-x-1.5"
+              to="/scanner"
+              className="cyber-btn-primary text-xs font-medium space-x-1.5 py-1.5 px-3"
             >
-              <span>SOC Dashboard</span>
-              <ArrowRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-0.5" />
+              <Terminal className="w-3.5 h-3.5" />
+              <span>Analyze URL</span>
             </Link>
           </div>
 
@@ -93,14 +96,14 @@ export default function Navbar() {
             <button
               onClick={toggleTheme}
               aria-label="Toggle Theme"
-              className="p-2 rounded-lg text-[#9EACC2] light:text-[#64748B] bg-[#111E32] light:bg-slate-100 border border-[#1C2D4A] light:border-[#E2E8F0]"
+              className="p-1.5 rounded-md text-[#9EACC2] light:text-[#64748B] bg-[#111E32] light:bg-slate-100 border border-[#24344B] light:border-[#E2E8F0]"
             >
               {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-[#2563EB]" />}
             </button>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle Menu"
-              className="p-2 rounded-lg text-[#9EACC2] light:text-[#64748B] hover:text-[#F1F5FF] light:hover:text-[#172033] bg-[#111E32] light:bg-slate-100 border border-[#1C2D4A] light:border-[#E2E8F0] cursor-pointer"
+              className="p-1.5 rounded-md text-[#9EACC2] light:text-[#64748B] hover:text-[#F1F5FF] bg-[#111E32] light:bg-slate-100 border border-[#24344B] light:border-[#E2E8F0]"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -110,31 +113,32 @@ export default function Navbar() {
 
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-b border-[#1C2D4A] light:border-[#E2E8F0] bg-[#080F1E] light:bg-white px-4 pt-2 pb-4 space-y-1">
+        <div className="md:hidden border-t border-[#24344B] light:border-[#E2E8F0] bg-[#080F1E] light:bg-white px-4 pt-3 pb-4 space-y-1">
           {navLinks.map((link) => {
             const active = isActive(link.path)
             return (
-              <a
+              <Link
                 key={link.name}
-                href={link.path}
+                to={link.path}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`block px-3 py-2 rounded-lg text-sm font-medium ${
+                className={`block px-3 py-2 rounded-md text-sm font-medium ${
                   active
-                    ? 'text-[#55B7FF] light:text-[#2563EB] bg-[#287FE9]/10 light:bg-blue-50 font-semibold'
-                    : 'text-[#9EACC2] light:text-[#64748B] hover:text-[#F1F5FF] light:hover:text-[#172033] hover:bg-[#111E32] light:hover:bg-slate-100'
+                    ? 'text-[#287FE9] light:text-[#2563EB] bg-[#111E32] light:bg-blue-50 font-semibold'
+                    : 'text-[#9EACC2] light:text-[#64748B] hover:bg-[#111E32] light:hover:bg-slate-50'
                 }`}
               >
                 {link.name}
-              </a>
+              </Link>
             )
           })}
-          <div className="pt-2">
+          <div className="pt-2 border-t border-[#24344B] light:border-[#E2E8F0]">
             <Link
-              to="/dashboard"
+              to="/scanner"
               onClick={() => setMobileMenuOpen(false)}
-              className="cyber-btn-primary w-full text-center text-sm font-semibold py-2.5"
+              className="cyber-btn-primary w-full text-xs font-semibold py-2 space-x-2"
             >
-              <span>Launch SOC Dashboard</span>
+              <span>Analyze URL</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
         </div>

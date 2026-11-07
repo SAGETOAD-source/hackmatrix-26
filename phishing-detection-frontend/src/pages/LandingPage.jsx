@@ -1,20 +1,11 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
 import {
-  Shield,
-  ShieldAlert,
-  Lock,
-  Search,
-  Cpu,
-  Database,
   ArrowRight,
-  CheckCircle,
-  FileSearch,
-  Zap,
-  ChevronRight,
-  Layers,
-  Sparkles
+  Terminal,
+  Check,
+  Server,
+  ArrowUpRight
 } from 'lucide-react'
 import Navbar from '../components/common/Navbar'
 import Footer from '../components/common/Footer'
@@ -35,80 +26,40 @@ export default function LandingPage() {
     navigate(`/scanner?url=${encodeURIComponent(heroUrl.trim())}`)
   }
 
-  // Features list
-  const features = [
+  // Realistic attack vectors matrix
+  const vectorMatrix = [
     {
-      icon: Cpu,
-      title: 'AI-Powered Phishing Detection',
-      description:
-        'Custom-trained Random Forest and gradient models inspecting 18+ lexical, domain, and structural URL features to detect zero-day credential harvesting lures.',
-      color: 'from-[#287FE9] to-[#55B7FF]',
-      badge: 'Machine Learning',
-      points: ['18 Lexical & Structural Features', 'Shannon Entropy Analysis', 'Subdomain Stacking Defense'],
+      threat: 'Credential Harvesting Lure',
+      sample: 'paypal.com.verify-account-notice.xyz/login',
+      indicator: 'Multi-subdomain stacking + Shannon entropy spike',
+      engine: '18-Feature Lexical Model',
+      verdict: 'PHISHING (Score 94)',
+      verdictType: 'danger'
     },
     {
-      icon: Lock,
-      title: 'SSL/TLS Certificate Analysis',
-      description:
-        'Socket-level TLS inspection validating certificate chains, expiration horizons, SAN matching, weak cryptographic algorithms, and Certificate Transparency logs.',
-      color: 'from-indigo-600 to-[#55B7FF]',
-      badge: 'Cryptographic Audit',
-      points: ['Chain & Authority Verification', 'Self-Signed Indicator Detection', 'Certificate Transparency via crt.sh'],
+      threat: 'Punycode Homoglyph Impersonation',
+      sample: 'xn--googl-pra.com/auth/oauth',
+      indicator: 'Cyrillic character substitution (U+0430)',
+      engine: 'IDN Unicode Normalizer',
+      verdict: 'PHISHING (Score 96)',
+      verdictType: 'danger'
     },
     {
-      icon: ShieldAlert,
-      title: 'Website Security Assessment',
-      description:
-        'Non-invasive passive auditing of HTTP security headers including HSTS, Content Security Policy, X-Frame-Options, and hop-by-hop redirect destination tracking.',
-      color: 'from-amber-500 to-rose-500',
-      badge: 'Header Hygiene',
-      points: ['HSTS & CSP Compliance', 'Clickjacking & MIME Guard', 'Hop-by-Hop Redirect Audit'],
+      threat: 'Direct Raw IP Egress Link',
+      sample: 'http://185.220.101.4:8080/apple/id',
+      indicator: 'Bare IPv4 destination + non-standard port 8080',
+      engine: 'SSRF & Boundary Inspector',
+      verdict: 'SUSPICIOUS (Score 78)',
+      verdictType: 'warning'
     },
     {
-      icon: Database,
-      title: 'Real-Time Threat Intelligence',
-      description:
-        'Modular cross-feed correlation integrating URLhaus, PhishTank, and reputation databases with local high-confidence indicators and community verification.',
-      color: 'from-emerald-500 to-teal-500',
-      badge: 'Cross-Feed Correlation',
-      points: ['Automated Threat Feeds', 'Attributed Source Timestamps', 'Local Malicious IOC Cache'],
-    },
-  ]
-
-  // How it works steps
-  const steps = [
-    {
-      step: '01',
-      title: 'Submit Target URL or Domain',
-      description:
-        'Provide any suspicious link, shortened URL, or raw IP address. Our SSRF-hardened validator safely parses and normalizes the target while blocking internal network destinations.',
-      icon: Search,
-      tag: 'Passive Ingestion',
-    },
-    {
-      step: '02',
-      title: 'Multi-Pillar Security Correlation',
-      description:
-        'Four dedicated engines analyze the target concurrently: 18-feature machine learning model, passive HTTP security header scanner, TLS certificate inspector, and threat intelligence adapters.',
-      icon: Layers,
-      tag: 'Parallel Telemetry',
-    },
-    {
-      step: '03',
-      title: 'Explainable Risk Assessment',
-      description:
-        'Receive a composite 0-100 risk score and clear breakdown of why the website is dangerous or safe—complete with evidence, severity levels, and prioritized mitigation steps.',
-      icon: FileSearch,
-      tag: 'Transparent Verdict',
-    },
-  ]
-
-  // Platform statistics
-  const platformStats = [
-    { value: '99.8%', label: 'Precision Recall', sub: 'Evaluated on held-out test splits' },
-    { value: '18+', label: 'Extracted Features', sub: 'Entropy, homoglyphs, lexical signals' },
-    { value: '< 150ms', label: 'Inference Latency', sub: 'High-throughput Random Forest model' },
-    { value: '5-Pillar', label: 'Composite Risk Engine', sub: 'ML, TLS, Headers, Threat Intel, DNS' },
+      threat: 'Verified Enterprise Destination',
+      sample: 'https://github.com/torvalds/linux',
+      indicator: 'EV Certificate + HSTS preload + zero lure tokens',
+      engine: 'Cryptographic & Header Audit',
+      verdict: 'LEGITIMATE (Score 4)',
+      verdictType: 'success'
+    }
   ]
 
   return (
@@ -116,7 +67,7 @@ export default function LandingPage() {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden pt-12 pb-20 md:pt-20 md:pb-28">
+      <section className="relative overflow-hidden pt-12 pb-16 md:pt-20 md:pb-24 border-b border-[#24344B] light:border-[#E2E8F0]">
         {/* React Bits Particles Background */}
         <div className="absolute inset-0 pointer-events-none -z-10">
           <Particles
@@ -125,315 +76,306 @@ export default function LandingPage() {
                 ? ['#287FE9', '#55B7FF', '#38BDF8', '#9EACC2']
                 : ['#2563EB', '#3B82F6', '#0284C7', '#64748B']
             }
-            particleCount={180}
+            particleCount={140}
             particleSpread={10}
-            speed={0.1}
-            particleBaseSize={100}
-            glow={0.5}
-            twinkle={0.3}
+            speed={0.08}
+            particleBaseSize={80}
+            glow={0.4}
+            twinkle={0.25}
             connections={true}
-            connectionDistance={100}
+            connectionDistance={95}
             moveParticlesOnHover={true}
             hoverEffect="parallax"
             clickBurst={true}
-            cameraDistance={22}
+            cameraDistance={24}
             lightMode={!isDark}
-            className="w-full h-full opacity-85 dark:opacity-90"
+            className="w-full h-full opacity-60 dark:opacity-75"
           />
         </div>
 
-        {/* Subtle Background Radial Glow and Dark Overlay */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-gradient-to-tr from-[#287FE9]/15 via-[#1E6FD6]/10 to-[#55B7FF]/15 rounded-full blur-3xl pointer-events-none -z-10"></div>
-        <div className="absolute -top-20 right-0 w-80 h-80 bg-[#55B7FF]/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
-        <div className="absolute inset-0 bg-radial from-transparent via-[#080F1E]/30 to-[#080F1E]/80 light:via-[#F5F7FC]/40 light:to-[#F5F7FC]/80 pointer-events-none -z-10"></div>
+        {/* Ambient Dark Overlay */}
+        <div className="absolute inset-0 bg-[#080F1E]/50 light:bg-[#F5F7FC]/60 pointer-events-none -z-10"></div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          {/* Top Security Badge */}
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-            className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-[#287FE9]/10 border border-[#287FE9]/30 text-[#55B7FF] light:text-[#2563EB] text-xs font-semibold mb-6 shadow-xs"
-          >
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Next-Gen Machine Learning Phishing Defense</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-[#55B7FF] light:bg-[#2563EB]"></span>
-            <span className="text-[11px] opacity-80">v2.4 Active</span>
-          </motion.div>
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center">
+          {/* Engineering Badge */}
+          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-md bg-[#0D1728] light:bg-white border border-[#24344B] light:border-[#E2E8F0] text-xs font-mono text-[#9EACC2] light:text-[#64748B] mb-5">
+            <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <span>PHISHGUARD DEFENSIVE INTELLIGENCE v2.4</span>
+          </div>
 
-          {/* Main Heading */}
-          <motion.h1
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-[#F1F5FF] light:text-[#172033] max-w-4xl mx-auto leading-[1.15]"
-          >
-            Stay One Step Ahead of{' '}
-            <span className="bg-gradient-to-r from-[#287FE9] via-[#55B7FF] to-[#38BDF8] light:from-[#2563EB] light:via-[#3B82F6] light:to-[#0284C7] bg-clip-text text-transparent">
-              Cyber Threats
-            </span>
-          </motion.h1>
+          {/* Headline (Confident, Restrained, Human-Crafted) */}
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-[#F1F5FF] light:text-[#172033] max-w-3xl mx-auto leading-tight">
+            Intelligent Phishing & Malicious Website Detection
+          </h1>
 
-          {/* Supporting Text */}
-          <motion.p
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="mt-6 text-base sm:text-lg md:text-xl text-[#9EACC2] light:text-[#64748B] max-w-2xl mx-auto leading-relaxed"
-          >
-            Intelligent phishing and malicious website detection combining custom-trained machine learning, cryptographic TLS analysis, passive security header inspection, and collaborative threat intelligence.
-          </motion.p>
+          {/* Subtitle */}
+          <p className="mt-4 text-sm sm:text-base text-[#9EACC2] light:text-[#64748B] max-w-2xl mx-auto leading-relaxed">
+            Multi-pillar cybersecurity platform evaluating URL lexical entropy, transport cryptography, passive HTTP security header hygiene, and collaborative threat intelligence feeds.
+          </p>
 
-          {/* URL Input Hero Form with Get Started CTA */}
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="mt-8 max-w-2xl mx-auto"
-          >
+          {/* Interactive URL Inspection Bar */}
+          <div className="mt-8 max-w-2xl mx-auto">
             <form
               onSubmit={handleHeroSubmit}
-              className="p-2 sm:p-2.5 rounded-2xl bg-[#111E32] light:bg-white border border-[#1C2D4A] light:border-[#E2E8F0] shadow-xl shadow-black/30 light:shadow-slate-200/50 flex flex-col sm:flex-row items-center gap-2"
+              className="p-1.5 rounded-lg cyber-card flex flex-col sm:flex-row items-center gap-2"
             >
               <div className="relative flex-1 w-full flex items-center pl-3">
-                <Search className="w-5 h-5 text-[#9EACC2] light:text-[#64748B] mr-2 flex-shrink-0" />
+                <Terminal className="w-4 h-4 text-[#9EACC2] light:text-[#64748B] mr-2 shrink-0" />
                 <input
                   type="text"
-                  placeholder="Paste URL to inspect (e.g. http://paypal.com.verify-user.xyz)..."
+                  placeholder="Paste URL or domain to audit (e.g. paypal-verify-account.xyz)..."
                   value={heroUrl}
                   onChange={(e) => setHeroUrl(e.target.value)}
-                  className="w-full py-2.5 text-sm sm:text-base bg-transparent text-[#F1F5FF] light:text-[#172033] placeholder-[#9EACC2]/60 light:placeholder-[#64748B]/60 focus:outline-none"
+                  className="w-full py-2 text-xs sm:text-sm font-mono bg-transparent text-[#F1F5FF] light:text-[#172033] placeholder-[#9EACC2]/60 focus:outline-none"
                 />
               </div>
               <button
                 type="submit"
-                className="w-full sm:w-auto px-7 py-3 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-[#287FE9] via-[#1E6FD6] to-[#287FE9] hover:from-[#378DF0] hover:to-[#256FD0] shadow-md shadow-[#287FE9]/30 transition-all duration-200 flex items-center justify-center space-x-2 cursor-pointer flex-shrink-0"
+                className="cyber-btn-primary w-full sm:w-auto text-xs font-semibold py-2.5 px-4 shrink-0 space-x-1.5"
               >
-                <span>Get Started</span>
-                <ArrowRight className="w-4 h-4" />
+                <span>Analyze Link</span>
+                <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </form>
 
-            {/* Quick test badges */}
-            <div className="mt-3 flex flex-wrap items-center justify-center gap-2 text-xs text-[#9EACC2] light:text-[#64748B]">
-              <span className="text-[11px] font-medium">Try samples:</span>
+            {/* Quick Sample Vectors */}
+            <div className="mt-3 flex flex-wrap items-center justify-center gap-2 text-xs font-mono text-[#9EACC2] light:text-[#64748B]">
+              <span className="text-[11px]">Inspect Samples:</span>
               <button
                 type="button"
                 onClick={() => setHeroUrl('http://paypal.com.account-verification-notice.xyz/login.html')}
-                className="hover:text-[#55B7FF] light:hover:text-[#2563EB] underline cursor-pointer"
+                className="hover:text-[#287FE9] underline cursor-pointer"
               >
-                PayPal Phishing Lure
+                PayPal Phish
               </button>
-              <span>•</span>
+              <span>&bull;</span>
               <button
                 type="button"
                 onClick={() => setHeroUrl('http://185.220.101.4:8080/apple/id/verification')}
-                className="hover:text-[#55B7FF] light:hover:text-[#2563EB] underline cursor-pointer"
+                className="hover:text-[#287FE9] underline cursor-pointer"
               >
-                Bare IP Lure
+                Bare IP Host
               </button>
-              <span>•</span>
+              <span>&bull;</span>
               <button
                 type="button"
                 onClick={() => setHeroUrl('https://github.com/torvalds/linux')}
-                className="hover:text-[#55B7FF] light:hover:text-[#2563EB] underline cursor-pointer"
+                className="hover:text-[#287FE9] underline cursor-pointer"
               >
-                Verified Clean URL
+                Legitimate Domain
               </button>
             </div>
-          </motion.div>
+          </div>
 
-          {/* Trust points */}
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-xs font-medium text-[#9EACC2] light:text-[#64748B]">
-            <div className="flex items-center space-x-2">
-              <CheckCircle className="w-4 h-4 text-emerald-400" />
-              <span>Zero Inbound Software Install</span>
+          {/* Architecture Trust Highlights */}
+          <div className="mt-10 pt-6 border-t border-[#24344B]/60 light:border-[#E2E8F0] grid grid-cols-2 md:grid-cols-4 gap-4 text-left">
+            <div className="p-3 rounded-md bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0]">
+              <span className="text-[10px] font-mono uppercase text-[#9EACC2] block">Engine 01</span>
+              <span className="text-xs font-semibold text-[#F1F5FF] light:text-[#172033] block mt-0.5">18 Lexical Signals</span>
+              <span className="text-[11px] text-[#9EACC2] block mt-0.5">Entropy, tokens, length</span>
             </div>
-            <div className="flex items-center space-x-2">
-              <CheckCircle className="w-4 h-4 text-emerald-400" />
-              <span>SSRF-Hardened Outbound Gateway</span>
+            <div className="p-3 rounded-md bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0]">
+              <span className="text-[10px] font-mono uppercase text-[#9EACC2] block">Engine 02</span>
+              <span className="text-xs font-semibold text-[#F1F5FF] light:text-[#172033] block mt-0.5">TLS Cryptography</span>
+              <span className="text-[11px] text-[#9EACC2] block mt-0.5">SAN matching, CT logs</span>
             </div>
-            <div className="flex items-center space-x-2">
-              <CheckCircle className="w-4 h-4 text-emerald-400" />
-              <span>Explainable Threat Verdicts</span>
+            <div className="p-3 rounded-md bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0]">
+              <span className="text-[10px] font-mono uppercase text-[#9EACC2] block">Engine 03</span>
+              <span className="text-xs font-semibold text-[#F1F5FF] light:text-[#172033] block mt-0.5">Header Hygiene</span>
+              <span className="text-[11px] text-[#9EACC2] block mt-0.5">HSTS, CSP, X-Frame</span>
+            </div>
+            <div className="p-3 rounded-md bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0]">
+              <span className="text-[10px] font-mono uppercase text-[#9EACC2] block">Engine 04</span>
+              <span className="text-xs font-semibold text-[#F1F5FF] light:text-[#172033] block mt-0.5">Threat Correlation</span>
+              <span className="text-[11px] text-[#9EACC2] block mt-0.5">PhishTank & URLhaus</span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Platform Statistics Section */}
-      <section className="py-12 border-y border-[#1C2D4A] light:border-[#E2E8F0] bg-[#0B1528] light:bg-[#FFFFFF] transition-colors">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 text-center">
-            {platformStats.map((stat, idx) => (
-              <div key={idx} className="p-4 rounded-xl cyber-card">
-                <div className="text-3xl sm:text-4xl font-extrabold bg-gradient-to-r from-[#287FE9] via-[#55B7FF] to-[#38BDF8] light:from-[#2563EB] light:via-[#3B82F6] light:to-[#0284C7] bg-clip-text text-transparent">
-                  {stat.value}
+      {/* Real-World Threat Classification Matrix */}
+      <section className="py-14 max-w-6xl mx-auto px-4 sm:px-6 w-full">
+        <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-6 gap-2">
+          <div>
+            <span className="text-xs font-mono font-semibold uppercase tracking-wider text-[#287FE9]">
+              DETECTION PLAYBOOK
+            </span>
+            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-[#F1F5FF] light:text-[#172033] mt-0.5">
+              Multi-Pillar Attack Vector Interception
+            </h2>
+            <p className="text-xs text-[#9EACC2] light:text-[#64748B] mt-0.5">
+              How different threat methodologies are isolated and scored across our defensive engines
+            </p>
+          </div>
+          <Link
+            to="/scanner"
+            className="text-xs font-mono font-semibold text-[#287FE9] hover:underline flex items-center space-x-1"
+          >
+            <span>Launch Interactive Scanner</span>
+            <ArrowUpRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+
+        <div className="cyber-card overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs font-mono">
+              <thead className="bg-[#0D1728] light:bg-slate-50 text-[10px] uppercase text-[#9EACC2] border-b border-[#24344B] light:border-[#E2E8F0]">
+                <tr>
+                  <th className="py-2.5 px-4">Threat Methodology</th>
+                  <th className="py-2.5 px-4">Sample Lure Vector</th>
+                  <th className="py-2.5 px-4">Primary Anomaly Signal</th>
+                  <th className="py-2.5 px-4">Interception Engine</th>
+                  <th className="py-2.5 px-4 text-right">Verdict</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#24344B]/60 light:divide-[#E2E8F0]">
+                {vectorMatrix.map((row, idx) => (
+                  <tr key={idx} className="hover:bg-[#15253F]/40 light:hover:bg-slate-50 transition-colors">
+                    <td className="py-3 px-4 font-semibold text-[#F1F5FF] light:text-[#172033] whitespace-nowrap">
+                      {row.threat}
+                    </td>
+                    <td className="py-3 px-4 text-[#9EACC2] light:text-[#64748B] truncate max-w-xs">
+                      {row.sample}
+                    </td>
+                    <td className="py-3 px-4 text-[#9EACC2] light:text-[#64748B]">
+                      {row.indicator}
+                    </td>
+                    <td className="py-3 px-4 text-[#F1F5FF] light:text-[#172033]">
+                      {row.engine}
+                    </td>
+                    <td className="py-3 px-4 text-right whitespace-nowrap">
+                      <span
+                        className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold ${
+                          row.verdictType === 'danger'
+                            ? 'bg-rose-500/10 text-rose-400 border border-rose-500/25'
+                            : row.verdictType === 'warning'
+                            ? 'bg-amber-500/10 text-amber-400 border border-amber-500/25'
+                            : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/25'
+                        }`}
+                      >
+                        {row.verdict}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      {/* Live Feature Inspector & SOC Preview */}
+      <section className="py-14 bg-[#0D1728] light:bg-[#F0F4FA] border-y border-[#24344B] light:border-[#E2E8F0]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            <div>
+              <span className="text-xs font-mono font-semibold uppercase tracking-wider text-[#287FE9]">
+                HEURISTIC EXPLAINABILITY
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#F1F5FF] light:text-[#172033] mt-1">
+                Zero Black-Box Scoring. Every Verdict Backed by Evidence.
+              </h2>
+              <p className="mt-3 text-xs sm:text-sm text-[#9EACC2] light:text-[#64748B] leading-relaxed">
+                Rather than returning an opaque prediction, PhishGuard provides actionable telemetry across 18 lexical features, certificate transparency validation, and passive security header hygiene.
+              </p>
+
+              <div className="mt-6 space-y-3 text-xs font-mono">
+                <div className="flex items-start space-x-3">
+                  <div className="w-5 h-5 rounded bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 mt-0.5">
+                    <Check size={12} />
+                  </div>
+                  <div>
+                    <span className="font-semibold text-[#F1F5FF] light:text-[#172033] block">Shannon Character Entropy Calculation</span>
+                    <span className="text-[#9EACC2] light:text-[#64748B]">Detects algorithmically generated domains (DGA) and randomized credential harvesting slugs.</span>
+                  </div>
                 </div>
-                <div className="text-sm font-semibold text-[#F1F5FF] light:text-[#172033] mt-1">
-                  {stat.label}
+
+                <div className="flex items-start space-x-3">
+                  <div className="w-5 h-5 rounded bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 mt-0.5">
+                    <Check size={12} />
+                  </div>
+                  <div>
+                    <span className="font-semibold text-[#F1F5FF] light:text-[#172033] block">Cryptographic SAN & CT Log Auditing</span>
+                    <span className="text-[#9EACC2] light:text-[#64748B]">Validates Subject Alternative Names and monitors Certificate Transparency public append logs.</span>
+                  </div>
                 </div>
-                <div className="text-xs text-[#9EACC2] light:text-[#64748B] mt-0.5">
-                  {stat.sub}
+
+                <div className="flex items-start space-x-3">
+                  <div className="w-5 h-5 rounded bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 mt-0.5">
+                    <Check size={12} />
+                  </div>
+                  <div>
+                    <span className="font-semibold text-[#F1F5FF] light:text-[#172033] block">Passive HTTP Header Compliance</span>
+                    <span className="text-[#9EACC2] light:text-[#64748B]">Non-invasive verification of Strict-Transport-Security, CSP, X-Frame-Options, and hop redirects.</span>
+                  </div>
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* Features Section */}
-      <section id="features" className="py-20 md:py-28 relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#287FE9]/10 text-[#55B7FF] light:text-[#2563EB] border border-[#287FE9]/30 text-xs font-semibold mb-3">
-              <Shield className="w-3.5 h-3.5" />
-              <span>Defense Architecture</span>
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-[#F1F5FF] light:text-[#172033] tracking-tight">
-              Four Intelligence Pillars Working in Unison
-            </h2>
-            <p className="mt-3 text-[#9EACC2] light:text-[#64748B] text-sm sm:text-base">
-              Rather than relying on single blacklists, our engine correlates machine learning predictions with live cryptographic and HTTP audits.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {features.map((feat, idx) => {
-              const Icon = feat.icon
-              return (
-                <div
-                  key={idx}
-                  className="p-8 rounded-3xl bg-[#111E32] light:bg-white border border-[#1C2D4A] light:border-[#E2E8F0] shadow-xl shadow-black/10 light:shadow-slate-200/50 hover:border-[#287FE9]/50 transition-all duration-300 group"
+              <div className="mt-6 pt-4 border-t border-[#24344B]/60 light:border-[#CBD5E1]">
+                <Link
+                  to="/security-analysis"
+                  className="cyber-btn-secondary text-xs space-x-1.5 py-2 px-3.5"
                 >
-                  <div className="flex items-center justify-between mb-6">
-                    <div
-                      className={`w-12 h-12 rounded-2xl bg-gradient-to-tr ${feat.color} p-0.5 shadow-md`}
-                    >
-                      <div className="w-full h-full bg-[#080F1E] light:bg-white rounded-[14px] flex items-center justify-center">
-                        <Icon className="w-6 h-6 text-[#55B7FF] light:text-[#2563EB] transition-transform group-hover:scale-110" />
-                      </div>
-                    </div>
-                    <span className="text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-[#080F1E] light:bg-slate-100 text-[#9EACC2] light:text-[#172033] border border-[#1C2D4A] light:border-[#E2E8F0]">
-                      {feat.badge}
-                    </span>
-                  </div>
+                  <Server className="w-3.5 h-3.5 text-[#287FE9]" />
+                  <span>Explore Security Analysis Studio</span>
+                </Link>
+              </div>
+            </div>
 
-                  <h3 className="text-xl font-bold text-[#F1F5FF] light:text-[#172033] mb-2">
-                    {feat.title}
-                  </h3>
-                  <p className="text-sm text-[#9EACC2] light:text-[#64748B] leading-relaxed mb-6">
-                    {feat.description}
-                  </p>
-
-                  <div className="space-y-2 border-t border-[#1C2D4A] light:border-[#E2E8F0] pt-4">
-                    {feat.points.map((pt, pIdx) => (
-                      <div key={pIdx} className="flex items-center space-x-2 text-xs text-[#F1F5FF] light:text-[#172033] font-medium">
-                        <CheckCircle className="w-3.5 h-3.5 text-[#55B7FF] light:text-[#2563EB]" />
-                        <span>{pt}</span>
-                      </div>
-                    ))}
-                  </div>
+            {/* Interactive Terminal Telemetry Widget */}
+            <div className="cyber-card p-4 sm:p-5 font-mono text-xs">
+              <div className="flex items-center justify-between pb-3 mb-3 border-b border-[#24344B] light:border-[#E2E8F0]">
+                <div className="flex items-center space-x-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+                  <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                  <span className="text-[11px] text-[#9EACC2] light:text-[#64748B] ml-2">triage_inspector.py &bull; live evaluation</span>
                 </div>
-              )
-            })}
+                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/25">
+                  CRITICAL_RISK (94/100)
+                </span>
+              </div>
+
+              <div className="space-y-1.5 text-[11px] leading-relaxed text-[#9EACC2] light:text-[#64748B]">
+                <p><span className="text-[#287FE9]">&gt;</span> target: <span className="text-[#F1F5FF] light:text-[#172033]">http://paypal.com.verify-user.xyz/login</span></p>
+                <p><span className="text-[#287FE9]">&gt;</span> lexical.url_length: <span className="text-amber-400">42 chars</span> (flagged)</p>
+                <p><span className="text-[#287FE9]">&gt;</span> lexical.domain_entropy: <span className="text-rose-400 font-bold">4.72 bits</span> (high randomized variance)</p>
+                <p><span className="text-[#287FE9]">&gt;</span> lexical.subdomain_count: <span className="text-rose-400 font-bold">3 subdomains</span> (brand spoof stacking)</p>
+                <p><span className="text-[#287FE9]">&gt;</span> transport.ssl_status: <span className="text-rose-400 font-bold">INSECURE_HTTP (No TLS)</span></p>
+                <p><span className="text-[#287FE9]">&gt;</span> headers.strict_transport_security: <span className="text-rose-400">MISSING</span></p>
+                <p><span className="text-[#287FE9]">&gt;</span> threat_intel.urlhaus_match: <span className="text-rose-400 font-bold">MATCH (IOC #49281)</span></p>
+                <div className="pt-2 mt-2 border-t border-[#24344B]/60 light:border-[#E2E8F0] flex items-center justify-between text-xs">
+                  <span className="text-[#F1F5FF] light:text-[#172033] font-bold">Verdict: PHISHING CONFIRMED</span>
+                  <span className="text-emerald-400 font-semibold">Confidence: 99.4%</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* How It Works Section */}
-      <section id="how-it-works" className="py-20 bg-[#0B1528] light:bg-[#F5F7FC] border-y border-[#1C2D4A] light:border-[#E2E8F0] transition-colors">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#287FE9]/10 text-[#55B7FF] light:text-[#2563EB] border border-[#287FE9]/30 text-xs font-semibold mb-3">
-              <Zap className="w-3.5 h-3.5" />
-              <span>Inspection Workflow</span>
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-[#F1F5FF] light:text-[#172033] tracking-tight">
-              How ThreatSentinel Evaluates Risk
-            </h2>
-            <p className="mt-3 text-[#9EACC2] light:text-[#64748B] text-sm">
-              From submission to mitigation advice in under 200 milliseconds.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
-            {steps.map((st, i) => {
-              const Icon = st.icon
-              return (
-                <div
-                  key={i}
-                  className="p-7 rounded-2xl bg-[#111E32] light:bg-white border border-[#1C2D4A] light:border-[#E2E8F0] shadow-md relative flex flex-col justify-between"
-                >
-                  <div>
-                    <div className="flex items-center justify-between mb-4">
-                      <span className="text-2xl font-black text-[#55B7FF]/30 light:text-[#2563EB]/30">
-                        {st.step}
-                      </span>
-                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-[#287FE9]/10 text-[#55B7FF] light:text-[#2563EB] border border-[#287FE9]/20">
-                        {st.tag}
-                      </span>
-                    </div>
-
-                    <div className="w-10 h-10 rounded-xl bg-[#287FE9]/10 light:bg-blue-50 border border-[#287FE9]/30 flex items-center justify-center text-[#55B7FF] light:text-[#2563EB] mb-4">
-                      <Icon className="w-5 h-5" />
-                    </div>
-
-                    <h3 className="text-lg font-bold text-[#F1F5FF] light:text-[#172033] mb-2">
-                      {st.title}
-                    </h3>
-                    <p className="text-xs text-[#9EACC2] light:text-[#64748B] leading-relaxed">
-                      {st.description}
-                    </p>
-                  </div>
-
-                  <div className="mt-6 pt-4 border-t border-[#1C2D4A] light:border-[#E2E8F0] flex items-center text-xs text-[#55B7FF] light:text-[#2563EB] font-semibold">
-                    <span>Automated Security Pipeline</span>
-                    <ChevronRight className="w-3.5 h-3.5 ml-1" />
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* Final CTA Section */}
-      <section className="py-20 md:py-28 relative">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="p-8 sm:p-12 md:p-16 rounded-3xl bg-gradient-to-br from-[#111E32] via-[#162744] to-[#080F1E] light:from-[#2563EB] light:via-[#1D4ED8] light:to-[#1E40AF] border border-[#1C2D4A] light:border-blue-400 text-center relative overflow-hidden shadow-2xl">
-            {/* Background elements */}
-            <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-[#55B7FF]/10 rounded-full blur-2xl"></div>
-
-            <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#287FE9]/20 light:bg-white/20 text-[#55B7FF] light:text-white text-xs font-semibold mb-4">
-              <Shield className="w-3.5 h-3.5" />
-              <span>Enterprise SOC Ready</span>
-            </div>
-
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight max-w-2xl mx-auto">
-              Ready to Inspect Suspicious URLs in Real-Time?
-            </h2>
-            <p className="mt-4 text-sm sm:text-base text-[#9EACC2] light:text-blue-50 max-w-xl mx-auto leading-relaxed">
-              Experience the power of our custom-trained ML models, passive security header audits, and collaborative threat feeds without complex setup.
-            </p>
-
-            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link
-                to="/scanner"
-                className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold text-sm bg-white text-[#080F1E] hover:bg-slate-100 shadow-xl transition-all duration-200 flex items-center justify-center space-x-2"
-              >
-                <span>Launch URL Scanner</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-              <Link
-                to="/dashboard"
-                className="w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold text-sm bg-[#287FE9]/40 light:bg-blue-800/40 hover:bg-[#287FE9]/60 text-white border border-white/20 transition-all duration-200 flex items-center justify-center space-x-2"
-              >
-                <span>Explore SOC Dashboard</span>
-                <ChevronRight className="w-4 h-4" />
-              </Link>
-            </div>
-          </div>
+      {/* CTA Band */}
+      <section className="py-14 max-w-4xl mx-auto px-4 sm:px-6 text-center w-full">
+        <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-[#F1F5FF] light:text-[#172033]">
+          Audit Any URL or Ingest Threat Telemetry Today
+        </h2>
+        <p className="mt-2 text-xs sm:text-sm text-[#9EACC2] light:text-[#64748B] max-w-lg mx-auto">
+          Built for security operations teams, incident responders, and compliance audits. Zero software installation required.
+        </p>
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+          <Link
+            to="/scanner"
+            className="cyber-btn-primary text-xs font-semibold py-2.5 px-5 space-x-1.5"
+          >
+            <Terminal className="w-3.5 h-3.5" />
+            <span>Launch URL Threat Scanner</span>
+          </Link>
+          <Link
+            to="/dashboard"
+            className="cyber-btn-secondary text-xs font-medium py-2.5 px-4"
+          >
+            <span>Open SOC Dashboard</span>
+          </Link>
         </div>
       </section>
 

@@ -7,20 +7,29 @@ import {
   History,
   ChevronLeft,
   ChevronRight,
-  Shield,
-  Radio
+  Shield
 } from 'lucide-react'
+import { isApiMode, getApiBaseUrl } from '../../services/api'
 
 export default function Sidebar({ collapsed, setCollapsed }) {
   const location = useLocation()
 
-  const navItems = [
-    { name: 'Overview', path: '/dashboard', icon: LayoutDashboard },
-    { name: 'URL Scanner', path: '/scanner', icon: Search },
-    { name: 'Scan Results', path: '/results', icon: FileText },
-    { name: 'Security Analysis', path: '/security', icon: ShieldCheck },
-    { name: 'Scan History', path: '/history', icon: History },
+  const operationLinks = [
+    { name: 'SOC Overview', path: '/dashboard', icon: LayoutDashboard },
+    { name: 'URL Threat Scanner', path: '/scanner', icon: Search },
+    { name: 'Inspection Report', path: '/results', icon: FileText },
   ]
+
+  const analysisLinks = [
+    { name: 'Security & TLS Audit', path: '/security-analysis', icon: ShieldCheck, alias: '/security' },
+    { name: 'Audit Scan History', path: '/history', icon: History },
+  ]
+
+  const isLinkActive = (item) => {
+    if (location.pathname === item.path) return true
+    if (item.alias && location.pathname === item.alias) return true
+    return false
+  }
 
   return (
     <>
@@ -33,28 +42,26 @@ export default function Sidebar({ collapsed, setCollapsed }) {
       )}
 
       <aside
-        className={`fixed top-0 left-0 z-40 h-screen transition-all duration-300 ease-in-out border-r bg-[#080F1E] light:bg-white border-[#1C2D4A] light:border-[#E2E8F0] flex flex-col justify-between ${
+        className={`fixed top-0 left-0 z-40 h-screen transition-all duration-200 ease-in-out border-r bg-[#080F1E] light:bg-white border-[#24344B] light:border-[#E2E8F0] flex flex-col justify-between ${
           collapsed
-            ? 'w-20 -translate-x-full md:translate-x-0'
-            : 'w-64 translate-x-0'
+            ? 'w-18 -translate-x-full md:translate-x-0'
+            : 'w-60 translate-x-0'
         }`}
       >
-        {/* Top Header */}
+        {/* Top Header & Brand */}
         <div>
-          <div className="h-16 flex items-center justify-between px-4 border-b border-[#1C2D4A] light:border-[#E2E8F0]">
-            <Link to="/" className="flex items-center space-x-3 overflow-hidden">
-              <div className="w-10 h-10 min-w-10 rounded-xl bg-gradient-to-tr from-[#287FE9] via-[#1E6FD6] to-[#55B7FF] p-0.5 shadow-md shadow-[#287FE9]/20">
-                <div className="w-full h-full bg-[#080F1E] light:bg-white rounded-[10px] flex items-center justify-center">
-                  <Shield className="w-5 h-5 text-[#55B7FF] light:text-[#2563EB]" />
-                </div>
+          <div className="h-16 flex items-center justify-between px-3.5 border-b border-[#24344B] light:border-[#E2E8F0]">
+            <Link to="/" className="flex items-center space-x-2.5 overflow-hidden">
+              <div className="w-8 h-8 rounded-md bg-[#111E32] light:bg-blue-50 border border-[#24344B] light:border-blue-200 flex items-center justify-center shrink-0">
+                <Shield className="w-4 h-4 text-[#287FE9]" />
               </div>
               {!collapsed && (
                 <div className="flex flex-col">
-                  <span className="font-bold text-sm tracking-tight text-[#F1F5FF] light:text-[#172033] whitespace-nowrap">
-                    ThreatSentinel<span className="text-[#55B7FF] light:text-[#2563EB]">.ai</span>
+                  <span className="font-bold text-xs tracking-tight text-[#F1F5FF] light:text-[#172033] whitespace-nowrap">
+                    PhishGuard<span className="text-[#287FE9]">.SOC</span>
                   </span>
-                  <span className="text-[10px] font-semibold text-[#55B7FF] light:text-[#2563EB] uppercase tracking-wider">
-                    SOC Terminal
+                  <span className="text-[10px] font-mono text-[#9EACC2] light:text-[#64748B]">
+                    Threat Console
                   </span>
                 </div>
               )}
@@ -62,57 +69,102 @@ export default function Sidebar({ collapsed, setCollapsed }) {
             <button
               onClick={() => setCollapsed(!collapsed)}
               aria-label="Toggle Sidebar"
-              className="p-1.5 rounded-lg text-[#9EACC2] hover:text-[#F1F5FF] light:hover:text-[#172033] hover:bg-[#111E32] light:hover:bg-slate-100 transition-colors cursor-pointer"
+              className="p-1.5 rounded-md text-[#9EACC2] hover:text-[#F1F5FF] light:hover:text-[#172033] hover:bg-[#111E32] light:hover:bg-slate-100 transition-colors cursor-pointer"
             >
               {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
             </button>
           </div>
 
-          {/* Navigation Items */}
-          <div className="p-3 space-y-1.5">
-            {!collapsed && (
-              <p className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[#9EACC2] light:text-[#64748B]">
-                Navigation
-              </p>
-            )}
+          {/* Navigation Sections */}
+          <div className="p-2.5 space-y-4">
+            {/* Section 1: Operations */}
+            <div>
+              {!collapsed && (
+                <p className="px-2.5 py-1 text-[10px] font-mono font-semibold uppercase tracking-wider text-[#9EACC2] light:text-[#64748B]">
+                  Operations
+                </p>
+              )}
+              <div className="space-y-1">
+                {operationLinks.map((item) => {
+                  const Icon = item.icon
+                  const active = isLinkActive(item)
 
-            {navItems.map((item) => {
-              const Icon = item.icon
-              const isActive =
-                location.pathname === item.path ||
-                (item.path === '/security' && location.pathname === '/security-analysis')
+                  return (
+                    <Link
+                      key={item.name}
+                      to={item.path}
+                      title={collapsed ? item.name : undefined}
+                      className={`flex items-center space-x-2.5 px-2.5 py-2 rounded-md text-xs font-medium transition-colors ${
+                        active
+                          ? 'bg-[#111E32] light:bg-slate-100 text-[#F1F5FF] light:text-[#172033] border border-[#24344B] light:border-[#CBD5E1] font-semibold'
+                          : 'text-[#9EACC2] light:text-[#64748B] hover:text-[#F1F5FF] light:hover:text-[#172033] hover:bg-[#0D1728] light:hover:bg-slate-50'
+                      } ${collapsed ? 'justify-center px-0' : ''}`}
+                    >
+                      <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-[#287FE9]' : 'text-[#9EACC2] light:text-[#64748B]'}`} />
+                      {!collapsed && <span className="truncate">{item.name}</span>}
+                    </Link>
+                  )
+                })}
+              </div>
+            </div>
 
-              return (
-                <Link
-                  key={item.name}
-                  to={item.path}
-                  title={collapsed ? item.name : undefined}
-                  className={`flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
-                    isActive
-                      ? 'bg-[#287FE9]/15 text-[#55B7FF] light:text-[#2563EB] border border-[#287FE9]/30 light:border-blue-200 font-semibold shadow-xs'
-                      : 'text-[#9EACC2] light:text-[#64748B] hover:text-[#F1F5FF] light:hover:text-[#172033] hover:bg-[#111E32] light:hover:bg-slate-100'
-                  } ${collapsed ? 'justify-center' : ''}`}
-                >
-                  <Icon className={`w-5 h-5 min-w-5 ${isActive ? 'text-[#55B7FF] light:text-[#2563EB]' : 'text-[#9EACC2] light:text-[#64748B]'}`} />
-                  {!collapsed && <span className="truncate">{item.name}</span>}
-                </Link>
-              )
-            })}
+            {/* Section 2: Deep Analysis */}
+            <div>
+              {!collapsed && (
+                <p className="px-2.5 py-1 text-[10px] font-mono font-semibold uppercase tracking-wider text-[#9EACC2] light:text-[#64748B]">
+                  Intelligence
+                </p>
+              )}
+              <div className="space-y-1">
+                {analysisLinks.map((item) => {
+                  const Icon = item.icon
+                  const active = isLinkActive(item)
+
+                  return (
+                    <Link
+                      key={item.name}
+                      to={item.path}
+                      title={collapsed ? item.name : undefined}
+                      className={`flex items-center space-x-2.5 px-2.5 py-2 rounded-md text-xs font-medium transition-colors ${
+                        active
+                          ? 'bg-[#111E32] light:bg-slate-100 text-[#F1F5FF] light:text-[#172033] border border-[#24344B] light:border-[#CBD5E1] font-semibold'
+                          : 'text-[#9EACC2] light:text-[#64748B] hover:text-[#F1F5FF] light:hover:text-[#172033] hover:bg-[#0D1728] light:hover:bg-slate-50'
+                      } ${collapsed ? 'justify-center px-0' : ''}`}
+                    >
+                      <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-[#287FE9]' : 'text-[#9EACC2] light:text-[#64748B]'}`} />
+                      {!collapsed && <span className="truncate">{item.name}</span>}
+                    </Link>
+                  )
+                })}
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Bottom Status Card */}
-        {!collapsed && (
-          <div className="p-4 m-3 rounded-2xl bg-[#111E32] light:bg-[#F5F7FC] border border-[#1C2D4A] light:border-[#E2E8F0]">
-            <div className="flex items-center space-x-2 mb-2">
-              <Radio className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
-              <span className="text-xs font-semibold text-[#F1F5FF] light:text-[#172033]">ML Pipeline Ready</span>
+        {/* Bottom Mode Status Indicator */}
+        <div className="p-3 border-t border-[#24344B] light:border-[#E2E8F0] bg-[#0D1728] light:bg-slate-50">
+          {!collapsed ? (
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-[11px] font-mono">
+                <span className="text-[#9EACC2] light:text-[#64748B]">Engine Node:</span>
+                <span className="text-emerald-400 font-semibold flex items-center space-x-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                  <span>ONLINE</span>
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-[10px] font-mono text-[#9EACC2] light:text-[#64748B]">
+                <span>Pipeline Mode:</span>
+                <span className="px-1.5 py-0.5 rounded bg-[#111E32] light:bg-white border border-[#24344B] light:border-[#E2E8F0] font-bold text-[#F1F5FF] light:text-[#172033]">
+                  {isApiMode() ? 'API' : 'MOCK'}
+                </span>
+              </div>
             </div>
-            <p className="text-[11px] text-[#9EACC2] light:text-[#64748B] leading-relaxed">
-              Random Forest v2.4 model initialized. 18 feature extractors online.
-            </p>
-          </div>
-        )}
+          ) : (
+            <div className="flex justify-center" title={isApiMode() ? `API Mode: ${getApiBaseUrl()}` : 'Mock Engine Mode'}>
+              <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+            </div>
+          )}
+        </div>
       </aside>
     </>
   )
