@@ -37,7 +37,7 @@ export default function RiskGauge({ score = 0, size = 200, riskLevel = 'LOW' }) 
           r={radius}
           fill="none"
           stroke="currentColor"
-          className="text-white/10 light:text-gray-200"
+          className="text-[#1C2D4A] light:text-[#E2E8F0]"
           strokeWidth={strokeWidth}
           strokeLinecap="round"
           strokeDasharray={`${arcLength} ${circumference}`}
@@ -65,7 +65,7 @@ export default function RiskGauge({ score = 0, size = 200, riskLevel = 'LOW' }) 
       {/* Center text */}
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <motion.span
-          className="font-bold text-white light:text-gray-900"
+          className="font-extrabold text-[#F1F5FF] light:text-[#172033]"
           style={{ fontSize: size * 0.22 }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -74,13 +74,13 @@ export default function RiskGauge({ score = 0, size = 200, riskLevel = 'LOW' }) 
           {score}
         </motion.span>
         <span
-          className="text-slate-400 light:text-slate-500 font-medium"
+          className="text-[#9EACC2] light:text-[#64748B] font-medium"
           style={{ fontSize: size * 0.09 }}
         >
           /100
         </span>
         <span
-          className="mt-1 font-semibold tracking-wider uppercase"
+          className="mt-1 font-bold tracking-wider uppercase"
           style={{ fontSize: size * 0.08, color }}
         >
           {riskLevel}

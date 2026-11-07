@@ -6,9 +6,9 @@ const SEVERITY_CONFIG = {
     label: 'Critical',
   },
   HIGH: {
-    border: 'border-l-red-500',
-    bg: 'bg-red-500/15 light:bg-red-100',
-    text: 'text-red-400 light:text-red-600',
+    border: 'border-l-orange-500',
+    bg: 'bg-orange-500/15 light:bg-orange-100',
+    text: 'text-orange-400 light:text-orange-600',
     label: 'High',
   },
   MEDIUM: {
@@ -24,9 +24,9 @@ const SEVERITY_CONFIG = {
     label: 'Low',
   },
   INFO: {
-    border: 'border-l-slate-400',
+    border: 'border-l-[#9EACC2]',
     bg: 'bg-slate-500/15 light:bg-slate-100',
-    text: 'text-slate-400 light:text-slate-500',
+    text: 'text-[#9EACC2] light:text-[#64748B]',
     label: 'Info',
   },
 };
@@ -37,10 +37,10 @@ export default function FindingCard({ title, severity = 'INFO', description, ico
   return (
     <div
       className={`
-        relative flex gap-3 rounded-lg border-l-4 ${config.border}
-        bg-white/5 light:bg-white
-        p-4
-        light:shadow-sm light:border light:border-gray-200
+        relative flex gap-3.5 rounded-xl border-l-4 ${config.border}
+        bg-[#111E32] light:bg-white
+        p-4 border border-[#1C2D4A] light:border-[#E2E8F0]
+        shadow-sm shadow-black/10 light:shadow-slate-200/50
       `}
     >
       {/* Optional icon */}
@@ -53,14 +53,14 @@ export default function FindingCard({ title, severity = 'INFO', description, ico
       {/* Content */}
       <div className="min-w-0 flex-1">
         <div className="flex items-start justify-between gap-2">
-          <h4 className="font-semibold text-white light:text-gray-900 text-sm leading-snug">
+          <h4 className="font-semibold text-[#F1F5FF] light:text-[#172033] text-sm leading-snug">
             {title}
           </h4>
 
           {/* Severity badge */}
           <span
             className={`
-              shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium
+              shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold
               ${config.bg} ${config.text}
             `}
           >
@@ -69,7 +69,7 @@ export default function FindingCard({ title, severity = 'INFO', description, ico
         </div>
 
         {description && (
-          <p className="mt-1.5 text-sm text-slate-400 light:text-slate-600 leading-relaxed">
+          <p className="mt-1.5 text-sm text-[#9EACC2] light:text-[#64748B] leading-relaxed">
             {description}
           </p>
         )}

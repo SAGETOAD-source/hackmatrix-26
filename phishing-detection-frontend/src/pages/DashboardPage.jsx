@@ -8,14 +8,39 @@ import ActivityChart from '../components/dashboard/ActivityChart'
 import ThreatDistributionChart from '../components/dashboard/ThreatDistributionChart'
 import RecentScanTable from '../components/dashboard/RecentScanTable'
 import QuickScanner from '../components/dashboard/QuickScanner'
+import Aurora from '../components/backgrounds/Aurora'
+import { useTheme } from '../context/ThemeContext'
 import { STAT_CARDS_DATA } from '../data/mockData'
 
 export default function DashboardPage() {
+  const { isDark } = useTheme()
   const [collapsed, setCollapsed] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
 
   return (
-    <div className="min-h-screen bg-[#0a0f1d] light:bg-[#f8fafc] text-slate-100 light:text-slate-900 transition-colors duration-200 flex">
+    <div className="min-h-screen bg-[#080F1E] light:bg-[#F5F7FC] text-[#F1F5FF] light:text-[#172033] transition-colors duration-200 flex relative overflow-hidden">
+      {/* React Bits Aurora Ambient Background */}
+      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
+        <Aurora
+          colorStops={
+            isDark
+              ? ['#080F1E', '#111E32', '#287FE9', '#55B7FF', '#111E32']
+              : ['#2563EB', '#3B82F6', '#60A5FA', '#93C5FD', '#2563EB']
+          }
+          amplitude={1}
+          blend={0.5}
+          height={0.5}
+          speed={0.8}
+          glow={0.6}
+          layers={2}
+          mouseInteraction={true}
+          lightMode={!isDark}
+          opacity={isDark ? 0.6 : 0.35}
+          className="w-full h-full"
+        />
+        <div className="absolute inset-0 bg-[#080F1E]/60 light:bg-[#F5F7FC]/75 pointer-events-none"></div>
+      </div>
+
       {/* Collapsible Sidebar */}
       <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
 
@@ -36,14 +61,14 @@ export default function DashboardPage() {
         {/* Dashboard Content */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl w-full mx-auto">
           {/* Simulated Disclaimer Banner */}
-          <div className="p-3.5 rounded-xl bg-blue-500/10 light:bg-blue-50 border border-blue-500/20 light:border-blue-200 flex items-center justify-between text-xs text-blue-300 light:text-blue-800">
+          <div className="p-3.5 rounded-xl bg-[#287FE9]/10 light:bg-blue-50 border border-[#287FE9]/25 light:border-blue-200 flex items-center justify-between text-xs text-[#55B7FF] light:text-blue-800">
             <div className="flex items-center space-x-2.5">
-              <AlertCircle className="w-4 h-4 text-blue-400 light:text-blue-600 flex-shrink-0" />
+              <AlertCircle className="w-4 h-4 text-[#55B7FF] light:text-[#2563EB] shrink-0" />
               <span>
                 <strong className="font-semibold">Simulated Security Environment:</strong> Telemetry values reflect sample enterprise SOC metrics and synthetic test vectors.
               </span>
             </div>
-            <span className="hidden sm:inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-blue-500/20 light:bg-blue-200">
+            <span className="hidden sm:inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-[#287FE9]/20 light:bg-blue-200 text-[#55B7FF] light:text-blue-900">
               SOC Mode Demo
             </span>
           </div>
@@ -51,10 +76,10 @@ export default function DashboardPage() {
           {/* Page Title & Quick Actions */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white light:text-slate-900">
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#F1F5FF] light:text-[#172033]">
                 Security Operations Center (SOC)
               </h1>
-              <p className="text-xs sm:text-sm text-slate-400 light:text-slate-500 mt-1">
+              <p className="text-xs sm:text-sm text-[#9EACC2] light:text-[#64748B] mt-1">
                 Real-time threat monitoring, heuristic feature extraction, and URL verification overview.
               </p>
             </div>
@@ -62,7 +87,7 @@ export default function DashboardPage() {
             <div className="flex items-center space-x-3">
               <Link
                 to="/scanner"
-                className="inline-flex items-center justify-center space-x-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 shadow-md shadow-blue-500/20 transition-all duration-200"
+                className="cyber-btn-primary text-xs sm:text-sm font-semibold space-x-2 py-2"
               >
                 <Search className="w-4 h-4" />
                 <span>New URL Scan</span>

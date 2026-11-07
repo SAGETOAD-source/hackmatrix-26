@@ -31,9 +31,10 @@ export default function HeaderAuditRow({ name, present, value, severity = 'PASS'
   return (
     <div
       className="
-        flex items-center gap-3 rounded-lg px-4 py-3
-        bg-white/5 light:bg-white
-        light:border light:border-gray-200
+        flex items-center gap-3 rounded-xl px-4 py-3
+        bg-[#111E32] light:bg-white
+        border border-[#1C2D4A] light:border-[#E2E8F0]
+        shadow-xs
       "
     >
       {/* Status icon */}
@@ -42,7 +43,7 @@ export default function HeaderAuditRow({ name, present, value, severity = 'PASS'
       </div>
 
       {/* Header name */}
-      <span className="shrink-0 font-semibold text-sm text-white light:text-gray-900 min-w-[140px]">
+      <span className="shrink-0 font-semibold text-sm text-[#F1F5FF] light:text-[#172033] min-w-[140px]">
         {name}
       </span>
 
@@ -50,7 +51,7 @@ export default function HeaderAuditRow({ name, present, value, severity = 'PASS'
       <span
         className="
           flex-1 truncate font-mono text-xs
-          text-slate-400 light:text-slate-600
+          text-[#9EACC2] light:text-[#64748B]
         "
         title={value}
       >
@@ -60,7 +61,7 @@ export default function HeaderAuditRow({ name, present, value, severity = 'PASS'
       {/* Severity badge */}
       <span
         className={`
-          shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium
+          shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold
           ${config.bg} ${config.text}
         `}
       >

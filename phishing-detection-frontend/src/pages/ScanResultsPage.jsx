@@ -32,27 +32,20 @@ import HeaderAuditRow from '../components/results/HeaderAuditRow'
 import CertificateCard from '../components/results/CertificateCard'
 import { SIMULATION_DISCLAIMER } from '../data/mockData'
 import { generateReportText, simulateScan } from '../utils/simulateScan'
+import { getLatestScan, setLatestScan } from '../services/scanService'
+import { getApiBaseUrl } from '../services/api'
 
 function getInitialScan(urlParam) {
-  try {
-    const stored = sessionStorage.getItem('latest_scan_result')
-    if (stored) {
-      const parsed = JSON.parse(stored)
-      if (!urlParam || parsed.url === urlParam) {
-        return parsed
-      }
+  const stored = getLatestScan()
+  if (stored) {
+    if (!urlParam || stored.url === urlParam) {
+      return stored
     }
-  } catch {
-    // ignore
   }
 
   if (urlParam) {
     const generated = simulateScan(urlParam)
-    try {
-      sessionStorage.setItem('latest_scan_result', JSON.stringify(generated))
-    } catch {
-      // ignore
-    }
+    setLatestScan(generated)
     return generated
   }
 
@@ -105,44 +98,43 @@ export default function ScanResultsPage() {
   const handleRescan = () => {
     if (scanResult?.url) {
       navigate(`/scanner?url=${encodeURIComponent(scanResult.url)}`)
+    } else {
+      navigate('/scanner')
     }
   }
 
-  // Download Report
+  // Download raw report
   const handleDownloadReport = () => {
     if (!scanResult) return
     const text = generateReportText(scanResult)
     const blob = new Blob([text], { type: 'text/plain;charset=utf-8' })
     const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    const safeDomain = (scanResult.domain || 'report').replace(/[^a-zA-Z0-9_-]/g, '_')
-    link.href = url
-    link.download = `security-audit-${safeDomain}-${Date.now()}.txt`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `threatsentinel-report-${Date.now()}.txt`
+    a.click()
     URL.revokeObjectURL(url)
   }
 
-  const isPhish = scanResult?.riskLevel === 'CRITICAL' || scanResult?.riskLevel === 'HIGH'
-  const isSuspicious = scanResult?.riskLevel === 'SUSPICIOUS'
+  const isPhish = scanResult?.prediction === 'phishing'
+  const isSuspicious = scanResult?.prediction === 'suspicious'
 
   return (
-    <div className="min-h-screen bg-[#0a0f1d] light:bg-[#f8fafc] text-slate-100 light:text-slate-900 transition-colors duration-200 flex">
+    <div className="min-h-screen bg-[#080F1E] light:bg-[#F5F7FC] text-[#F1F5FF] light:text-[#172033] transition-colors duration-200 flex">
       <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
 
       <div className={`flex-1 flex flex-col min-h-screen transition-all duration-300 ${collapsed ? 'ml-0 md:ml-20' : 'ml-0 md:ml-64'}`}>
         <TopNavbar collapsed={collapsed} setCollapsed={setCollapsed} />
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8 space-y-6 max-w-6xl w-full mx-auto">
-          {/* Top Actions Bar */}
+          {/* Top Actions Row */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <Link
-              to="/dashboard"
-              className="inline-flex items-center space-x-1.5 text-xs font-semibold text-slate-400 hover:text-white light:hover:text-slate-900 transition-colors"
+              to="/scanner"
+              className="inline-flex items-center space-x-1.5 text-xs font-semibold text-[#9EACC2] hover:text-[#F1F5FF] light:hover:text-[#172033] transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
-              <span>Back to Dashboard</span>
+              <span>Back to Scanner</span>
             </Link>
 
             {scanResult && (
@@ -150,7 +142,7 @@ export default function ScanResultsPage() {
                 <button
                   type="button"
                   onClick={handleCopyUrl}
-                  className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-800/80 light:bg-slate-100 hover:bg-slate-700 light:hover:bg-slate-200 text-slate-300 light:text-slate-700 border border-slate-700/80 light:border-slate-300 flex items-center space-x-1.5 transition-colors cursor-pointer"
+                  className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#111E32] light:bg-white hover:bg-[#162744] light:hover:bg-slate-100 text-[#9EACC2] light:text-[#172033] border border-[#1C2D4A] light:border-[#E2E8F0] flex items-center space-x-1.5 transition-colors cursor-pointer"
                 >
                   {copied ? (
                     <>
@@ -168,7 +160,7 @@ export default function ScanResultsPage() {
                 <button
                   type="button"
                   onClick={handleRescan}
-                  className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-800/80 light:bg-slate-100 hover:bg-slate-700 light:hover:bg-slate-200 text-slate-300 light:text-slate-700 border border-slate-700/80 light:border-slate-300 flex items-center space-x-1.5 transition-colors cursor-pointer"
+                  className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#111E32] light:bg-white hover:bg-[#162744] light:hover:bg-slate-100 text-[#9EACC2] light:text-[#172033] border border-[#1C2D4A] light:border-[#E2E8F0] flex items-center space-x-1.5 transition-colors cursor-pointer"
                 >
                   <RefreshCw className="w-3.5 h-3.5" />
                   <span>Rescan Target</span>
@@ -177,7 +169,7 @@ export default function ScanResultsPage() {
                 <button
                   type="button"
                   onClick={handleDownloadReport}
-                  className="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-md shadow-blue-500/20 flex items-center space-x-1.5 transition-all cursor-pointer"
+                  className="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-[#287FE9] hover:bg-[#1E6FD6] text-white shadow-md shadow-[#287FE9]/25 flex items-center space-x-1.5 transition-all cursor-pointer"
                 >
                   <Download className="w-3.5 h-3.5" />
                   <span>Download Report (.txt)</span>
@@ -185,7 +177,7 @@ export default function ScanResultsPage() {
 
                 <Link
                   to="/scanner"
-                  className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-800/80 light:bg-slate-100 hover:bg-slate-700 light:hover:bg-slate-200 text-slate-300 light:text-slate-700 border border-slate-700/80 light:border-slate-300 flex items-center space-x-1.5 transition-colors"
+                  className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-[#111E32] light:bg-white hover:bg-[#162744] light:hover:bg-slate-100 text-[#9EACC2] light:text-[#172033] border border-[#1C2D4A] light:border-[#E2E8F0] flex items-center space-x-1.5 transition-colors"
                 >
                   <ChevronRight className="w-3.5 h-3.5" />
                   <span>New Scan</span>
@@ -194,31 +186,41 @@ export default function ScanResultsPage() {
             )}
           </div>
 
-          {/* Simulation Disclaimer Banner */}
+          {/* Simulation / API Mode Banner */}
           <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 light:text-amber-800 flex items-start sm:items-center space-x-3 text-xs">
-            <AlertTriangle className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5 sm:mt-0" />
+            <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5 sm:mt-0" />
             <div>
-              <span className="font-bold">Simulated Demonstration Report:</span>{' '}
-              This report represents a simulated client-side heuristic evaluation designed for cybersecurity SaaS demonstration. Indicators and findings do not reflect live malicious network activity.
+              <span className="font-bold">
+                {scanResult?.isLiveApi
+                  ? 'Live Backend API Audit Report:'
+                  : scanResult?.apiFallback
+                  ? 'Offline Fallback Assessment:'
+                  : 'Simulated Demonstration Report:'}
+              </span>{' '}
+              {scanResult?.isLiveApi
+                ? `Results retrieved live from backend API (${getApiBaseUrl()}). Telemetry and predictions reflect server evaluation.`
+                : scanResult?.apiFallback
+                ? 'Backend service is unreachable; displaying local cached assessment.'
+                : 'This report represents a simulated client-side heuristic evaluation designed for cybersecurity SaaS demonstration. Indicators and findings do not reflect live malicious network activity.'}
             </div>
           </div>
 
           {/* Empty State when no result available */}
           {!scanResult && (
-            <div className="p-12 text-center rounded-2xl bg-[#0f172a] light:bg-white border border-[#1e293b] light:border-slate-200 space-y-4">
-              <div className="w-16 h-16 mx-auto rounded-2xl bg-blue-500/10 text-blue-400 flex items-center justify-center">
+            <div className="p-12 text-center rounded-2xl bg-[#111E32] light:bg-white border border-[#1C2D4A] light:border-[#E2E8F0] space-y-4 shadow-xl">
+              <div className="w-16 h-16 mx-auto rounded-2xl bg-[#287FE9]/10 text-[#55B7FF] flex items-center justify-center">
                 <Shield className="w-8 h-8" />
               </div>
-              <h2 className="text-xl font-bold text-white light:text-slate-900">
+              <h2 className="text-xl font-bold text-[#F1F5FF] light:text-[#172033]">
                 No Scan Telemetry Available
               </h2>
-              <p className="text-sm text-slate-400 light:text-slate-500 max-w-md mx-auto">
+              <p className="text-sm text-[#9EACC2] light:text-[#64748B] max-w-md mx-auto">
                 No scan results are currently loaded in your session. Input a URL or pick one of our curated security demonstration samples.
               </p>
               <div className="pt-2">
                 <Link
                   to="/scanner"
-                  className="inline-flex items-center space-x-2 px-6 py-3 rounded-xl text-sm font-bold text-white bg-blue-600 hover:bg-blue-500 shadow-lg shadow-blue-500/25 transition-all"
+                  className="cyber-btn-primary px-6 py-3 text-sm font-bold inline-flex items-center space-x-2"
                 >
                   <span>Launch URL Scanner</span>
                   <ExternalLink className="w-4 h-4" />
@@ -239,17 +241,17 @@ export default function ScanResultsPage() {
               <div
                 className={`p-6 sm:p-8 rounded-3xl border shadow-2xl relative overflow-hidden ${
                   isPhish
-                    ? 'bg-gradient-to-br from-rose-950/40 via-[#0f172a] to-[#0a0f1d] light:from-rose-50 light:via-white light:to-white border-rose-500/30'
+                    ? 'bg-gradient-to-br from-rose-950/40 via-[#111E32] to-[#080F1E] light:from-rose-50 light:via-white light:to-white border-rose-500/30'
                     : isSuspicious
-                    ? 'bg-gradient-to-br from-amber-950/40 via-[#0f172a] to-[#0a0f1d] light:from-amber-50 light:via-white light:to-white border-amber-500/30'
-                    : 'bg-gradient-to-br from-emerald-950/40 via-[#0f172a] to-[#0a0f1d] light:from-emerald-50 light:via-white light:to-white border-emerald-500/30'
+                    ? 'bg-gradient-to-br from-amber-950/40 via-[#111E32] to-[#080F1E] light:from-amber-50 light:via-white light:to-white border-amber-500/30'
+                    : 'bg-gradient-to-br from-emerald-950/40 via-[#111E32] to-[#080F1E] light:from-emerald-50 light:via-white light:to-white border-emerald-500/30'
                 }`}
               >
                 <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
                   {/* Left: Verdict info */}
                   <div className="flex items-start sm:items-center space-x-4 sm:space-x-5">
                     <div
-                      className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center flex-shrink-0 ${
+                      className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center shrink-0 ${
                         isPhish
                           ? 'bg-rose-500 text-white shadow-xl shadow-rose-500/30'
                           : isSuspicious
@@ -279,29 +281,29 @@ export default function ScanResultsPage() {
                         >
                           {scanResult.riskLevel} RISK LEVEL
                         </span>
-                        <span className="text-xs font-semibold text-slate-400">
+                        <span className="text-xs font-semibold text-[#9EACC2] light:text-[#64748B]">
                           {Math.round((scanResult.confidence || 0.95) * 100)}% ML Confidence
                         </span>
-                        <span className="text-xs text-slate-500">•</span>
-                        <span className="text-xs text-slate-400 flex items-center space-x-1">
+                        <span className="text-xs text-[#9EACC2] light:text-[#64748B]">•</span>
+                        <span className="text-xs text-[#9EACC2] light:text-[#64748B] flex items-center space-x-1">
                           <Clock className="w-3 h-3 inline" />
-                          <span>Simulated Audit</span>
+                          <span>{scanResult.isLiveApi ? 'Live API Audit' : 'Simulated Audit'}</span>
                         </span>
                       </div>
 
-                      <h1 className="text-2xl sm:text-3xl font-black text-white light:text-slate-900 tracking-tight">
+                      <h1 className="text-2xl sm:text-3xl font-black text-[#F1F5FF] light:text-[#172033] tracking-tight">
                         Verdict: {scanResult.prediction?.toUpperCase()}
                       </h1>
 
                       <div className="mt-2 flex items-center space-x-2">
-                        <p className="text-xs sm:text-sm text-slate-300 light:text-slate-600 font-mono break-all max-w-xl">
+                        <p className="text-xs sm:text-sm text-[#F1F5FF] light:text-[#172033] font-mono break-all max-w-xl">
                           {scanResult.url}
                         </p>
                         <button
                           type="button"
                           onClick={handleCopyUrl}
                           title="Copy target URL"
-                          className="text-slate-400 hover:text-white light:hover:text-slate-900 p-1 rounded cursor-pointer"
+                          className="text-[#9EACC2] hover:text-[#F1F5FF] light:hover:text-[#172033] p-1 rounded cursor-pointer"
                         >
                           <Copy className="w-3.5 h-3.5" />
                         </button>
@@ -310,7 +312,7 @@ export default function ScanResultsPage() {
                   </div>
 
                   {/* Right: Circular Gauge */}
-                  <div className="self-center lg:self-auto flex flex-col items-center p-3 rounded-2xl bg-[#0f172a]/80 light:bg-white/90 border border-[#1e293b] light:border-slate-200">
+                  <div className="self-center lg:self-auto flex flex-col items-center p-3 rounded-2xl bg-[#111E32]/90 light:bg-white/95 border border-[#1C2D4A] light:border-[#E2E8F0]">
                     <RiskGauge
                       score={scanResult.riskScore}
                       riskLevel={scanResult.riskLevel}
@@ -322,8 +324,8 @@ export default function ScanResultsPage() {
 
               {/* 5-Pillar Score Weights Grid */}
               <div>
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center space-x-1.5">
-                  <Cpu className="w-3.5 h-3.5 text-blue-400" />
+                <h3 className="text-xs font-bold uppercase tracking-wider text-[#9EACC2] light:text-[#64748B] mb-3 flex items-center space-x-1.5">
+                  <Cpu className="w-3.5 h-3.5 text-[#55B7FF]" />
                   <span>Multi-Pillar Engine Score Breakdown</span>
                 </h3>
 
@@ -369,22 +371,22 @@ export default function ScanResultsPage() {
                     return (
                       <div
                         key={idx}
-                        className="p-4 rounded-2xl bg-[#0f172a] light:bg-white border border-[#1e293b] light:border-slate-200 space-y-2"
+                        className="p-4 rounded-2xl bg-[#111E32] light:bg-white border border-[#1C2D4A] light:border-[#E2E8F0] space-y-2 shadow-xs"
                       >
-                        <div className="flex items-center justify-between text-xs text-slate-400">
-                          <span className="font-semibold text-slate-300 light:text-slate-700">{pillar.label}</span>
-                          <PillarIcon className="w-3.5 h-3.5 text-blue-400" />
+                        <div className="flex items-center justify-between text-xs text-[#9EACC2]">
+                          <span className="font-semibold text-[#F1F5FF] light:text-[#172033]">{pillar.label}</span>
+                          <PillarIcon className="w-3.5 h-3.5 text-[#55B7FF]" />
                         </div>
                         <div className="flex items-baseline justify-between">
-                          <div className="text-xl sm:text-2xl font-black text-white light:text-slate-900">
+                          <div className="text-xl sm:text-2xl font-black text-[#F1F5FF] light:text-[#172033]">
                             {pillar.score}%
                           </div>
-                          <span className="text-[10px] font-bold text-slate-500 uppercase">
+                          <span className="text-[10px] font-bold text-[#9EACC2] light:text-[#64748B] uppercase">
                             Wt: {pillar.weight}
                           </span>
                         </div>
                         {/* Progress line */}
-                        <div className="w-full bg-slate-800 light:bg-slate-200 h-1 rounded-full overflow-hidden">
+                        <div className="w-full bg-[#0B1528] light:bg-slate-200 h-1.5 rounded-full overflow-hidden">
                           <div
                             className={`h-full rounded-full ${
                               pillar.score > 60
@@ -403,15 +405,15 @@ export default function ScanResultsPage() {
               </div>
 
               {/* URL Characteristics Section (18 Features) */}
-              <div className="p-6 rounded-2xl bg-[#0f172a] light:bg-white border border-[#1e293b] light:border-slate-200 shadow-xl space-y-4">
+              <div className="p-6 rounded-2xl bg-[#111E32] light:bg-white border border-[#1C2D4A] light:border-[#E2E8F0] shadow-xl space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <Globe className="w-4 h-4 text-blue-400" />
-                    <h3 className="font-bold text-base text-white light:text-slate-900">
+                    <Globe className="w-4 h-4 text-[#55B7FF]" />
+                    <h3 className="font-bold text-base text-[#F1F5FF] light:text-[#172033]">
                       URL Lexical & Structural Characteristics (18 Features)
                     </h3>
                   </div>
-                  <span className="text-xs text-slate-500">Feature Extraction Engine</span>
+                  <span className="text-xs text-[#9EACC2] light:text-[#64748B]">Feature Extraction Engine</span>
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-xs">
@@ -476,14 +478,14 @@ export default function ScanResultsPage() {
                   ].map((feat, idx) => (
                     <div
                       key={idx}
-                      className="p-3 rounded-xl bg-slate-900/60 light:bg-slate-50 border border-slate-800/80 light:border-slate-200"
+                      className="p-3 rounded-xl bg-[#0B1528] light:bg-[#F5F7FC] border border-[#1C2D4A] light:border-[#E2E8F0]"
                     >
-                      <span className="text-[11px] text-slate-400 block mb-1 truncate">
+                      <span className="text-[11px] text-[#9EACC2] light:text-[#64748B] block mb-1 truncate">
                         {feat.label}
                       </span>
                       <span
                         className={`font-semibold block truncate ${
-                          feat.flag ? 'text-rose-400 font-bold' : 'text-white light:text-slate-900'
+                          feat.flag ? 'text-rose-400 font-bold' : 'text-[#F1F5FF] light:text-[#172033]'
                         }`}
                       >
                         {feat.value}
@@ -498,8 +500,8 @@ export default function ScanResultsPage() {
                 {/* SSL/TLS Certificate Status */}
                 <div className="space-y-3">
                   <div className="flex items-center space-x-2">
-                    <Lock className="w-4 h-4 text-blue-400" />
-                    <h3 className="font-bold text-base text-white light:text-slate-900">
+                    <Lock className="w-4 h-4 text-[#55B7FF]" />
+                    <h3 className="font-bold text-base text-[#F1F5FF] light:text-[#172033]">
                       Cryptographic & Certificate Health
                     </h3>
                   </div>
@@ -510,12 +512,12 @@ export default function ScanResultsPage() {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
-                      <Shield className="w-4 h-4 text-blue-400" />
-                      <h3 className="font-bold text-base text-white light:text-slate-900">
+                      <Shield className="w-4 h-4 text-[#55B7FF]" />
+                      <h3 className="font-bold text-base text-[#F1F5FF] light:text-[#172033]">
                         Passive HTTP Security Headers Audit
                       </h3>
                     </div>
-                    <span className="text-xs text-slate-500">Security Baseline</span>
+                    <span className="text-xs text-[#9EACC2] light:text-[#64748B]">Security Baseline</span>
                   </div>
 
                   <div className="space-y-2">
@@ -533,22 +535,22 @@ export default function ScanResultsPage() {
               </div>
 
               {/* Suspicious Indicators Section */}
-              <div className="p-6 rounded-2xl bg-[#0f172a] light:bg-white border border-[#1e293b] light:border-slate-200 shadow-xl space-y-4">
+              <div className="p-6 rounded-2xl bg-[#111E32] light:bg-white border border-[#1C2D4A] light:border-[#E2E8F0] shadow-xl space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <AlertTriangle className="w-4 h-4 text-amber-400" />
-                    <h3 className="font-bold text-base text-white light:text-slate-900">
+                    <h3 className="font-bold text-base text-[#F1F5FF] light:text-[#172033]">
                       Suspicious Indicators & Evidence
                     </h3>
                   </div>
-                  <span className="text-xs text-slate-500">
+                  <span className="text-xs text-[#9EACC2] light:text-[#64748B]">
                     {scanResult.suspiciousIndicators?.length || 0} Flags Detected
                   </span>
                 </div>
 
                 {scanResult.suspiciousIndicators?.length === 0 ? (
                   <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs flex items-center space-x-2 font-semibold">
-                    <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+                    <CheckCircle2 className="w-4 h-4 shrink-0" />
                     <span>No active suspicious indicators or malicious patterns flagged for this target.</span>
                   </div>
                 ) : (
@@ -567,10 +569,10 @@ export default function ScanResultsPage() {
               </div>
 
               {/* Security Recommendations Section */}
-              <div className="p-6 rounded-2xl bg-[#0f172a] light:bg-white border border-[#1e293b] light:border-slate-200 shadow-xl space-y-4">
+              <div className="p-6 rounded-2xl bg-[#111E32] light:bg-white border border-[#1C2D4A] light:border-[#E2E8F0] shadow-xl space-y-4">
                 <div className="flex items-center space-x-2">
-                  <FileText className="w-4 h-4 text-blue-400" />
-                  <h3 className="font-bold text-base text-white light:text-slate-900">
+                  <FileText className="w-4 h-4 text-[#55B7FF]" />
+                  <h3 className="font-bold text-base text-[#F1F5FF] light:text-[#172033]">
                     Recommended Security Actions & Remediation
                   </h3>
                 </div>
@@ -583,7 +585,7 @@ export default function ScanResultsPage() {
                     return (
                       <div
                         key={idx}
-                        className="p-4 rounded-xl bg-slate-900/60 light:bg-slate-50 border border-slate-800 light:border-slate-200 flex items-start space-x-3 text-xs"
+                        className="p-4 rounded-xl bg-[#0B1528] light:bg-[#F5F7FC] border border-[#1C2D4A] light:border-[#E2E8F0] flex items-start space-x-3 text-xs"
                       >
                         <div
                           className={`mt-0.5 p-1 rounded-lg ${
@@ -603,7 +605,7 @@ export default function ScanResultsPage() {
 
                         <div className="flex-1">
                           <div className="flex items-center justify-between gap-2 mb-1">
-                            <span className="font-bold text-sm text-white light:text-slate-900">
+                            <span className="font-bold text-sm text-[#F1F5FF] light:text-[#172033]">
                               {rec.title}
                             </span>
                             <span
@@ -618,7 +620,7 @@ export default function ScanResultsPage() {
                               Priority: {rec.priority}
                             </span>
                           </div>
-                          <p className="text-slate-400 light:text-slate-600 leading-relaxed">
+                          <p className="text-[#9EACC2] light:text-[#64748B] leading-relaxed">
                             {rec.description}
                           </p>
                         </div>
@@ -631,7 +633,7 @@ export default function ScanResultsPage() {
           )}
 
           {/* Footer note */}
-          <div className="p-3 text-center text-xs text-slate-500 italic">
+          <div className="p-3 text-center text-xs text-[#9EACC2] italic">
             {SIMULATION_DISCLAIMER}
           </div>
         </main>

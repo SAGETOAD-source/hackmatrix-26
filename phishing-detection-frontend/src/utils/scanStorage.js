@@ -3,7 +3,7 @@
  * Handles persistence of simulated scans in localStorage/sessionStorage.
  */
 
-import { RECENT_SCANS } from '../data/mockData'
+import { RECENT_SCANS } from '../data/mockData.js'
 
 const STORAGE_KEY = 'threat_sentinel_scan_history'
 

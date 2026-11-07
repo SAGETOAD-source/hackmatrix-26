@@ -101,6 +101,11 @@ phishing-detection-frontend/
 │   │   ├── ScanResultsPage.jsx  # Explainable risk assessment report
 │   │   ├── SecurityAnalysisPage.jsx # TLS, DNS, and header deep-dive
 │   │   └── ScanHistoryPage.jsx  # Searchable & filterable scan logs
+│   ├── services/
+│   │   ├── api.js               # Centralized Axios client with interceptors & mode switcher
+│   │   ├── scanService.js       # URL scan dispatcher with API normalization & mock fallback
+│   │   ├── historyService.js    # Scan history service with API endpoints & local storage sync
+│   │   └── securityService.js   # Deep TLS, DNS, & header analysis dispatcher
 │   ├── utils/
 │   │   ├── simulateScan.js      # Deterministic 18-feature client-side heuristics & report generator
 │   │   ├── scanStorage.js       # localStorage scan persistence & history manager
@@ -155,6 +160,34 @@ phishing-detection-frontend/
    ```bash
    npm run preview
    ```
+
+---
+
+## 🔌 Backend API Integration & Mode Configuration
+
+ThreatSentinel features a decoupled service architecture allowing seamless switching between local demonstration (`mock`) and live backend API (`api`) modes without modifying UI components.
+
+### Environment Configuration
+
+Create a `.env` file in the root of `phishing-detection-frontend/` based on `.env.example`:
+
+```env
+# Operating Mode: 'mock' (default standalone demo) or 'api' (connects to live backend)
+VITE_DATA_MODE=mock
+
+# Centralized API Base URL (Node.js API Gateway or Python FastAPI service)
+VITE_API_BASE_URL=http://localhost:5000/api/v1
+```
+
+### Switching to Live Backend API
+
+1. Set `VITE_DATA_MODE=api` in `.env`.
+2. Set `VITE_API_BASE_URL` to your live API endpoint (e.g. `http://localhost:5000/api/v1` or production URL).
+3. Restart the dev server (`npm run dev`) or build for production (`npm run build`).
+
+### Automatic Fallback & Resiliency
+
+When `VITE_DATA_MODE=api` is enabled, the centralized services (`scanService`, `historyService`, `securityService`) will attempt live requests. If the backend is temporarily unreachable or returns network/server errors, the frontend gracefully falls back to cached local heuristics, alerts the user with an intuitive status banner, and provides instant **Retry** controls.
 
 ---
 

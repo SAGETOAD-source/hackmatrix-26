@@ -6,7 +6,7 @@ export default function TopNavbar({ onSearch, searchQuery = '', collapsed, setCo
 
   return (
     <header
-      className={`sticky top-0 z-30 h-16 backdrop-blur-md transition-all duration-300 ease-in-out border-b bg-[#0a0f1d]/90 light:bg-white/90 border-[#1e293b] light:border-slate-200 flex items-center justify-between px-4 sm:px-6 lg:px-8`}
+      className={`sticky top-0 z-30 h-16 backdrop-blur-md transition-all duration-300 ease-in-out border-b bg-[#080F1E]/90 light:bg-white/95 border-[#1C2D4A] light:border-[#E2E8F0] flex items-center justify-between px-4 sm:px-6 lg:px-8`}
     >
       {/* Mobile Sidebar Hamburger Toggle & Search Input Bar */}
       <div className="flex items-center flex-1 max-w-md">
@@ -15,20 +15,20 @@ export default function TopNavbar({ onSearch, searchQuery = '', collapsed, setCo
             type="button"
             onClick={() => setCollapsed(!collapsed)}
             aria-label="Toggle Navigation Menu"
-            className="md:hidden mr-2.5 p-2 rounded-xl text-slate-400 hover:text-white light:hover:text-slate-900 bg-slate-800/60 light:bg-slate-100 border border-slate-700/60 light:border-slate-300 cursor-pointer"
+            className="md:hidden mr-2.5 p-2 rounded-xl text-[#9EACC2] hover:text-[#F1F5FF] light:hover:text-[#172033] bg-[#111E32] light:bg-[#F5F7FC] border border-[#1C2D4A] light:border-[#E2E8F0] cursor-pointer"
           >
             <Menu className="w-4 h-4" />
           </button>
         )}
 
         <div className="relative flex-1">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9EACC2]" />
           <input
             type="text"
             placeholder="Search scans, target domains, IP addresses..."
             value={searchQuery}
             onChange={(e) => onSearch && onSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 rounded-xl text-xs sm:text-sm bg-slate-900/80 light:bg-slate-100 border border-slate-800 light:border-slate-300 text-white light:text-slate-900 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+            className="w-full pl-10 pr-4 py-2 rounded-xl text-xs sm:text-sm bg-[#0B1528] light:bg-[#F5F7FC] border border-[#1C2D4A] light:border-[#E2E8F0] text-[#F1F5FF] light:text-[#172033] placeholder-[#9EACC2]/60 focus:outline-none focus:border-[#287FE9] focus:ring-1 focus:ring-[#287FE9] transition-all"
           />
         </div>
       </div>
@@ -45,37 +45,37 @@ export default function TopNavbar({ onSearch, searchQuery = '', collapsed, setCo
         <button
           onClick={toggleTheme}
           aria-label="Toggle Theme"
-          className="p-2 rounded-xl text-slate-300 light:text-slate-600 hover:text-white light:hover:text-slate-900 bg-slate-800/60 light:bg-slate-100 hover:bg-slate-700/60 light:hover:bg-slate-200 border border-slate-700/60 light:border-slate-300 transition-all duration-200"
+          className="p-2 rounded-xl text-[#9EACC2] light:text-[#64748B] hover:text-[#F1F5FF] light:hover:text-[#172033] bg-[#111E32] light:bg-[#F5F7FC] hover:bg-[#15253F] light:hover:bg-slate-200 border border-[#1C2D4A] light:border-[#E2E8F0] transition-all duration-200 cursor-pointer"
         >
           {isDark ? (
             <Sun className="w-4 h-4 text-amber-400 transition-transform rotate-0 hover:rotate-45" />
           ) : (
-            <Moon className="w-4 h-4 text-indigo-600 transition-transform -rotate-12 hover:rotate-0" />
+            <Moon className="w-4 h-4 text-[#2563EB] transition-transform -rotate-12 hover:rotate-0" />
           )}
         </button>
 
         {/* Notification Bell */}
         <button
           aria-label="Notifications"
-          className="relative p-2 rounded-xl text-slate-300 light:text-slate-600 hover:text-white light:hover:text-slate-900 bg-slate-800/60 light:bg-slate-100 border border-slate-700/60 light:border-slate-300 transition-colors"
+          className="relative p-2 rounded-xl text-[#9EACC2] light:text-[#64748B] hover:text-[#F1F5FF] light:hover:text-[#172033] bg-[#111E32] light:bg-[#F5F7FC] border border-[#1C2D4A] light:border-[#E2E8F0] transition-colors cursor-pointer"
         >
           <Bell className="w-4 h-4" />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-blue-500 animate-ping"></span>
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-blue-500"></span>
+          <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#287FE9] animate-ping"></span>
+          <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#287FE9]"></span>
         </button>
 
         {/* SecOps User Pill */}
-        <div className="flex items-center space-x-2.5 pl-2 border-l border-slate-800 light:border-slate-200">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 p-0.5 shadow-sm">
-            <div className="w-full h-full bg-[#0a0f1d] light:bg-white rounded-[10px] flex items-center justify-center">
-              <User className="w-4 h-4 text-blue-400 light:text-blue-600" />
+        <div className="flex items-center space-x-2.5 pl-2 border-l border-[#1C2D4A] light:border-[#E2E8F0]">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#287FE9] to-[#55B7FF] p-0.5 shadow-sm">
+            <div className="w-full h-full bg-[#080F1E] light:bg-white rounded-[10px] flex items-center justify-center">
+              <User className="w-4 h-4 text-[#55B7FF] light:text-[#2563EB]" />
             </div>
           </div>
           <div className="hidden lg:flex flex-col text-left">
-            <span className="text-xs font-semibold text-white light:text-slate-900 leading-tight">
+            <span className="text-xs font-semibold text-[#F1F5FF] light:text-[#172033] leading-tight">
               SecOps Lead
             </span>
-            <span className="text-[10px] text-slate-400 light:text-slate-500">
+            <span className="text-[10px] text-[#9EACC2] light:text-[#64748B]">
               Analyst Tier 3
             </span>
           </div>

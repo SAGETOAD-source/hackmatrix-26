@@ -5,11 +5,10 @@ import {
   FileText,
   ShieldCheck,
   History,
-  Home,
   ChevronLeft,
   ChevronRight,
   Shield,
-  Cpu
+  Radio
 } from 'lucide-react'
 
 export default function Sidebar({ collapsed, setCollapsed }) {
@@ -34,107 +33,87 @@ export default function Sidebar({ collapsed, setCollapsed }) {
       )}
 
       <aside
-        className={`fixed top-0 left-0 z-40 h-screen transition-all duration-300 ease-in-out border-r bg-[#0a0f1d] light:bg-white border-[#1e293b] light:border-slate-200 flex flex-col justify-between ${
+        className={`fixed top-0 left-0 z-40 h-screen transition-all duration-300 ease-in-out border-r bg-[#080F1E] light:bg-white border-[#1C2D4A] light:border-[#E2E8F0] flex flex-col justify-between ${
           collapsed
             ? 'w-20 -translate-x-full md:translate-x-0'
             : 'w-64 translate-x-0'
         }`}
       >
-      {/* Top Header */}
-      <div>
-        <div className="h-16 flex items-center justify-between px-4 border-b border-[#1e293b] light:border-slate-200">
-          <Link to="/" className="flex items-center space-x-3 overflow-hidden">
-            <div className="w-10 h-10 min-w-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-400 p-0.5 shadow-md shadow-blue-500/20">
-              <div className="w-full h-full bg-[#0a0f1d] light:bg-white rounded-[10px] flex items-center justify-center">
-                <Shield className="w-5 h-5 text-blue-400 light:text-blue-600" />
+        {/* Top Header */}
+        <div>
+          <div className="h-16 flex items-center justify-between px-4 border-b border-[#1C2D4A] light:border-[#E2E8F0]">
+            <Link to="/" className="flex items-center space-x-3 overflow-hidden">
+              <div className="w-10 h-10 min-w-10 rounded-xl bg-gradient-to-tr from-[#287FE9] via-[#1E6FD6] to-[#55B7FF] p-0.5 shadow-md shadow-[#287FE9]/20">
+                <div className="w-full h-full bg-[#080F1E] light:bg-white rounded-[10px] flex items-center justify-center">
+                  <Shield className="w-5 h-5 text-[#55B7FF] light:text-[#2563EB]" />
+                </div>
               </div>
-            </div>
-            {!collapsed && (
-              <div className="flex flex-col">
-                <span className="font-bold text-sm tracking-tight text-white light:text-slate-900 whitespace-nowrap">
-                  ThreatSentinel<span className="text-blue-400">.ai</span>
-                </span>
-                <span className="text-[10px] font-semibold text-blue-400 light:text-blue-600 uppercase tracking-wider">
-                  SOC Terminal
-                </span>
-              </div>
-            )}
-          </Link>
-          <button
-            onClick={() => setCollapsed(!collapsed)}
-            aria-label="Toggle Sidebar"
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white light:hover:text-slate-900 hover:bg-slate-800 light:hover:bg-slate-100 transition-colors"
-          >
-            {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
-          </button>
-        </div>
-
-        {/* Navigation Items */}
-        <div className="p-3 space-y-1.5">
-          {!collapsed && (
-            <p className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-500 light:text-slate-400">
-              Navigation
-            </p>
-          )}
-
-          {navItems.map((item) => {
-            const Icon = item.icon
-            const isActive =
-              location.pathname === item.path ||
-              (item.path === '/security' && location.pathname === '/security-analysis')
-
-            return (
-              <Link
-                key={item.name}
-                to={item.path}
-                title={collapsed ? item.name : undefined}
-                className={`flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
-                  isActive
-                    ? 'bg-gradient-to-r from-blue-600/20 to-indigo-600/20 text-blue-400 light:text-blue-600 border border-blue-500/30 light:border-blue-200 font-semibold shadow-sm'
-                    : 'text-slate-400 light:text-slate-600 hover:text-white light:hover:text-slate-900 hover:bg-slate-800/50 light:hover:bg-slate-100'
-                } ${collapsed ? 'justify-center' : ''}`}
-              >
-                <Icon className={`w-5 h-5 min-w-5 ${isActive ? 'text-blue-400 light:text-blue-600' : 'text-slate-400 light:text-slate-500'}`} />
-                {!collapsed && <span className="truncate">{item.name}</span>}
-              </Link>
-            )
-          })}
-        </div>
-      </div>
-
-      {/* Bottom Module / SOC Status */}
-      <div className="p-3 border-t border-[#1e293b] light:border-slate-200 space-y-2">
-        <Link
-          to="/"
-          title={collapsed ? 'Back to Landing' : undefined}
-          className={`flex items-center space-x-3 px-3 py-2 rounded-xl text-xs text-slate-400 hover:text-white light:hover:text-slate-900 hover:bg-slate-800/40 light:hover:bg-slate-100 transition-colors ${
-            collapsed ? 'justify-center' : ''
-          }`}
-        >
-          <Home className="w-4 h-4 min-w-4 text-slate-400" />
-          {!collapsed && <span>Back to Main Site</span>}
-        </Link>
-
-        {!collapsed ? (
-          <div className="p-3 rounded-xl bg-[#0f172a] light:bg-slate-100 border border-[#1e293b] light:border-slate-300">
-            <div className="flex items-center justify-between mb-1.5">
-              <span className="text-[11px] font-semibold text-slate-300 light:text-slate-800 flex items-center space-x-1.5">
-                <Cpu className="w-3.5 h-3.5 text-blue-400" />
-                <span>ML Engine v1.0</span>
-              </span>
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            </div>
-            <p className="text-[10px] text-slate-400 light:text-slate-600 leading-tight">
-              Random Forest Active • 18 Features • 99.8% Precision
-            </p>
+              {!collapsed && (
+                <div className="flex flex-col">
+                  <span className="font-bold text-sm tracking-tight text-[#F1F5FF] light:text-[#172033] whitespace-nowrap">
+                    ThreatSentinel<span className="text-[#55B7FF] light:text-[#2563EB]">.ai</span>
+                  </span>
+                  <span className="text-[10px] font-semibold text-[#55B7FF] light:text-[#2563EB] uppercase tracking-wider">
+                    SOC Terminal
+                  </span>
+                </div>
+              )}
+            </Link>
+            <button
+              onClick={() => setCollapsed(!collapsed)}
+              aria-label="Toggle Sidebar"
+              className="p-1.5 rounded-lg text-[#9EACC2] hover:text-[#F1F5FF] light:hover:text-[#172033] hover:bg-[#111E32] light:hover:bg-slate-100 transition-colors cursor-pointer"
+            >
+              {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+            </button>
           </div>
-        ) : (
-          <div className="flex justify-center py-2" title="Engine Operational">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+
+          {/* Navigation Items */}
+          <div className="p-3 space-y-1.5">
+            {!collapsed && (
+              <p className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[#9EACC2] light:text-[#64748B]">
+                Navigation
+              </p>
+            )}
+
+            {navItems.map((item) => {
+              const Icon = item.icon
+              const isActive =
+                location.pathname === item.path ||
+                (item.path === '/security' && location.pathname === '/security-analysis')
+
+              return (
+                <Link
+                  key={item.name}
+                  to={item.path}
+                  title={collapsed ? item.name : undefined}
+                  className={`flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+                    isActive
+                      ? 'bg-[#287FE9]/15 text-[#55B7FF] light:text-[#2563EB] border border-[#287FE9]/30 light:border-blue-200 font-semibold shadow-xs'
+                      : 'text-[#9EACC2] light:text-[#64748B] hover:text-[#F1F5FF] light:hover:text-[#172033] hover:bg-[#111E32] light:hover:bg-slate-100'
+                  } ${collapsed ? 'justify-center' : ''}`}
+                >
+                  <Icon className={`w-5 h-5 min-w-5 ${isActive ? 'text-[#55B7FF] light:text-[#2563EB]' : 'text-[#9EACC2] light:text-[#64748B]'}`} />
+                  {!collapsed && <span className="truncate">{item.name}</span>}
+                </Link>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Bottom Status Card */}
+        {!collapsed && (
+          <div className="p-4 m-3 rounded-2xl bg-[#111E32] light:bg-[#F5F7FC] border border-[#1C2D4A] light:border-[#E2E8F0]">
+            <div className="flex items-center space-x-2 mb-2">
+              <Radio className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+              <span className="text-xs font-semibold text-[#F1F5FF] light:text-[#172033]">ML Pipeline Ready</span>
+            </div>
+            <p className="text-[11px] text-[#9EACC2] light:text-[#64748B] leading-relaxed">
+              Random Forest v2.4 model initialized. 18 feature extractors online.
+            </p>
           </div>
         )}
-      </div>
-    </aside>
+      </aside>
     </>
   )
 }

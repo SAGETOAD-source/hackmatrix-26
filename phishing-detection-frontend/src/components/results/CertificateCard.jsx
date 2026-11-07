@@ -11,10 +11,10 @@ const GRADE_COLORS = {
 function InfoItem({ label, value }) {
   return (
     <div className="space-y-1">
-      <span className="block text-xs font-medium text-slate-500 light:text-slate-400 uppercase tracking-wider">
+      <span className="block text-xs font-semibold text-[#9EACC2] light:text-[#64748B] uppercase tracking-wider">
         {label}
       </span>
-      <span className="block text-sm text-white light:text-gray-900 font-medium">
+      <span className="block text-sm text-[#F1F5FF] light:text-[#172033] font-medium">
         {value || '—'}
       </span>
     </div>
@@ -29,7 +29,7 @@ function BooleanIndicator({ label, value }) {
       ) : (
         <X size={16} className="text-rose-400 light:text-rose-600" />
       )}
-      <span className="text-sm text-slate-300 light:text-slate-700">{label}</span>
+      <span className="text-sm text-[#F1F5FF] light:text-[#172033] font-medium">{label}</span>
     </div>
   );
 }
@@ -53,17 +53,17 @@ export default function CertificateCard({ sslStatus = {} }) {
     return (
       <div
         className="
-          rounded-xl p-6
-          bg-white/5 light:bg-white
-          border border-white/10 light:border-gray-200
-          light:shadow-sm
+          rounded-2xl p-6
+          bg-[#111E32] light:bg-white
+          border border-[#1C2D4A] light:border-[#E2E8F0]
+          shadow-lg shadow-black/10 light:shadow-slate-200/50
         "
       >
         <div className="flex items-center gap-3">
           <ShieldX size={24} className="text-rose-400 light:text-rose-500" />
           <div>
-            <h3 className="font-semibold text-white light:text-gray-900">No SSL Certificate</h3>
-            <p className="text-sm text-slate-400 light:text-slate-500 mt-0.5">
+            <h3 className="font-semibold text-[#F1F5FF] light:text-[#172033]">No SSL Certificate</h3>
+            <p className="text-sm text-[#9EACC2] light:text-[#64748B] mt-0.5">
               This site does not have an SSL/TLS certificate configured.
             </p>
           </div>
@@ -77,17 +77,17 @@ export default function CertificateCard({ sslStatus = {} }) {
   return (
     <div
       className="
-        rounded-xl p-6
-        bg-white/5 light:bg-white
-        border border-white/10 light:border-gray-200
-        light:shadow-sm
+        rounded-2xl p-6
+        bg-[#111E32] light:bg-white
+        border border-[#1C2D4A] light:border-[#E2E8F0]
+        shadow-lg shadow-black/10 light:shadow-slate-200/50
       "
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-3">
           <ShieldCheck size={22} className="text-emerald-400 light:text-emerald-600" />
-          <h3 className="font-semibold text-white light:text-gray-900 text-base">
+          <h3 className="font-bold text-[#F1F5FF] light:text-[#172033] text-base">
             SSL/TLS Certificate
           </h3>
         </div>
@@ -105,20 +105,20 @@ export default function CertificateCard({ sslStatus = {} }) {
         )}
       </div>
 
-      {/* Info grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-5">
-        <InfoItem label="Protocol" value={protocol} />
+      {/* Grid of info items */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-5">
         <InfoItem label="Issuer" value={issuer} />
+        <InfoItem label="Protocol" value={protocol} />
         <InfoItem label="Valid From" value={validFrom} />
         <InfoItem label="Valid To" value={validTo} />
-        <InfoItem label="Key Size" value={keySize ? `${keySize} bit` : null} />
+        <InfoItem label="Key Size" value={keySize ? `${keySize} bits` : undefined} />
         <InfoItem label="Signature" value={signatureAlgorithm} />
       </div>
 
       {/* Boolean indicators */}
-      <div className="flex items-center gap-6 pt-4 border-t border-white/10 light:border-gray-200">
-        <BooleanIndicator label="SAN Match" value={sanMatch} />
-        <BooleanIndicator label="CT Logged" value={ctLogged} />
+      <div className="flex flex-wrap gap-6 pt-4 border-t border-[#1C2D4A] light:border-[#E2E8F0]">
+        <BooleanIndicator label="SAN matches hostname" value={sanMatch} />
+        <BooleanIndicator label="Logged in CT logs" value={ctLogged} />
       </div>
     </div>
   );

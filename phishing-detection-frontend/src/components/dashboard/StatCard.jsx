@@ -9,10 +9,10 @@ const ICON_MAP = {
 
 const COLOR_MAP = {
   primary: {
-    iconBg: 'from-blue-600 to-indigo-600',
-    iconColor: 'text-blue-400 light:text-blue-600',
-    borderColor: 'border-blue-500/20 light:border-blue-200',
-    badge: 'bg-blue-500/10 text-blue-400 light:text-blue-700 border-blue-500/20',
+    iconBg: 'from-[#287FE9] to-[#55B7FF]',
+    iconColor: 'text-[#55B7FF] light:text-[#2563EB]',
+    borderColor: 'border-[#1C2D4A] light:border-[#E2E8F0]',
+    badge: 'bg-[#287FE9]/10 text-[#55B7FF] light:text-[#2563EB] border-[#287FE9]/30',
   },
   danger: {
     iconBg: 'from-rose-600 to-red-600',
@@ -41,21 +41,21 @@ export default function StatCard({ item }) {
 
   return (
     <div
-      className={`p-5 rounded-2xl bg-[#0f172a]/90 light:bg-white border ${themeColors.borderColor} shadow-lg shadow-black/5 transition-all duration-300 hover:translate-y-[-2px]`}
+      className={`p-5 rounded-2xl bg-[#111E32] light:bg-white border ${themeColors.borderColor} shadow-lg shadow-black/15 light:shadow-slate-200/50 transition-all duration-300 hover:translate-y-[-2px] hover:border-[#287FE9]/40`}
     >
       <div className="flex items-center justify-between mb-3">
-        <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 light:text-slate-500">
+        <span className="text-xs font-semibold uppercase tracking-wider text-[#9EACC2] light:text-[#64748B]">
           {item.title}
         </span>
         <div className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${themeColors.iconBg} p-0.5 shadow-md`}>
-          <div className="w-full h-full bg-[#0a0f1d] light:bg-white rounded-[10px] flex items-center justify-center">
+          <div className="w-full h-full bg-[#080F1E] light:bg-white rounded-[10px] flex items-center justify-center">
             <Icon className={`w-4 h-4 ${themeColors.iconColor}`} />
           </div>
         </div>
       </div>
 
       <div className="flex items-baseline justify-between">
-        <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white light:text-slate-900">
+        <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#F1F5FF] light:text-[#172033]">
           {item.value}
         </h3>
         <div
@@ -66,10 +66,9 @@ export default function StatCard({ item }) {
         </div>
       </div>
 
-      <p className="mt-2 text-[11px] text-slate-400 light:text-slate-500">
+      <p className="mt-2 text-[11px] text-[#9EACC2] light:text-[#64748B]">
         {item.description}
       </p>
     </div>
   )
 }
-
