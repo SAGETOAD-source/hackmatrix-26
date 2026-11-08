@@ -9,7 +9,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Shield,
-  Palette,
   Terminal
 } from 'lucide-react'
 import { isApiMode, getApiBaseUrl } from '../../services/api'
@@ -33,7 +32,6 @@ export default function Sidebar({ collapsed, setCollapsed }) {
   const analysisLinks = [
     { name: 'Security & TLS Audit', path: '/security-analysis', icon: ShieldCheck, alias: '/security' },
     { name: 'Audit Scan History', path: '/history', icon: History },
-    { name: 'Design Tokens', path: '/styleguide', icon: Palette },
   ]
 
   const isLinkActive = (item) => {

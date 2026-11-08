@@ -1,9 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
 @import "tailwindcss";
 
-@custom-variant light (&:where(.light, .light *));
-@custom-variant dark (&:where(.dark, .dark *));
+/* 1. Design Tokens */
+@import "./styles/tokens.css";
 
-/* Tailwind v4 theme token mapping */
+/* 2. Base Typography & Reset */
+@import "./styles/base.css";
+
+/* 3. Layout Mechanics */
+@import "./styles/layout.css";
+
+/* 4. Component Styles */
+@import "./styles/components/buttons.css";
+@import "./styles/components/cards.css";
+@import "./styles/components/inputs.css";
+@import "./styles/components/badges.css";
+@import "./styles/components/tabs.css";
+@import "./styles/components/tables.css";
+@import "./styles/components/stepper.css";
+@import "./styles/components/modals.css";
+@import "./styles/components/gauges.css";
+@import "./styles/components/diff.css";
+@import "./styles/components/charts.css";
+
+/* 5. Page Layout Styles */
+@import "./styles/pages/landing.css";
+@import "./styles/pages/scanner.css";
+@import "./styles/pages/results.css";
+@import "./styles/pages/dashboard.css";
+@import "./styles/pages/security.css";
+@import "./styles/pages/history.css";
+
+/* 6. Utilities & Effects */
+@import "./styles/utilities.css";
+
+/* 7. Themes & Accessibility Modes */
+@import "./styles/themes.css";
+
+/* 8. Print Stylesheet */
+@import "./styles/print.css";
+
+/* Custom Variants for Theme Switching */
+@custom-variant light (&:where(.light, .light *, [data-theme="light"], [data-theme="light"] *));
+@custom-variant dark (&:where(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *));
+
+/* Tailwind v4 Theme Inlining */
 @theme inline {
   --color-bg-base: var(--bg-base);
   --color-bg-surface: var(--bg-surface);
@@ -20,217 +61,20 @@
   --color-brand-accent-text: var(--brand-accent-text);
 
   /* Verdict Colors (Strictly reserved for risk status) */
-  --color-verdict-safe: var(--verdict-safe);
-  --color-verdict-suspicious: var(--verdict-suspicious);
-  --color-verdict-malicious: var(--verdict-malicious);
-  --color-verdict-unknown: var(--verdict-unknown);
+  --color-verdict-safe: var(--safe);
+  --color-verdict-suspicious: var(--suspicious);
+  --color-verdict-malicious: var(--malicious);
+  --color-verdict-unknown: var(--unknown);
 
-  /* Compatibility Aliases for existing components */
+  /* Semantic Aliases */
   --color-primary: var(--brand-primary);
-  --color-primary-hover: var(--brand-glow);
   --color-accent: var(--brand-accent);
-  --color-bg-secondary: var(--bg-surface);
-  --color-bg-input: var(--bg-elevated);
-  --color-border: var(--border-subtle);
-  --color-border-hover: var(--border-focus);
-  --color-text-main: var(--text-primary);
-  --color-success: var(--verdict-safe);
-  --color-warning: var(--verdict-suspicious);
-  --color-danger: var(--verdict-malicious);
+  --color-success: var(--safe);
+  --color-warning: var(--suspicious);
+  --color-danger: var(--malicious);
 
   /* Typography */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-display: 'Space Grotesk', 'Inter', -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-}
-
-@layer base {
-  :root {
-    /* DARK THEME (Ultraviolet Sentinel) */
-    --bg-base: #0B0A14;          /* Void Ink */
-    --bg-surface: #14122A;       /* Deep Obsidian Surface */
-    --bg-elevated: #1C1936;      /* Elevated obsidian layer */
-    --border-subtle: #2A2650;    /* Indigo wire border */
-    --border-focus: #7C5CFF;     /* Ultraviolet active ring */
-
-    --text-primary: #F2F0FF;     /* Silvermist text */
-    --text-muted: #A29FC9;       /* Soft Iris text */
-
-    --brand-primary: #7C5CFF;    /* Ultraviolet */
-    --brand-glow: #A78BFF;       /* Soft Lavender Glow */
-    --brand-accent: #C6FF3D;     /* Acid Lime Tactical Accent */
-    --brand-accent-text: #0B0A14;/* Dark text on Acid Lime */
-
-    /* Verdict Colors (Reserved for risk meaning) */
-    --verdict-safe: #34E0A1;
-    --verdict-suspicious: #FFB020;
-    --verdict-malicious: #FF4D6D;
-    --verdict-unknown: #8B88B0;
-
-    --scroll-thumb: #2A2650;
-    --scroll-thumb-hover: #7C5CFF;
-
-    color-scheme: dark;
-  }
-
-  .light {
-    /* LIGHT THEME (Warm Pearl Sentinel) */
-    --bg-base: #F7F5FF;          /* Warm Pearl Background */
-    --bg-surface: #FFFFFF;       /* Pure White Surface */
-    --bg-elevated: #F0EDFF;      /* Soft Ultraviolet Tint */
-    --border-subtle: #DDD8F5;    /* Muted Lavender Wire */
-    --border-focus: #7C5CFF;     /* Ultraviolet Active Ring */
-
-    --text-primary: #1E1B4B;     /* Deep Indigo Text */
-    --text-muted: #68648E;       /* Dusk Indigo Muted */
-
-    --brand-primary: #7C5CFF;    /* Ultraviolet */
-    --brand-glow: #6340EB;       /* Deep Ultraviolet */
-    --brand-accent: #5E8F00;     /* Darkened Acid Lime for WCAG AA (5.8:1) */
-    --brand-accent-text: #FFFFFF;/* White text on darkened lime */
-
-    /* Verdict Colors (High contrast light mode) */
-    --verdict-safe: #0E9F6E;
-    --verdict-suspicious: #D97706;
-    --verdict-malicious: #E02424;
-    --verdict-unknown: #6B7280;
-
-    --scroll-thumb: #DDD8F5;
-    --scroll-thumb-hover: #7C5CFF;
-
-    color-scheme: light;
-  }
-
-  html {
-    scrollbar-width: thin;
-    scrollbar-color: var(--scroll-thumb) transparent;
-    scroll-behavior: smooth;
-    font-family: var(--font-sans);
-  }
-
-  body {
-    background-color: var(--bg-base);
-    color: var(--text-primary);
-    font-family: var(--font-sans);
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden;
-    min-height: 100dvh;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-
-  h1, h2, h3, h4, .font-heading {
-    font-family: var(--font-display);
-    letter-spacing: -0.02em;
-  }
-
-  code, pre, .font-mono {
-    font-family: var(--font-mono);
-  }
-
-  /* Custom Scrollbar */
-  ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
-  ::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  ::-webkit-scrollbar-thumb {
-    background: var(--scroll-thumb);
-    border-radius: 9999px;
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background: var(--scroll-thumb-hover);
-  }
-
-  /* Universal accessible focus ring using brand accent */
-  :focus-visible {
-    outline: 2px solid var(--brand-accent);
-    outline-offset: 2px;
-  }
-}
-
-/* Utilities for Ultraviolet Sentinel signature visuals */
-@layer utilities {
-  .uv-glass {
-    background: rgba(20, 18, 42, 0.75);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-  }
-
-  .light .uv-glass {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-  }
-
-  .uv-glow {
-    box-shadow: 0 0 35px -5px rgba(124, 92, 255, 0.35);
-  }
-
-  .uv-glow-sm {
-    box-shadow: 0 0 15px -3px rgba(124, 92, 255, 0.25);
-  }
-
-  .lime-glow {
-    box-shadow: 0 0 25px -4px rgba(198, 255, 61, 0.4);
-  }
-
-  .dot-grid {
-    background-image: radial-gradient(rgba(124, 92, 255, 0.15) 1px, transparent 1px);
-    background-size: 24px 24px;
-  }
-
-  .light .dot-grid {
-    background-image: radial-gradient(rgba(124, 92, 255, 0.12) 1px, transparent 1px);
-    background-size: 24px 24px;
-  }
-
-  .card-highlight {
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  }
-
-  .light .card-highlight {
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
-  }
-}
-
-/* UV Sweep Animation Keyframes */
-@keyframes uv-sweep {
-  0% {
-    transform: translateX(-100%);
-    opacity: 0;
-  }
-  20% {
-    opacity: 1;
-  }
-  80% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-}
-
-.animate-uv-sweep {
-  animation: uv-sweep 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-}
-
-/* Subtle Pulse for Sentinel Radar */
-@keyframes sentinel-pulse {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 0.6;
-  }
-  50% {
-    transform: scale(1.08);
-    opacity: 0.9;
-  }
-}
-
-.animate-sentinel-pulse {
-  animation: sentinel-pulse 4s ease-in-out infinite;
 }

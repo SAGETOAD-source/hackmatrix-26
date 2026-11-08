@@ -1,0 +1,39 @@
+/**
+ * Brand Impersonation Visual Diff Styles
+ * Token-level dissection of brand spoofing lures vs canonical destinations.
+ */
+
+.brand-diff-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+}
+
+.diff-target-token-flagged {
+  background-color: rgba(255, 77, 109, 0.2);
+  color: var(--malicious);
+  border-bottom: 2px solid var(--malicious);
+  border-radius: var(--radius-xs);
+  padding: 0 4px;
+  font-weight: 700;
+}
+
+.diff-canonical-token-match {
+  background-color: rgba(198, 255, 61, 0.15);
+  color: var(--brand-accent);
+  border-bottom: 2px solid var(--brand-accent);
+  border-radius: var(--radius-xs);
+  padding: 0 4px;
+  font-weight: 700;
+}
+
+[data-theme="light"] .diff-canonical-token-match,
+.light .diff-canonical-token-match {
+  color: var(--brand-accent);
+  background-color: rgba(94, 143, 0, 0.12);
+}
+

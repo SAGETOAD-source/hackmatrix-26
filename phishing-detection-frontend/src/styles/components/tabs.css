@@ -1,0 +1,74 @@
+/**
+ * Tabs Component Styles
+ * CSS-only sliding indicator and glow transitions.
+ */
+
+.tabs-container,
+[role="tablist"] {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: var(--space-1);
+}
+
+/* Individual Tab Trigger */
+.tab-button,
+[role="tab"] {
+  position: relative;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-family: 'Space Grotesk', inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  padding: var(--space-2) var(--space-3);
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+.tab-button:hover,
+[role="tab"]:hover {
+  color: var(--text-primary);
+}
+
+/* Active Tab Highlight and Glow */
+.tab-button.active,
+[role="tab"][aria-selected="true"] {
+  color: var(--brand-accent);
+}
+
+[data-theme="light"] .tab-button.active,
+.light .tab-button.active,
+[data-theme="light"] [role="tab"][aria-selected="true"],
+.light [role="tab"][aria-selected="true"] {
+  color: var(--brand-primary);
+}
+
+/* Underline Indicator (Pure CSS) */
+.tab-button::after,
+[role="tab"]::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: transparent;
+  border-radius: var(--radius-full);
+  transition: background-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.tab-button.active::after,
+[role="tab"][aria-selected="true"]::after {
+  background-color: var(--brand-primary);
+  box-shadow: 0 0 10px rgba(124, 92, 255, 0.6);
+}
+
+[data-theme="light"] .tab-button.active::after,
+.light .tab-button.active::after {
+  background-color: var(--brand-primary);
+  box-shadow: 0 0 8px rgba(124, 92, 255, 0.4);
+}
+

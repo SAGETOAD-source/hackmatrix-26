@@ -19,7 +19,7 @@ export default function Footer() {
               </span>
             </div>
             <p className="text-xs text-[#A29FC9] light:text-[#6E6893] leading-relaxed">
-              Ultraviolet Sentinel cybersecurity platform combining machine learning URL inference, transport cryptography, and continuous threat telemetry.
+              Autonomous cybersecurity platform combining machine learning URL inference, transport cryptography, and continuous threat telemetry.
             </p>
             <div className="inline-flex items-center space-x-2 px-2.5 py-1 rounded-md bg-[#14122A] light:bg-[#EDE9FE] border border-[#2A2650] light:border-[#D4CDFA] text-[11px] font-mono text-[#34E0A1] light:text-[#059669]">
               <span className="w-1.5 h-1.5 rounded-full bg-[#34E0A1] animate-pulse"></span>
@@ -51,11 +51,6 @@ export default function Footer() {
               <li>
                 <Link to="/history" className="hover:text-[#A78BFF] light:hover:text-[#7C5CFF] transition-colors">
                   Security Scan History
-                </Link>
-              </li>
-              <li>
-                <Link to="/styleguide" className="hover:text-[#A78BFF] light:hover:text-[#7C5CFF] transition-colors">
-                  Sentinel Design Tokens
                 </Link>
               </li>
             </ul>

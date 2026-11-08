@@ -1,0 +1,77 @@
+/**
+ * Modals, Dialogs & Toast Notifications
+ * Blurred backdrop, scale-and-fade entrance animation, elevated surface with violet halo.
+ */
+
+/* Modal Backdrop */
+.modal-backdrop,
+.fixed.inset-0.bg-black\/75,
+.fixed.inset-0.bg-black\/70,
+.fixed.inset-0.bg-black\/60 {
+  background-color: rgba(11, 10, 20, 0.8) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  z-index: var(--z-modal-backdrop);
+}
+
+/* Modal Entrance Animation */
+@keyframes modal-enter {
+  0% {
+    opacity: 0;
+    transform: scale(0.95) translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.modal-content,
+[role="dialog"] > div,
+.fixed.inset-0 > div:not(.modal-backdrop) {
+  animation: modal-enter 0.25s var(--ease-spring) both;
+  background-color: var(--bg-surface) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius-xl) !important;
+  box-shadow: var(--shadow-xl), var(--shadow-uv-glow) !important;
+  z-index: var(--z-modal);
+}
+
+[data-theme="light"] .modal-content,
+.light .modal-content {
+  background-color: var(--bg-surface) !important;
+  border-color: var(--border-subtle) !important;
+  box-shadow: var(--shadow-xl), 0 0 30px -5px rgba(124, 92, 255, 0.2) !important;
+}
+
+/* Toast Notifications */
+@keyframes toast-slide-in {
+  from {
+    transform: translateX(110%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.toast {
+  position: fixed;
+  bottom: var(--space-6);
+  right: var(--space-6);
+  z-index: var(--z-toast);
+  background-color: var(--bg-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+  border-left: 4px solid var(--brand-primary);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  box-shadow: var(--shadow-lg);
+  animation: toast-slide-in 0.3s var(--ease-spring) both;
+}
+
+.toast.toast-safe { border-left-color: var(--safe); }
+.toast.toast-warn { border-left-color: var(--suspicious); }
+.toast.toast-danger { border-left-color: var(--malicious); }
+

@@ -1,0 +1,52 @@
+/**
+ * Scan Results Page Styles
+ * Verdict banner, multi-pillar weight breakdown, and 18-feature telemetry matrix.
+ */
+
+/* Main Verdict Banner */
+.results-verdict-banner {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-6);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Pillar Progress Breakdown */
+.pillar-tile {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  font-family: 'JetBrains Mono', monospace;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-fast);
+}
+
+.pillar-tile:hover {
+  transform: translateY(-1px);
+}
+
+/* Lexical Grid Cells */
+.lexical-feature-cell {
+  background-color: var(--bg-base);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-2-5);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+}
+
+[data-theme="light"] .lexical-feature-cell,
+.light .lexical-feature-cell {
+  background-color: var(--bg-base);
+  border-color: var(--border-subtle);
+}
+
+.lexical-feature-cell.flagged {
+  border-color: rgba(255, 77, 109, 0.4);
+  background-color: rgba(255, 77, 109, 0.08);
+}
+

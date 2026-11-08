@@ -1,0 +1,121 @@
+/**
+ * Themes Configuration
+ * Light theme tokens, high contrast adaptations, and forced-colors accessibility.
+ */
+
+/* Light Theme Variables */
+[data-theme="light"],
+.light {
+  /* Surfaces and Canvas Layers */
+  --bg-base: #F7F5FF;          /* Warm off-white pearl */
+  --bg-surface: #FFFFFF;       /* Pure white */
+  --bg-elevated: #F0EDFF;      /* Soft lilac tint */
+  --border-subtle: #E2DEFA;    /* Soft lavender boundary */
+  --border-focus: #7C5CFF;
+
+  /* Typography */
+  --text-primary: #1E1B4B;     /* Deep indigo */
+  --text-muted: #6E6893;       /* Dusk violet */
+
+  /* Brand Violet */
+  --brand-primary: #7C5CFF;
+  --brand-glow: #6340EB;
+  --brand-accent: #5E8F00;     /* Darkened Acid Lime for 5.8:1 WCAG AA contrast */
+  --brand-accent-text: #FFFFFF;
+
+  /* Verdict Colors (WCAG AA compliant in light mode) */
+  --safe: #059669;
+  --suspicious: #B45309;
+  --malicious: #BE123C;
+  --unknown: #6E6893;
+
+  /* Shadows in Light Mode */
+  --shadow-sm: 0 1px 3px rgba(30, 27, 75, 0.08);
+  --shadow-md: 0 4px 16px -2px rgba(30, 27, 75, 0.1);
+  --shadow-lg: 0 10px 30px -4px rgba(30, 27, 75, 0.12);
+  --shadow-xl: 0 20px 45px -8px rgba(30, 27, 75, 0.15);
+  --shadow-card: 0 4px 16px -2px rgba(30, 27, 75, 0.06);
+  --shadow-card-hover: 0 12px 28px -4px rgba(30, 27, 75, 0.12), 0 0 20px -3px rgba(124, 92, 255, 0.18);
+  --shadow-inner-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+
+  /* Scrollbar */
+  --scroll-thumb: #D4CDFA;
+  --scroll-thumb-hover: #7C5CFF;
+
+  color-scheme: light;
+}
+
+/* System Preference Automatic Light Fallback (when no theme is manually forced) */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]):not(.dark) {
+    --bg-base: #F7F5FF;
+    --bg-surface: #FFFFFF;
+    --bg-elevated: #F0EDFF;
+    --border-subtle: #E2DEFA;
+    --border-focus: #7C5CFF;
+    --text-primary: #1E1B4B;
+    --text-muted: #6E6893;
+    --brand-primary: #7C5CFF;
+    --brand-glow: #6340EB;
+    --brand-accent: #5E8F00;
+    --brand-accent-text: #FFFFFF;
+    --safe: #059669;
+    --suspicious: #B45309;
+    --malicious: #BE123C;
+    --unknown: #6E6893;
+    --scroll-thumb: #D4CDFA;
+    --scroll-thumb-hover: #7C5CFF;
+    color-scheme: light;
+  }
+}
+
+/* High Contrast Mode (@media (prefers-contrast: more)) */
+@media (prefers-contrast: more) {
+  :root {
+    --border-subtle: #4D4785;
+    --text-muted: #C5C2E6;
+  }
+
+  [data-theme="light"],
+  .light {
+    --border-subtle: #8A84B8;
+    --text-muted: #3D3966;
+  }
+
+  .cyber-card,
+  button,
+  input,
+  table {
+    border-width: 2px !important;
+  }
+}
+
+/* Windows Forced Colors / High Contrast Mode */
+@media (forced-colors: active) {
+  :root {
+    --bg-base: Canvas;
+    --bg-surface: Canvas;
+    --bg-elevated: Canvas;
+    --border-subtle: ButtonBorder;
+    --border-focus: Highlight;
+    --text-primary: CanvasText;
+    --text-muted: CanvasText;
+    --brand-accent: Highlight;
+    --brand-accent-text: HighlightText;
+    --safe: Highlight;
+    --suspicious: Highlight;
+    --malicious: Highlight;
+  }
+
+  .cyber-card,
+  .badge,
+  button,
+  input {
+    border: 1px solid ButtonBorder !important;
+  }
+
+  :focus-visible {
+    outline: 3px solid Highlight !important;
+  }
+}
+

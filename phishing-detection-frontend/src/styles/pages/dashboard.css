@@ -1,0 +1,45 @@
+/**
+ * Dashboard & SOC Console Page Styles
+ * Metric stat tiles, chart containers, and rapid triage ingestion layout.
+ */
+
+.dashboard-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+@media (min-width: 640px) {
+  .dashboard-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+/* Metric Stat Tile */
+.stat-card-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(1.5rem, 2vw + 1rem, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+/* Operational Status Pill */
+.soc-status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1-5);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  background-color: rgba(52, 224, 161, 0.1);
+  color: var(--safe);
+  border: 1px solid rgba(52, 224, 161, 0.3);
+}
+

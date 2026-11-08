@@ -26,6 +26,8 @@ import CertificateCard from '../components/results/CertificateCard'
 import BrandImpersonationDiff from '../components/ui/BrandImpersonationDiff'
 import Button from '../components/ui/Button'
 import Badge from '../components/ui/Badge'
+import Aurora from '../components/backgrounds/Aurora'
+import { useTheme } from '../context/ThemeContext'
 import { SIMULATION_DISCLAIMER } from '../data/mockData'
 import { generateReportText, simulateScan } from '../utils/simulateScan'
 import { getLatestScan, setLatestScan } from '../services/scanService'
@@ -63,6 +65,7 @@ function getVerdictType(scanResult) {
 }
 
 export default function ScanResultsPage() {
+  const { isDark } = useTheme()
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const urlParam = searchParams.get('url')
@@ -140,11 +143,36 @@ export default function ScanResultsPage() {
   // Detect brand impersonation heuristic
   const isSpoofed = scanResult?.urlCharacteristics?.suspiciousKeywords?.length > 0 || (scanResult?.url && /paypal|apple|google|microsoft|amazon|netflix/i.test(scanResult.url))
 
+  // Ambient Aurora color palette reflecting security posture
+  const auroraStops = isPending
+    ? ['#5227FF', '#7C5CFF', '#5227FF']
+    : verdict === 'malicious'
+    ? ['#7C5CFF', '#FF4D6D', '#5227FF']
+    : verdict === 'suspicious'
+    ? ['#7C5CFF', '#FFB020', '#5227FF']
+    : verdict === 'safe'
+    ? ['#7C5CFF', '#34E0A1', '#5227FF']
+    : ['#7C5CFF', '#C6FF3D', '#5227FF']
+
   return (
-    <div className="min-h-screen bg-[#0B0A14] light:bg-[#F7F5FF] text-[#F2F0FF] light:text-[#1E1B4B] transition-colors duration-200 flex">
+    <div className="min-h-screen bg-[#0B0A14] light:bg-[#F7F5FF] text-[#F2F0FF] light:text-[#1E1B4B] transition-colors duration-200 flex relative overflow-hidden">
+      {/* Ambient Aurora Wave reflecting target threat level */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
+        <Aurora
+          colorStops={auroraStops}
+          blend={0.5}
+          amplitude={1.2}
+          speed={0.4}
+          opacity={isDark ? 0.38 : 0.20}
+          lightMode={!isDark}
+          className="w-full h-full"
+        />
+        <div className="absolute inset-0 bg-[#0B0A14]/20 light:bg-[#F7F5FF]/30 pointer-events-none" />
+      </div>
+
       <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
 
-      <div className={`flex-1 flex flex-col min-h-screen transition-all duration-200 ${collapsed ? 'ml-0 md:ml-18' : 'ml-0 md:ml-60'}`}>
+      <div className={`flex-1 flex flex-col min-h-screen transition-all duration-200 relative z-10 ${collapsed ? 'ml-0 md:ml-18' : 'ml-0 md:ml-60'}`}>
         <TopNavbar collapsed={collapsed} setCollapsed={setCollapsed} />
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8 space-y-6 max-w-5xl w-full mx-auto">

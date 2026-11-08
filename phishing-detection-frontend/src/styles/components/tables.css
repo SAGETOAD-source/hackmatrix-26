@@ -1,0 +1,87 @@
+/**
+ * Table Component Styles
+ * Sticky header with glass blur, subtle zebra striping, row hover glow, and responsive container.
+ */
+
+.table-wrapper,
+.overflow-x-auto:has(table) {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  background-color: var(--bg-surface);
+  box-shadow: var(--shadow-card);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.75rem;
+}
+
+/* Sticky Header */
+thead,
+th {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-elevated);
+  background-color: rgba(11, 10, 20, 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--text-muted);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+[data-theme="light"] thead,
+[data-theme="light"] th,
+.light thead,
+.light th {
+  background-color: rgba(247, 245, 255, 0.95);
+  color: var(--text-muted);
+}
+
+/* Table Body Rows */
+tbody tr {
+  border-bottom: 1px solid rgba(42, 38, 80, 0.4);
+  transition: background-color var(--transition-fast);
+}
+
+[data-theme="light"] tbody tr,
+.light tbody tr {
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+/* Zebra Striping (Low-contrast tint) */
+tbody tr:nth-child(even) {
+  background-color: rgba(28, 25, 54, 0.35);
+}
+
+[data-theme="light"] tbody tr:nth-child(even),
+.light tbody tr:nth-child(even) {
+  background-color: rgba(247, 245, 255, 0.5);
+}
+
+/* Row Hover Glow Highlight */
+tbody tr:hover {
+  background-color: rgba(124, 92, 255, 0.1) !important;
+}
+
+[data-theme="light"] tbody tr:hover,
+.light tbody tr:hover {
+  background-color: rgba(124, 92, 255, 0.06) !important;
+}
+
+td {
+  padding: var(--space-3) var(--space-4);
+  color: var(--text-primary);
+  font-family: 'JetBrains Mono', monospace;
+  vertical-align: middle;
+}
+

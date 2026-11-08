@@ -46,7 +46,7 @@ export default function StyleguidePage() {
     { token: '--border-subtle', hex: '#2A2650', name: 'Subtle Violet Border', role: 'Dividers & container borders' },
     { token: '--text-primary', hex: '#F2F0FF', name: 'Ice Violet Light', role: 'Primary high-contrast headings & text' },
     { token: '--text-muted', hex: '#A29FC9', name: 'Lavender Muted', role: 'Subtitles, captions & secondary text' },
-    { token: '--brand-primary', hex: '#7C5CFF', name: 'Ultraviolet Sentinel', role: 'Core brand identity & focus rings' },
+    { token: '--brand-primary', hex: '#7C5CFF', name: 'Ultraviolet Core', role: 'Core brand identity & focus rings' },
     { token: '--brand-glow', hex: '#A78BFF', name: 'UV Light Beam', role: 'Ambient backdrops & active glows' },
     { token: '--brand-accent', hex: '#C6FF3D', name: 'Acid Lime Highlight', role: 'Primary CTAs & high-impact accents' },
   ]
@@ -68,7 +68,7 @@ export default function StyleguidePage() {
           <div>
             <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-[#14122A] light:bg-white border border-[#2A2650] light:border-[#E2DEFA] text-xs font-mono text-[#A29FC9] light:text-[#6E6893] mb-2">
               <Palette className="w-3.5 h-3.5 text-[#C6FF3D] light:text-[#5E8F00]" />
-              <span>ULTRAVIOLET SENTINEL DESIGN SYSTEM</span>
+              <span>PHISHGUARD DESIGN SYSTEM</span>
             </div>
             <h1 className="font-heading text-3xl sm:text-4xl font-extrabold tracking-tight text-[#F2F0FF] light:text-[#1E1B4B]">
               Component & Token Specifications

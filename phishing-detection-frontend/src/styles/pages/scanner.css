@@ -1,0 +1,73 @@
+/**
+ * Scanner Page Styles
+ * UV sweep beam animation, stage timeline node lights, and preset vector buttons.
+ */
+
+/* UV Sweep Scanning Beam Animation */
+@keyframes uv-sweep-beam {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(200%);
+    opacity: 0;
+  }
+}
+
+/* Active Scanner Card Beam Sweep */
+.scanner-card-active,
+.cyber-card:has(.animate-spin),
+[aria-busy="true"] {
+  position: relative;
+  overflow: hidden;
+}
+
+.scanner-card-active::before,
+.cyber-card:has(.animate-spin)::before,
+[aria-busy="true"]::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--brand-primary) 30%,
+    var(--brand-accent) 50%,
+    var(--brand-primary) 70%,
+    transparent 100%
+  );
+  box-shadow: 0 0 15px 2px var(--brand-accent);
+  animation: uv-sweep-beam 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  z-index: var(--z-elevated);
+}
+
+/* Stage Progression Cards */
+.stage-item {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  background-color: var(--bg-surface);
+  transition: all var(--transition-fast);
+}
+
+.stage-item.stage-active {
+  background-color: rgba(124, 92, 255, 0.12);
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 20px -3px rgba(124, 92, 255, 0.3);
+}
+
+.stage-item.stage-complete {
+  background-color: rgba(52, 224, 161, 0.06);
+  border-color: rgba(52, 224, 161, 0.3);
+}
+

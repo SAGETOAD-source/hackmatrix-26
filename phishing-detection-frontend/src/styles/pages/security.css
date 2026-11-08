@@ -1,0 +1,40 @@
+/**
+ * Security & Transport Cryptography Audit Styles
+ * Deep audit tabs, DNS authoritative resource records, and OWASP header audit items.
+ */
+
+.security-section-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-card);
+}
+
+/* Header Audit Row */
+.header-audit-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--bg-base);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  transition: border-color var(--transition-fast);
+}
+
+.header-audit-item:hover {
+  border-color: rgba(124, 92, 255, 0.4);
+}
+
+/* DNS Record Cards */
+.dns-record-cell {
+  background-color: var(--bg-base);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  font-family: 'JetBrains Mono', monospace;
+}
+

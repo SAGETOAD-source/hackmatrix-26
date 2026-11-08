@@ -1,0 +1,82 @@
+/**
+ * Utility Classes
+ * Glassmorphism with @supports fallbacks, glow halos, and dot patterns.
+ */
+
+/* Glass Surface with Progressive Enhancement */
+.uv-glass {
+  background-color: rgba(20, 18, 42, 0.75);
+}
+
+@supports (backdrop-filter: blur(16px)) or (-webkit-backdrop-filter: blur(16px)) {
+  .uv-glass {
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+}
+
+[data-theme="light"] .uv-glass,
+.light .uv-glass {
+  background-color: rgba(255, 255, 255, 0.85);
+}
+
+/* Glow Halos */
+.uv-glow {
+  box-shadow: var(--shadow-uv-glow);
+}
+
+.uv-glow-sm {
+  box-shadow: 0 0 16px -3px rgba(124, 92, 255, 0.25);
+}
+
+.lime-glow {
+  box-shadow: var(--shadow-lime-glow);
+}
+
+.safe-glow {
+  box-shadow: var(--shadow-safe-glow);
+}
+
+.warn-glow {
+  box-shadow: var(--shadow-warn-glow);
+}
+
+.danger-glow {
+  box-shadow: var(--shadow-malicious-glow);
+}
+
+/* Card Top Highlight */
+.card-highlight {
+  box-shadow: var(--shadow-inner-highlight);
+}
+
+[data-theme="light"] .card-highlight,
+.light .card-highlight {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+/* Dot Grid & Technical Grid Patterns */
+.dot-grid {
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(167, 139, 255, 0.5) 1.5px, transparent 0),
+    linear-gradient(to right, rgba(124, 92, 255, 0.18) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(124, 92, 255, 0.18) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+[data-theme="light"] .dot-grid,
+.light .dot-grid {
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(124, 92, 255, 0.4) 1.5px, transparent 0),
+    linear-gradient(to right, rgba(124, 92, 255, 0.14) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(124, 92, 255, 0.14) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.tech-grid {
+  background-image:
+    linear-gradient(to right, rgba(124, 92, 255, 0.22) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(124, 92, 255, 0.22) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+

@@ -1,0 +1,57 @@
+/**
+ * Certificate Chain Stepper Styles
+ * PKI node line with gradient, glowing status dots, and active dashed transit animations.
+ */
+
+.certificate-stepper,
+.stepper-chain {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  position: relative;
+  padding-left: var(--space-6);
+}
+
+/* Connecting Line Rail */
+.certificate-stepper::before,
+.stepper-rail {
+  content: "";
+  position: absolute;
+  top: 14px;
+  bottom: 14px;
+  left: 11px;
+  width: 2px;
+  background: linear-gradient(
+    180deg,
+    var(--brand-primary) 0%,
+    rgba(124, 92, 255, 0.4) 50%,
+    var(--safe) 100%
+  );
+  border-radius: var(--radius-full);
+}
+
+/* Glowing Node Dots */
+.stepper-node-dot {
+  position: absolute;
+  left: 4px;
+  width: 16px;
+  height: 16px;
+  border-radius: var(--radius-full);
+  background-color: var(--bg-surface);
+  border: 2px solid var(--brand-primary);
+  box-shadow: 0 0 10px rgba(124, 92, 255, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stepper-node-dot.active {
+  border-color: var(--brand-accent);
+  box-shadow: var(--shadow-lime-glow);
+}
+
+.stepper-node-dot.valid {
+  border-color: var(--safe);
+  box-shadow: var(--shadow-safe-glow);
+}
+

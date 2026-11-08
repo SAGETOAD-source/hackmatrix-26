@@ -1,0 +1,84 @@
+/**
+ * Print Stylesheet
+ * High-contrast white canvas, hides navigation and sidebars, prints report signals clearly.
+ */
+
+@media print {
+  /* Reset Background and Page Colors */
+  *,
+  *::before,
+  *::after {
+    background: transparent !important;
+    color: #000000 !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  body {
+    background-color: #FFFFFF !important;
+    color: #111111 !important;
+    font-size: 10pt;
+    line-height: 1.4;
+    padding: 0;
+    margin: 0;
+  }
+
+  /* Hide Interactivity, Navbars, Sidebars, Modals */
+  nav,
+  aside,
+  header,
+  footer,
+  button,
+  .no-print,
+  [role="dialog"],
+  .fixed,
+  .modal-backdrop {
+    display: none !important;
+  }
+
+  /* Main Container Full Width */
+  main,
+  .content-constrained {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+  }
+
+  /* Card and Panel Print Layout */
+  .cyber-card,
+  .card,
+  [data-card] {
+    border: 1px solid #CCCCCC !important;
+    border-radius: 4px !important;
+    padding: 12px !important;
+    page-break-inside: avoid;
+    margin-bottom: 12px !important;
+  }
+
+  /* High Contrast Report Headings */
+  h1, h2, h3, h4 {
+    color: #000000 !important;
+    page-break-after: avoid;
+  }
+
+  /* Print URL and Verdict Highlights */
+  .badge {
+    border: 1px solid #000000 !important;
+    color: #000000 !important;
+    font-weight: bold;
+    padding: 2px 6px !important;
+  }
+
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    page-break-inside: avoid;
+  }
+
+  th, td {
+    border: 1px solid #DDDDDD !important;
+    padding: 6px 8px !important;
+  }
+}
+

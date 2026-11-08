@@ -107,7 +107,7 @@ export default function LandingPage() {
           {/* Engineering Badge */}
           <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-[#14122A] light:bg-white border border-[#2A2650] light:border-[#D4CDFA] text-xs font-mono text-[#A29FC9] light:text-[#6E6893] mb-6 shadow-sm">
             <span className="w-2 h-2 rounded-full bg-[#34E0A1] animate-pulse"></span>
-            <span className="font-semibold text-[#F2F0FF] light:text-[#1E1B4B]">ULTRAVIOLET SENTINEL INTELLIGENCE v2.4</span>
+            <span className="font-semibold text-[#F2F0FF] light:text-[#1E1B4B]">PHISHGUARD SENTINEL INTELLIGENCE v2.4</span>
           </div>
 
           {/* Headline */}

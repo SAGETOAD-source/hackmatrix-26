@@ -1,0 +1,70 @@
+/**
+ * Card Component Styles
+ * Layered surfaces, 16px radius, soft inner highlight, and hover lift elevation.
+ */
+
+.cyber-card,
+[data-card],
+.card {
+  position: relative;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card), var(--shadow-inner-highlight);
+  transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
+}
+
+/* Light Theme Card Highlight */
+[data-theme="light"] .cyber-card,
+.light .cyber-card,
+[data-theme="light"] .card,
+.light .card {
+  background-color: var(--bg-surface);
+  box-shadow: var(--shadow-card), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+/* Card Hover Lift & Soft Edge Glow */
+.cyber-card:hover,
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card-hover);
+  border-color: rgba(124, 92, 255, 0.4);
+}
+
+/* Staggered Card Entrance Animation */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes card-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .stagger-cards > *:nth-child(1) { animation: card-fade-in 0.35s ease-out 0.05s both; }
+  .stagger-cards > *:nth-child(2) { animation: card-fade-in 0.35s ease-out 0.10s both; }
+  .stagger-cards > *:nth-child(3) { animation: card-fade-in 0.35s ease-out 0.15s both; }
+  .stagger-cards > *:nth-child(4) { animation: card-fade-in 0.35s ease-out 0.20s both; }
+  .stagger-cards > *:nth-child(5) { animation: card-fade-in 0.35s ease-out 0.25s both; }
+  .stagger-cards > *:nth-child(6) { animation: card-fade-in 0.35s ease-out 0.30s both; }
+}
+
+/* Specific Risk Severity Accent Borders */
+.cyber-card.border-safe,
+.cyber-card.border-l-emerald-500 {
+  border-left: 4px solid var(--safe) !important;
+}
+
+.cyber-card.border-suspicious,
+.cyber-card.border-l-amber-500 {
+  border-left: 4px solid var(--suspicious) !important;
+}
+
+.cyber-card.border-malicious,
+.cyber-card.border-l-rose-500 {
+  border-left: 4px solid var(--malicious) !important;
+}
+

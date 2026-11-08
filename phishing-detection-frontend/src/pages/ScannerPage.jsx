@@ -135,17 +135,17 @@ export default function ScannerPage() {
 
   return (
     <div className="min-h-screen bg-[#0B0A14] light:bg-[#F7F5FF] text-[#F2F0FF] light:text-[#1E1B4B] transition-colors duration-200 flex relative overflow-hidden">
-      {/* Restrained Technical Grid Background */}
+      {/* Technical Grid Background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
         <Squares
           direction="diagonal"
           speed={0.15}
           squareSize={48}
-          borderColor="rgba(124, 92, 255, 0.08)"
-          hoverFillColor="rgba(124, 92, 255, 0.06)"
-          className="opacity-40 dark:opacity-60"
+          borderColor="rgba(124, 92, 255, 0.35)"
+          hoverFillColor="rgba(198, 255, 61, 0.15)"
+          className="opacity-90 dark:opacity-95"
         />
-        <div className="absolute inset-0 bg-[#0B0A14]/75 light:bg-[#F7F5FF]/85 pointer-events-none"></div>
+        <div className="absolute inset-0 bg-[#0B0A14]/30 light:bg-[#F7F5FF]/40 pointer-events-none"></div>
       </div>
 
       <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />

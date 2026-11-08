@@ -1,0 +1,147 @@
+/**
+ * Button Component Styles
+ * Primary lime with shine sweep, secondary violet outline, ghost variants, active press-down.
+ */
+
+/* Base Button Reset & Layout */
+button,
+.btn,
+.cyber-btn-primary,
+.cyber-btn-secondary {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.25;
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-4);
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+  user-select: none;
+  overflow: hidden;
+  border: 1px solid transparent;
+}
+
+button:active:not(:disabled):not([aria-disabled="true"]),
+.btn:active:not(:disabled):not([aria-disabled="true"]) {
+  transform: translateY(1px) scale(0.98);
+}
+
+button:disabled,
+.btn:disabled,
+button[disabled],
+.btn[aria-disabled="true"] {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Primary Button (Acid Lime Highlight) */
+.cyber-btn-primary,
+button.btn-primary,
+button[type="submit"]:not([class*="secondary"]):not([class*="outline"]):not([class*="ghost"]) {
+  background-color: var(--brand-accent);
+  color: var(--brand-accent-text);
+  border-color: var(--brand-accent);
+  box-shadow: 0 2px 10px -2px rgba(198, 255, 61, 0.35);
+  font-weight: 700;
+}
+
+/* Diagonal Shine Sweep Effect on Hover */
+.cyber-btn-primary::after,
+button.btn-primary::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -60%;
+  width: 40%;
+  height: 200%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 100%
+  );
+  transform: rotate(25deg);
+  pointer-events: none;
+  opacity: 0;
+  transition: transform 0.6s var(--ease-spring), opacity 0.3s ease;
+}
+
+.cyber-btn-primary:hover:not(:disabled)::after,
+button.btn-primary:hover:not(:disabled)::after {
+  opacity: 1;
+  transform: rotate(25deg) translateX(450%);
+}
+
+.cyber-btn-primary:hover:not(:disabled),
+button.btn-primary:hover:not(:disabled) {
+  box-shadow: var(--shadow-lime-glow);
+  transform: translateY(-1px);
+}
+
+/* Secondary Button (Ultraviolet Wire & Subtle Fill) */
+.cyber-btn-secondary,
+button.btn-secondary {
+  background-color: rgba(124, 92, 255, 0.12);
+  color: var(--text-primary);
+  border: 1px solid rgba(124, 92, 255, 0.35);
+}
+
+[data-theme="light"] .cyber-btn-secondary,
+.light .cyber-btn-secondary {
+  background-color: rgba(124, 92, 255, 0.08);
+  color: var(--brand-primary);
+  border-color: rgba(124, 92, 255, 0.25);
+}
+
+.cyber-btn-secondary:hover:not(:disabled),
+button.btn-secondary:hover:not(:disabled) {
+  background-color: rgba(124, 92, 255, 0.22);
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 20px -3px rgba(124, 92, 255, 0.35);
+  transform: translateY(-1px);
+}
+
+/* Outline / Ghost Button */
+button.btn-outline {
+  background-color: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+}
+
+button.btn-outline:hover:not(:disabled) {
+  border-color: var(--brand-primary);
+  background-color: rgba(124, 92, 255, 0.08);
+}
+
+button.btn-ghost {
+  background-color: transparent;
+  color: var(--text-muted);
+  border: 1px solid transparent;
+}
+
+button.btn-ghost:hover:not(:disabled) {
+  color: var(--text-primary);
+  background-color: rgba(124, 92, 255, 0.1);
+}
+
+/* Danger Button */
+.btn-danger,
+button.btn-danger {
+  background-color: var(--verdict-malicious);
+  color: #ffffff;
+  border-color: var(--verdict-malicious);
+  box-shadow: 0 0 15px -3px rgba(255, 77, 109, 0.4);
+}
+
+.btn-danger:hover:not(:disabled) {
+  filter: brightness(1.1);
+  box-shadow: 0 0 20px -2px rgba(255, 77, 109, 0.6);
+}
+
+

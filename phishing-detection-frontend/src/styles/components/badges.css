@@ -1,0 +1,72 @@
+/**
+ * Badge & Verdict Chip Styles
+ * Tinted backgrounds with low-alpha border; strictly reserved risk mappings.
+ */
+
+.badge,
+[data-badge] {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  line-height: 1.4;
+}
+
+/* Safe / Legitimate Verdict */
+.badge-safe,
+[data-verdict="safe"],
+.bg-emerald-500\/10 {
+  background-color: rgba(52, 224, 161, 0.12) !important;
+  color: var(--safe) !important;
+  border-color: rgba(52, 224, 161, 0.35) !important;
+}
+
+/* Suspicious / Warning Verdict */
+.badge-suspicious,
+[data-verdict="suspicious"],
+.bg-amber-500\/10 {
+  background-color: rgba(255, 176, 32, 0.12) !important;
+  color: var(--suspicious) !important;
+  border-color: rgba(255, 176, 32, 0.35) !important;
+}
+
+/* Malicious / Phishing Verdict */
+.badge-malicious,
+[data-verdict="malicious"],
+.bg-rose-500\/10 {
+  background-color: rgba(255, 77, 109, 0.12) !important;
+  color: var(--malicious) !important;
+  border-color: rgba(255, 77, 109, 0.35) !important;
+}
+
+/* Unknown / Telemetry Pending */
+.badge-unknown,
+[data-verdict="unknown"],
+.bg-slate-500\/10 {
+  background-color: rgba(139, 136, 176, 0.12) !important;
+  color: var(--unknown) !important;
+  border-color: rgba(139, 136, 176, 0.3) !important;
+}
+
+/* Brand Violet Generic Status Chips */
+.badge-brand,
+.badge-neutral {
+  background-color: rgba(124, 92, 255, 0.12);
+  color: var(--brand-glow);
+  border-color: rgba(124, 92, 255, 0.3);
+}
+
+[data-theme="light"] .badge-brand,
+.light .badge-brand {
+  background-color: rgba(124, 92, 255, 0.08);
+  color: var(--brand-primary);
+  border-color: rgba(124, 92, 255, 0.2);
+}
+

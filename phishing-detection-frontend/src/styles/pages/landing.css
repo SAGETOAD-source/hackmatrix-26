@@ -1,0 +1,47 @@
+/**
+ * Landing Page Styles
+ * Hero glow spotlight, telemetry vector matrix, and terminal widget.
+ */
+
+.landing-hero {
+  position: relative;
+  overflow: hidden;
+  padding-top: var(--space-12);
+  padding-bottom: var(--space-16);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+/* Ambient Violet Radial Spotlight */
+.hero-ambient-spotlight {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 320px;
+  background: radial-gradient(ellipse at center, rgba(124, 92, 255, 0.18), transparent 70%);
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: var(--z-negative);
+}
+
+/* Explanatory Terminal Preview */
+.terminal-preview-window {
+  background-color: var(--bg-base);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  box-shadow: var(--shadow-xl), 0 0 30px -5px rgba(124, 92, 255, 0.25);
+  overflow: hidden;
+}
+
+.terminal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-3);
+  background-color: rgba(28, 25, 54, 0.6);
+  border-bottom: 1px solid var(--border-subtle);
+}
+

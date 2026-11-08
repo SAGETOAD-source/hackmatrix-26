@@ -7,7 +7,6 @@ import {
   Activity,
   History,
   Lock,
-  Palette,
   Sun,
   Moon,
   X,
@@ -15,33 +14,65 @@ import {
 } from 'lucide-react'
 import { useTheme } from '../../context/ThemeContext'
 
-export default function CommandPalette({ isOpen, onClose }) {
+export default function CommandPalette({ isOpen: controlledIsOpen, onClose: controlledOnClose }) {
+  const [internalOpen, setInternalOpen] = useState(false)
+  const isControlled = controlledIsOpen !== undefined
+  const isOpen = isControlled ? controlledIsOpen : internalOpen
+
+  const handleClose = () => {
+    if (isControlled) {
+      controlledOnClose?.()
+    } else {
+      setInternalOpen(false)
+    }
+  }
+
+  const handleOpen = () => {
+    if (!isControlled) {
+      setInternalOpen(true)
+    }
+  }
+
+  const handleToggle = () => {
+    if (!isControlled) {
+      setInternalOpen((prev) => !prev)
+    } else if (isOpen) {
+      controlledOnClose?.()
+    }
+  }
+
   const [query, setQuery] = useState('')
   const navigate = useNavigate()
   const { theme, toggleTheme } = useTheme()
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault()
-        if (isOpen) {
-          onClose()
-        }
+        handleToggle()
       }
       if (e.key === 'Escape' && isOpen) {
-        onClose()
+        handleClose()
       }
     }
 
+    const handleCustomOpen = () => {
+      handleOpen()
+    }
+
     window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [isOpen, onClose])
+    window.addEventListener('phishguard:open-command-palette', handleCustomOpen)
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+      window.removeEventListener('phishguard:open-command-palette', handleCustomOpen)
+    }
+  }, [isOpen, isControlled])
 
   const actions = [
     {
       id: 'scan',
       title: 'Analyze New Target URL',
-      subtitle: 'Submit target to the Ultraviolet Sentinel scanner',
+      subtitle: 'Submit target to the threat detection scanner',
       icon: Shield,
       action: () => navigate('/scanner'),
       badge: 'Action',
@@ -67,20 +98,12 @@ export default function CommandPalette({ isOpen, onClose }) {
       title: 'Deep Cryptographic & DNS Audit',
       subtitle: 'Inspect certificate transparency, zone records, headers',
       icon: Lock,
-      action: () => navigate('/security'),
+      action: () => navigate('/security-analysis'),
       badge: 'Audit',
     },
     {
-      id: 'styleguide',
-      title: 'Design System & Styleguide',
-      subtitle: 'Explore Ultraviolet Sentinel tokens and components',
-      icon: Palette,
-      action: () => navigate('/styleguide'),
-      badge: 'Design',
-    },
-    {
       id: 'theme',
-      title: `Switch to ${theme === 'dark' ? 'Light (Warm Pearl)' : 'Dark (Void Ink)'} Theme`,
+      title: `Switch to ${theme === 'dark' ? 'Light Theme' : 'Dark Theme'}`,
       subtitle: 'Toggle console visual mode',
       icon: theme === 'dark' ? Sun : Moon,
       action: () => toggleTheme(),
@@ -96,7 +119,7 @@ export default function CommandPalette({ isOpen, onClose }) {
 
   const handleSelect = (item) => {
     item.action()
-    onClose()
+    handleClose()
     setQuery('')
   }
 
@@ -109,7 +132,7 @@ export default function CommandPalette({ isOpen, onClose }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={onClose}
+            onClick={handleClose}
             className="fixed inset-0 bg-black/60 backdrop-blur-md"
           />
 
@@ -136,8 +159,9 @@ export default function CommandPalette({ isOpen, onClose }) {
                 ESC
               </kbd>
               <button
-                onClick={onClose}
-                className="text-[var(--text-muted)] hover:text-[var(--text-primary)] p-1 rounded-md"
+                type="button"
+                onClick={handleClose}
+                className="text-[var(--text-muted)] hover:text-[var(--text-primary)] p-1 rounded-md cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
