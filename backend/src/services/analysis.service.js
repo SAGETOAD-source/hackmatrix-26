@@ -555,18 +555,26 @@ function calculateUnifiedRiskScore({
   let riskLevel = "low";
   let verdict = "Safe";
 
-  if (clampedRiskScore >= 75) {
+  if (clampedRiskScore >= 60) {
     riskLevel = "critical";
     verdict = "Phishing";
-  } else if (clampedRiskScore >= 50) {
+  } else if (clampedRiskScore >= 40) {
     riskLevel = "high";
     verdict = "Phishing";
-  } else if (clampedRiskScore >= 40) {
+  } else if (clampedRiskScore >= 35) {
     riskLevel = "medium";
     verdict = "Suspicious";
   } else {
     riskLevel = "low";
     verdict = "Safe";
+  }
+
+  if (verdict === "Safe") {
+    for (const f of findings) {
+      if (f.title === "ML Phishing Classification") {
+        f.severity = "info";
+      }
+    }
   }
 
   return {
