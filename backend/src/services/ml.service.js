@@ -36,6 +36,9 @@ function getMlServiceUrl() {
  *   prediction: 'PHISHING' | 'LEGITIMATE' | null,
  *   confidence: number | null,
  *   model: string | null,
+ *   tier?: string | null,
+ *   riskScore?: number | null,
+ *   reasons?: string[],
  *   error?: string
  * }>}
  */
@@ -129,6 +132,12 @@ async function predictUrl(url, options = {}) {
       prediction: rawPrediction,
       confidence,
       model: String(model),
+      tier: data.tier ?? null,
+      riskScore:
+        typeof data.risk_score === "number" && !isNaN(data.risk_score)
+          ? data.risk_score
+          : null,
+      reasons: Array.isArray(data.reasons) ? data.reasons : [],
     };
   } catch (err) {
     if (err.name === "AbortError") {

@@ -379,11 +379,21 @@ function calculateUnifiedRiskScore({
       mlScore = Math.round(conf * 100);
       findings.push({
         title: "ML Phishing Classification",
-        description: `Custom Random Forest model classified URL as PHISHING with ${(conf * 100).toFixed(1)}% confidence.`,
+        description: `ML ensemble (Random Forest + character n-gram) classified URL as PHISHING with ${(conf * 100).toFixed(1)}% confidence.`,
         severity: "critical",
       });
     } else {
       mlScore = Math.round((1 - conf) * 100);
+    }
+
+    if (mlResult.tier && mlResult.tier !== "low_risk" && Array.isArray(mlResult.reasons)) {
+      for (const reason of mlResult.reasons) {
+        findings.push({
+          title: "ML signal",
+          description: reason,
+          severity: "medium",
+        });
+      }
     }
   } else if (mlResult.status === "unavailable") {
     findings.push({
@@ -393,6 +403,7 @@ function calculateUnifiedRiskScore({
     });
   }
   componentScores.ml = mlScore;
+  componentScores.mlAnalysis = mlScore;
 
   // 2. Domain & Lexical Component (Weight: 20%)
   let lexicalScore = 0;
@@ -446,6 +457,7 @@ function calculateUnifiedRiskScore({
   }
   lexicalScore = Math.min(100, lexicalScore);
   componentScores.lexical = lexicalScore;
+  componentScores.domainLexical = lexicalScore;
 
   // 3. TLS Certificate Component (Weight: 15%)
   let tlsScore = 0;
@@ -476,6 +488,7 @@ function calculateUnifiedRiskScore({
     }
   }
   componentScores.tls = tlsScore;
+  componentScores.tlsCertificate = tlsScore;
 
   // 4. HTTP Security Headers Component (Weight: 15%)
   let headersScore = 0;
@@ -497,6 +510,7 @@ function calculateUnifiedRiskScore({
   }
   headersScore = Math.min(100, headersScore);
   componentScores.headers = headersScore;
+  componentScores.webSecurity = headersScore;
 
   // 5. Threat Intelligence Component (Weight: 20%)
   // Threat intel feeds (e.g. blacklists) alert on confirmed indicators.
@@ -510,6 +524,8 @@ function calculateUnifiedRiskScore({
       description: `Domain matched ${threatMatches.length} threat intelligence record(s).`,
       severity: "critical",
     });
+  } else {
+    threatScore = null;
   }
   componentScores.threatIntel = threatScore !== null ? threatScore : 0;
 
@@ -539,18 +555,26 @@ function calculateUnifiedRiskScore({
   let riskLevel = "low";
   let verdict = "Safe";
 
-  if (clampedRiskScore >= 80) {
+  if (clampedRiskScore >= 60) {
     riskLevel = "critical";
     verdict = "Phishing";
-  } else if (clampedRiskScore >= 60) {
+  } else if (clampedRiskScore >= 40) {
     riskLevel = "high";
     verdict = "Phishing";
-  } else if (clampedRiskScore >= 30) {
+  } else if (clampedRiskScore >= 35) {
     riskLevel = "medium";
     verdict = "Suspicious";
   } else {
     riskLevel = "low";
     verdict = "Safe";
+  }
+
+  if (verdict === "Safe") {
+    for (const f of findings) {
+      if (f.title === "ML Phishing Classification") {
+        f.severity = "info";
+      }
+    }
   }
 
   return {
@@ -629,6 +653,9 @@ async function analyzeUrl(rawUrl) {
         model: mlResult.model,
         status: mlResult.status,
         error: mlResult.error || null,
+        tier: mlResult.tier ?? null,
+        risk_score: mlResult.riskScore != null ? mlResult.riskScore : (mlResult.risk_score != null ? mlResult.risk_score : null),
+        reasons: Array.isArray(mlResult.reasons) ? mlResult.reasons : [],
       },
       url_characteristics: {
         urlLength: urlChars.urlLength,

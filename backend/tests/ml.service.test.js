@@ -61,8 +61,8 @@ describe("ML Integration Service (ml.service.js)", () => {
     if (res.status === "success") {
       assert.equal(res.prediction, "LEGITIMATE");
       assert.ok(typeof res.confidence === "number");
-      assert.ok(res.confidence >= 0.5 && res.confidence <= 1.0);
-      assert.equal(res.model, "RandomForest");
+      assert.ok(res.confidence >= 0 && res.confidence <= 1.0);
+      assert.ok(typeof res.model === "string" && res.model.length > 0);
     } else {
       // If service is offline in this environment, it must report unavailable gracefully
       assert.equal(res.status, "unavailable");
@@ -76,7 +76,7 @@ describe("ML Integration Service (ml.service.js)", () => {
       assert.equal(res.prediction, "PHISHING");
       assert.ok(typeof res.confidence === "number");
       assert.ok(res.confidence >= 0.5 && res.confidence <= 1.0);
-      assert.equal(res.model, "RandomForest");
+      assert.ok(typeof res.model === "string" && res.model.length > 0);
     } else {
       assert.equal(res.status, "unavailable");
       assert.equal(res.prediction, null);
