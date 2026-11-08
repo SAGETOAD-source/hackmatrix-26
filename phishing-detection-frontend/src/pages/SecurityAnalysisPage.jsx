@@ -10,7 +10,8 @@ import {
   ShieldAlert,
   RefreshCw,
   Shield,
-  Terminal
+  Terminal,
+  ArrowRight
 } from 'lucide-react'
 import Sidebar from '../components/dashboard/Sidebar'
 import TopNavbar from '../components/dashboard/TopNavbar'
@@ -19,12 +20,201 @@ import { fetchSecurityAnalysis } from '../services/securityService'
 import { isApiMode, getApiBaseUrl } from '../services/api'
 import { getSecurityAnalysis } from '../utils/securityAnalysisData'
 
+/**
+ * Normalizes any analysis payload (mock, live API, partial, or empty)
+ * into a guaranteed safe data contract to avoid undefined property exceptions.
+ */
+function normalizeAnalysisPayload(data, targetFallback = 'github.com') {
+  if (!data || typeof data !== 'object') {
+    return {
+      domain: targetFallback,
+      cleanInput: targetFallback,
+      isHttps: true,
+      isPhish: false,
+      isSuspicious: false,
+      certificate: null,
+      httpHeaders: [],
+      dns: null,
+      redirects: [],
+      findings: [],
+      threatIntelligenceFeed: [],
+      simulatedDemo: false,
+      isLiveApi: false,
+      backendNotice: null,
+    }
+  }
+
+  const domain = data.domain || targetFallback.replace(/^https?:\/\//, '').split('/')[0] || 'unknown'
+  const isHttps = typeof data.isHttps === 'boolean' ? data.isHttps : Boolean(data.is_https)
+
+  // Safe certificate normalization
+  let cert = data.certificate || data.ssl_status || null
+  if (cert && typeof cert === 'object') {
+    cert = {
+      ...cert,
+      status: cert.status || 'Active',
+      issuer: cert.issuer || 'Information Not Provided',
+      subject: cert.subject || `CN=${domain}`,
+      validFrom: cert.validFrom || cert.valid_from || 'N/A',
+      expiryDate: cert.expiryDate || cert.expiry_date || cert.valid_to || 'N/A',
+      daysRemaining: cert.daysRemaining ?? cert.days_remaining ?? 'N/A',
+      keySize: cert.keySize || cert.key_size || 'N/A',
+      signatureAlgorithm: cert.signatureAlgorithm || cert.signature_algorithm || '',
+      validityBadge: cert.validityBadge || {
+        label: cert.status || (cert.hasSSL === false ? 'No TLS' : 'Valid'),
+        color: cert.hasSSL === false ? 'rose' : 'emerald',
+      },
+    }
+  }
+
+  // Safe HTTP headers normalization
+  let headers = []
+  if (Array.isArray(data.httpHeaders)) {
+    headers = data.httpHeaders
+  } else if (Array.isArray(data.http_headers)) {
+    headers = data.http_headers
+  } else if (data.httpHeaders && typeof data.httpHeaders === 'object') {
+    headers = Object.entries(data.httpHeaders).map(([key, val]) => ({
+      name: key,
+      status: 'OBSERVED',
+      statusBadge: 'OBSERVED',
+      explanation: typeof val === 'string' ? val : JSON.stringify(val),
+      recommendation: 'Inspect header configuration for OWASP compliance.',
+    }))
+  } else if (data.http_headers && typeof data.http_headers === 'object') {
+    headers = Object.entries(data.http_headers).map(([key, val]) => ({
+      name: key,
+      status: 'OBSERVED',
+      statusBadge: 'OBSERVED',
+      explanation: typeof val === 'string' ? val : JSON.stringify(val),
+      recommendation: 'Inspect header configuration for OWASP compliance.',
+    }))
+  }
+
+  // Safe DNS normalization
+  let dns = data.dns || null
+  if (dns && typeof dns === 'object') {
+    const aRecords = Array.isArray(dns.aRecord)
+      ? dns.aRecord
+      : Array.isArray(dns.aRecords)
+      ? dns.aRecords
+      : Array.isArray(dns.a_records)
+      ? dns.a_records
+      : dns.aRecord
+      ? [dns.aRecord]
+      : []
+
+    const aaaaRecords = Array.isArray(dns.aaaaRecord)
+      ? dns.aaaaRecord
+      : Array.isArray(dns.aaaaRecords)
+      ? dns.aaaaRecords
+      : Array.isArray(dns.aaaa_records)
+      ? dns.aaaa_records
+      : dns.aaaaRecord
+      ? [dns.aaaaRecord]
+      : []
+
+    const mxRecords = Array.isArray(dns.mxRecord)
+      ? dns.mxRecord
+      : Array.isArray(dns.mxRecords)
+      ? dns.mxRecords
+      : Array.isArray(dns.mx_records)
+      ? dns.mx_records
+      : dns.mxRecord
+      ? [dns.mxRecord]
+      : []
+
+    const nsRecords = Array.isArray(dns.nsRecord)
+      ? dns.nsRecord
+      : Array.isArray(dns.nsRecords)
+      ? dns.nsRecords
+      : Array.isArray(dns.ns_records)
+      ? dns.ns_records
+      : dns.nsRecord
+      ? [dns.nsRecord]
+      : []
+
+    const isDnssecActive =
+      dns.securityStatus?.dnssec === true ||
+      dns.securityStatus?.status === 'SECURE' ||
+      dns.dnsSecurityStatus?.dnssecStatus === 'PASS' ||
+      (typeof dns.dnsSecurityStatus?.dnssec === 'string' && /signed|active|pass/i.test(dns.dnsSecurityStatus.dnssec))
+
+    const isDnssecEvaluated =
+      dns.securityStatus !== undefined || dns.dnsSecurityStatus !== undefined
+
+    dns = {
+      ...dns,
+      aRecord: aRecords,
+      aaaaRecord: aaaaRecords,
+      mxRecord: mxRecords,
+      nsRecord: nsRecords,
+      securityStatus: {
+        status: isDnssecActive ? 'SECURE' : 'INSECURE',
+        dnssec: isDnssecActive,
+        isEvaluated: isDnssecEvaluated,
+        label: isDnssecEvaluated ? (isDnssecActive ? 'Active' : 'Disabled / Unsigned') : 'Not Evaluated',
+      },
+    }
+  }
+
+  // Safe findings normalization
+  let findings = []
+  if (Array.isArray(data.findings)) {
+    findings = data.findings
+  } else if (Array.isArray(data.suspiciousIndicators)) {
+    findings = data.suspiciousIndicators.map((ind, i) => ({
+      id: `ind-${i}`,
+      title: typeof ind === 'string' ? ind : ind.title || 'Security Indicator',
+      severity: ind.severity || 'MEDIUM',
+      description: ind.description || (typeof ind === 'string' ? ind : 'Suspicious indicator flagged during analysis.'),
+      recommendedAction: ind.recommendation || ind.recommendedAction || 'Review host security configurations.',
+    }))
+  } else if (Array.isArray(data.suspicious_indicators)) {
+    findings = data.suspicious_indicators.map((ind, i) => ({
+      id: `ind-${i}`,
+      title: typeof ind === 'string' ? ind : ind.title || 'Security Indicator',
+      severity: ind.severity || 'MEDIUM',
+      description: ind.description || (typeof ind === 'string' ? ind : 'Suspicious indicator flagged during analysis.'),
+      recommendedAction: ind.recommendation || ind.recommendedAction || 'Review host security configurations.',
+    }))
+  }
+
+  // Safe redirects normalization
+  const redirects = Array.isArray(data.redirects)
+    ? data.redirects
+    : Array.isArray(data.redirectChain)
+    ? data.redirectChain
+    : Array.isArray(data.redirect_chain)
+    ? data.redirect_chain
+    : []
+
+  return {
+    domain,
+    cleanInput: data.cleanInput || targetFallback,
+    isHttps,
+    isPhish: Boolean(data.isPhish),
+    isSuspicious: Boolean(data.isSuspicious),
+    certificate: cert,
+    httpHeaders: headers,
+    dns,
+    redirects,
+    findings,
+    threatIntelligenceFeed: Array.isArray(data.threatIntelligenceFeed) ? data.threatIntelligenceFeed : [],
+    simulatedDemo: Boolean(data.simulatedDemo),
+    isLiveApi: Boolean(data.isLiveApi),
+    backendNotice: data.backendNotice || null,
+  }
+}
+
 export default function SecurityAnalysisPage() {
   const [collapsed, setCollapsed] = useState(false)
   const [targetInput, setTargetInput] = useState('github.com')
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [analysisError, setAnalysisError] = useState(null)
-  const [analysisData, setAnalysisData] = useState(() => getSecurityAnalysis('github.com'))
+  const [analysisData, setAnalysisData] = useState(() =>
+    normalizeAnalysisPayload(getSecurityAnalysis('github.com'), 'github.com')
+  )
   const rawId = useId()
 
   const handleAnalyze = async (inputToAnalyze) => {
@@ -35,7 +225,7 @@ export default function SecurityAnalysisPage() {
     setAnalysisError(null)
     try {
       const data = await fetchSecurityAnalysis(target)
-      setAnalysisData(data)
+      setAnalysisData(normalizeAnalysisPayload(data, target))
     } catch (err) {
       setAnalysisError(err.message || 'Failed to inspect security parameters for the target host.')
     } finally {
@@ -48,8 +238,8 @@ export default function SecurityAnalysisPage() {
     handleAnalyze(presetDomain)
   }
 
-  const cert = analysisData.certificate
-  const dns = analysisData.dns
+  const cert = analysisData?.certificate
+  const dns = analysisData?.dns
 
   return (
     <div className="min-h-screen bg-[#080F1E] light:bg-[#F5F7FC] text-[#F1F5FF] light:text-[#172033] transition-colors duration-200 flex">
@@ -93,6 +283,14 @@ export default function SecurityAnalysisPage() {
               {isApiMode() ? 'API Node' : 'Mock Heuristics'}
             </span>
           </div>
+
+          {/* Backend Gateway Architecture Notice */}
+          {analysisData?.backendNotice && (
+            <div className="p-3 rounded-md bg-blue-500/10 border border-blue-500/30 text-blue-300 text-xs flex items-start space-x-2 font-mono">
+              <Shield className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
+              <span>{analysisData.backendNotice}</span>
+            </div>
+          )}
 
           {/* Analysis Error Banner with Retry */}
           {analysisError && (
@@ -191,7 +389,7 @@ export default function SecurityAnalysisPage() {
               </p>
             </div>
           ) : (
-            <div key={analysisData.domain + '-' + rawId} className="space-y-5">
+            <div key={(analysisData?.domain || 'unknown') + '-' + rawId} className="space-y-5">
               {/* 1. SSL/TLS CERTIFICATE CARD */}
               <div className="cyber-card p-5 space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#24344B] light:border-[#E2E8F0] pb-3">
@@ -204,66 +402,80 @@ export default function SecurityAnalysisPage() {
                         1. SSL/TLS Certificate Posture
                       </h2>
                       <span className="text-[11px] font-mono text-[#9EACC2] light:text-[#64748B]">
-                        Host: {analysisData.domain}
+                        Host: {analysisData?.domain || targetInput}
                       </span>
                     </div>
                   </div>
 
                   {/* Validity Badge */}
-                  <div className="flex items-center space-x-2 font-mono">
-                    <span
-                      className={`inline-flex items-center space-x-1 px-2.5 py-0.5 rounded text-[11px] font-bold uppercase border ${
-                        cert.validityBadge.color === 'emerald'
-                          ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-                          : cert.validityBadge.color === 'amber'
-                          ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
-                          : 'bg-rose-500/10 text-rose-400 border-rose-500/30'
-                      }`}
-                    >
-                      {cert.validityBadge.color === 'emerald' ? (
-                        <CheckCircle2 className="w-3 h-3" />
-                      ) : (
-                        <XCircle className="w-3 h-3" />
-                      )}
-                      <span>{cert.validityBadge.label}</span>
-                    </span>
+                  {cert ? (
+                    <div className="flex items-center space-x-2 font-mono">
+                      <span
+                        className={`inline-flex items-center space-x-1 px-2.5 py-0.5 rounded text-[11px] font-bold uppercase border ${
+                          cert?.validityBadge?.color === 'emerald'
+                            ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                            : cert?.validityBadge?.color === 'amber'
+                            ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+                            : 'bg-rose-500/10 text-rose-400 border-rose-500/30'
+                        }`}
+                      >
+                        {cert?.validityBadge?.color === 'emerald' ? (
+                          <CheckCircle2 className="w-3 h-3" />
+                        ) : (
+                          <XCircle className="w-3 h-3" />
+                        )}
+                        <span>{cert?.validityBadge?.label || cert?.status || 'Active'}</span>
+                      </span>
 
-                    <span className="px-2 py-0.5 rounded bg-[#0D1728] light:bg-slate-100 text-[#287FE9] text-[11px] font-bold border border-[#24344B] light:border-[#E2E8F0]">
-                      Days Remaining: {cert.daysRemaining}
+                      <span className="px-2 py-0.5 rounded bg-[#0D1728] light:bg-slate-100 text-[#287FE9] text-[11px] font-bold border border-[#24344B] light:border-[#E2E8F0]">
+                        Days Remaining: {cert?.daysRemaining ?? 'N/A'}
+                      </span>
+                    </div>
+                  ) : (
+                    <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase border bg-amber-500/10 text-amber-400 border-amber-500/25">
+                      No Certificate Telemetry
                     </span>
-                  </div>
+                  )}
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs font-mono">
-                  <div className="p-3 rounded bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0]">
-                    <span className="text-[10px] uppercase text-[#9EACC2] block mb-1">Status</span>
-                    <span className="font-bold text-[#F1F5FF] light:text-[#172033]">{cert.status}</span>
+                {cert ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs font-mono">
+                    <div className="p-3 rounded bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0]">
+                      <span className="text-[10px] uppercase text-[#9EACC2] block mb-1">Status</span>
+                      <span className="font-bold text-[#F1F5FF] light:text-[#172033]">{cert.status || 'Active'}</span>
+                    </div>
+                    <div className="p-3 rounded bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0]">
+                      <span className="text-[10px] uppercase text-[#9EACC2] block mb-1">Certificate Issuer</span>
+                      <span className="font-bold text-[#F1F5FF] light:text-[#172033] truncate block" title={cert.issuer}>
+                        {cert.issuer || 'Information Not Provided'}
+                      </span>
+                    </div>
+                    <div className="p-3 rounded bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0]">
+                      <span className="text-[10px] uppercase text-[#9EACC2] block mb-1">Subject Common Name</span>
+                      <span className="font-bold text-[#F1F5FF] light:text-[#172033] truncate block" title={cert.subject}>
+                        {cert.subject || `CN=${analysisData?.domain}`}
+                      </span>
+                    </div>
+                    <div className="p-3 rounded bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0]">
+                      <span className="text-[10px] uppercase text-[#9EACC2] block mb-1">Valid From</span>
+                      <span className="text-[#F1F5FF] light:text-[#172033]">{cert.validFrom || 'N/A'}</span>
+                    </div>
+                    <div className="p-3 rounded bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0]">
+                      <span className="text-[10px] uppercase text-[#9EACC2] block mb-1">Expiry Horizon</span>
+                      <span className="text-[#F1F5FF] light:text-[#172033]">{cert.expiryDate || 'N/A'}</span>
+                    </div>
+                    <div className="p-3 rounded bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0]">
+                      <span className="text-[10px] uppercase text-[#9EACC2] block mb-1">Key Length & Hash</span>
+                      <span className="text-[#F1F5FF] light:text-[#172033]">
+                        {cert.keySize || 'N/A'} {cert.signatureAlgorithm ? `/ ${cert.signatureAlgorithm}` : ''}
+                      </span>
+                    </div>
                   </div>
-                  <div className="p-3 rounded bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0]">
-                    <span className="text-[10px] uppercase text-[#9EACC2] block mb-1">Certificate Issuer</span>
-                    <span className="font-bold text-[#F1F5FF] light:text-[#172033] truncate block" title={cert.issuer}>
-                      {cert.issuer}
-                    </span>
+                ) : (
+                  <div className="p-4 rounded-md bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0] text-xs font-mono text-[#9EACC2]">
+                    No cryptographic TLS/SSL certificate parameters detected or reported for this target host.
                   </div>
-                  <div className="p-3 rounded bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0]">
-                    <span className="text-[10px] uppercase text-[#9EACC2] block mb-1">Subject Common Name</span>
-                    <span className="font-bold text-[#F1F5FF] light:text-[#172033] truncate block" title={cert.subject}>
-                      {cert.subject}
-                    </span>
-                  </div>
-                  <div className="p-3 rounded bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0]">
-                    <span className="text-[10px] uppercase text-[#9EACC2] block mb-1">Valid From</span>
-                    <span className="text-[#F1F5FF] light:text-[#172033]">{cert.validFrom}</span>
-                  </div>
-                  <div className="p-3 rounded bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0]">
-                    <span className="text-[10px] uppercase text-[#9EACC2] block mb-1">Expiry Horizon</span>
-                    <span className="text-[#F1F5FF] light:text-[#172033]">{cert.expiryDate}</span>
-                  </div>
-                  <div className="p-3 rounded bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0]">
-                    <span className="text-[10px] uppercase text-[#9EACC2] block mb-1">Key Length & Hash</span>
-                    <span className="text-[#F1F5FF] light:text-[#172033]">{cert.keySize} / {cert.signatureAlgorithm}</span>
-                  </div>
-                </div>
+                )}
               </div>
 
               {/* 2. HTTP SECURITY HEADERS */}
@@ -282,44 +494,57 @@ export default function SecurityAnalysisPage() {
                       </span>
                     </div>
                   </div>
+                  <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase border bg-[#0D1728] light:bg-slate-100 border-[#24344B] text-[#9EACC2]">
+                    Headers Audited: {analysisData?.httpHeaders?.length || 0}
+                  </span>
                 </div>
 
-                <div className="space-y-2 font-mono text-xs">
-                  {analysisData.httpHeaders.map((hdr, idx) => {
-                    const isGood = hdr.status === 'GOOD'
-                    const isWarn = hdr.status === 'WARN'
+                {analysisData?.httpHeaders && analysisData.httpHeaders.length > 0 ? (
+                  <div className="space-y-2 font-mono text-xs">
+                    {analysisData.httpHeaders.map((hdr, idx) => {
+                      const isGood = hdr?.status === 'GOOD' || hdr?.status === 'PASS'
+                      const isWarn = hdr?.status === 'WARN'
 
-                    return (
-                      <div
-                        key={idx}
-                        className="p-3 rounded-md bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0] space-y-1.5"
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className="font-bold text-xs text-[#F1F5FF] light:text-[#172033]">
-                            {hdr.name}
-                          </span>
-                          <span
-                            className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${
-                              isGood
-                                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/25'
-                                : isWarn
-                                ? 'bg-amber-500/10 text-amber-400 border-amber-500/25'
-                                : 'bg-rose-500/10 text-rose-400 border-rose-500/25'
-                            }`}
-                          >
-                            {hdr.statusBadge}
-                          </span>
+                      return (
+                        <div
+                          key={idx}
+                          className="p-3 rounded-md bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0] space-y-1.5"
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="font-bold text-xs text-[#F1F5FF] light:text-[#172033]">
+                              {hdr?.name || `Header #${idx + 1}`}
+                            </span>
+                            <span
+                              className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${
+                                isGood
+                                  ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/25'
+                                  : isWarn
+                                  ? 'bg-amber-500/10 text-amber-400 border-amber-500/25'
+                                  : 'bg-rose-500/10 text-rose-400 border-rose-500/25'
+                              }`}
+                            >
+                              {hdr?.statusBadge || hdr?.status || 'OBSERVED'}
+                            </span>
+                          </div>
+                          {hdr?.explanation && (
+                            <p className="text-[11px] text-[#9EACC2] light:text-[#64748B] leading-relaxed">
+                              {hdr.explanation}
+                            </p>
+                          )}
+                          {hdr?.recommendation && (
+                            <div className="text-[11px] text-[#287FE9] pt-1">
+                              <span className="font-semibold">Remediation:</span> {hdr.recommendation}
+                            </div>
+                          )}
                         </div>
-                        <p className="text-[11px] text-[#9EACC2] light:text-[#64748B] leading-relaxed">
-                          {hdr.explanation}
-                        </p>
-                        <div className="text-[11px] text-[#287FE9] pt-1">
-                          <span className="font-semibold">Remediation:</span> {hdr.recommendation}
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
+                      )
+                    })}
+                  </div>
+                ) : (
+                  <div className="p-4 rounded-md bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0] text-xs font-mono text-[#9EACC2]">
+                    No HTTP security response header records (HSTS, CSP, X-Frame-Options) were returned for this target.
+                  </div>
+                )}
               </div>
 
               {/* 3. DNS INFORMATION */}
@@ -338,38 +563,97 @@ export default function SecurityAnalysisPage() {
                       </span>
                     </div>
                   </div>
+
+                  {/* DNSSEC Status Badge with Safe Fallback */}
                   <span
                     className={`px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase border ${
-                      dns.securityStatus.status === 'SECURE'
+                      dns?.securityStatus?.status === 'SECURE'
                         ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/25'
-                        : 'bg-amber-500/10 text-amber-400 border-amber-500/25'
+                        : dns?.securityStatus?.isEvaluated
+                        ? 'bg-amber-500/10 text-amber-400 border-amber-500/25'
+                        : 'bg-[#111E32] text-[#9EACC2] border-[#24344B]'
                     }`}
                   >
-                    DNSSEC: {dns.securityStatus.dnssec ? 'Active' : 'Disabled'}
+                    DNSSEC: {dns?.securityStatus?.label || 'Not Evaluated'}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
-                  <div className="p-3 rounded bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0]">
-                    <span className="text-[10px] uppercase text-[#9EACC2] block mb-1">A Record (IPv4)</span>
-                    <span className="text-[#F1F5FF] light:text-[#172033] font-bold block">{dns.aRecord.join(', ')}</span>
+                {dns ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
+                    <div className="p-3 rounded bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0]">
+                      <span className="text-[10px] uppercase text-[#9EACC2] block mb-1">A Record (IPv4)</span>
+                      <span className="text-[#F1F5FF] light:text-[#172033] font-bold block truncate">
+                        {dns.aRecord?.length > 0 ? dns.aRecord.join(', ') : 'Not Configured / None'}
+                      </span>
+                    </div>
+                    <div className="p-3 rounded bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0]">
+                      <span className="text-[10px] uppercase text-[#9EACC2] block mb-1">AAAA Record (IPv6)</span>
+                      <span className="text-[#F1F5FF] light:text-[#172033] font-bold block truncate">
+                        {dns.aaaaRecord?.length > 0 ? dns.aaaaRecord.join(', ') : 'Not Configured / None'}
+                      </span>
+                    </div>
+                    <div className="p-3 rounded bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0]">
+                      <span className="text-[10px] uppercase text-[#9EACC2] block mb-1">MX Records (Mail Exchanger)</span>
+                      <span className="text-[#F1F5FF] light:text-[#172033] block truncate">
+                        {dns.mxRecord?.length > 0 ? dns.mxRecord.join(', ') : 'Not Configured / None'}
+                      </span>
+                    </div>
+                    <div className="p-3 rounded bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0]">
+                      <span className="text-[10px] uppercase text-[#9EACC2] block mb-1">Authoritative NS (Nameservers)</span>
+                      <span className="text-[#F1F5FF] light:text-[#172033] block truncate">
+                        {dns.nsRecord?.length > 0 ? dns.nsRecord.join(', ') : 'Not Configured / None'}
+                      </span>
+                    </div>
                   </div>
-                  <div className="p-3 rounded bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0]">
-                    <span className="text-[10px] uppercase text-[#9EACC2] block mb-1">AAAA Record (IPv6)</span>
-                    <span className="text-[#F1F5FF] light:text-[#172033] font-bold block truncate">{dns.aaaaRecord.join(', ')}</span>
+                ) : (
+                  <div className="p-4 rounded-md bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0] text-xs font-mono text-[#9EACC2]">
+                    No DNS zone resource records were returned for this target host.
                   </div>
-                  <div className="p-3 rounded bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0]">
-                    <span className="text-[10px] uppercase text-[#9EACC2] block mb-1">MX Records (Mail Exchanger)</span>
-                    <span className="text-[#F1F5FF] light:text-[#172033] block truncate">{dns.mxRecord.join(', ')}</span>
-                  </div>
-                  <div className="p-3 rounded bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0]">
-                    <span className="text-[10px] uppercase text-[#9EACC2] block mb-1">Authoritative NS (Nameservers)</span>
-                    <span className="text-[#F1F5FF] light:text-[#172033] block truncate">{dns.nsRecord.join(', ')}</span>
-                  </div>
-                </div>
+                )}
               </div>
 
-              {/* 4. SECURITY FINDINGS */}
+              {/* 4. REDIRECT CHAIN & TRAJECTORY */}
+              <div className="cyber-card p-5 space-y-4">
+                <div className="flex items-center justify-between border-b border-[#24344B] light:border-[#E2E8F0] pb-3">
+                  <div className="flex items-center space-x-2.5">
+                    <div className="w-8 h-8 rounded-md bg-[#0D1728] border border-[#24344B] text-[#287FE9] flex items-center justify-center">
+                      <ArrowRight className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h2 className="font-bold text-xs uppercase tracking-wider text-[#F1F5FF] light:text-[#172033]">
+                        4. Redirect Chain & Hop Trajectory
+                      </h2>
+                      <span className="text-[11px] font-mono text-[#9EACC2] light:text-[#64748B]">
+                        HTTP Status Hop Trajectory
+                      </span>
+                    </div>
+                  </div>
+                  <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase border bg-[#0D1728] light:bg-slate-100 border-[#24344B] text-[#9EACC2]">
+                    Hops: {analysisData?.redirects?.length || 0}
+                  </span>
+                </div>
+
+                {analysisData?.redirects && analysisData.redirects.length > 0 ? (
+                  <div className="space-y-2 text-xs font-mono">
+                    {analysisData.redirects.map((hop, idx) => (
+                      <div key={idx} className="p-2.5 rounded bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0] flex items-center justify-between">
+                        <span className="text-[#F1F5FF] light:text-[#172033] truncate max-w-md">
+                          {typeof hop === 'string' ? hop : hop.url || `Hop ${idx + 1}`}
+                        </span>
+                        <span className="text-[#287FE9] font-bold">
+                          {typeof hop === 'object' && hop.statusCode ? hop.statusCode : '301 / 302'}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-3 rounded bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0] text-xs font-mono text-[#9EACC2]">
+                    Direct connection established (0 intermediate hops) or redirect trajectory was not reported by host probes.
+                  </div>
+                )}
+              </div>
+
+              {/* 5. SECURITY FINDINGS */}
               <div className="cyber-card p-5 space-y-4">
                 <div className="flex items-center justify-between border-b border-[#24344B] light:border-[#E2E8F0] pb-3">
                   <div className="flex items-center space-x-2.5">
@@ -378,46 +662,59 @@ export default function SecurityAnalysisPage() {
                     </div>
                     <div>
                       <h2 className="font-bold text-xs uppercase tracking-wider text-[#F1F5FF] light:text-[#172033]">
-                        4. Security Findings & Technical Recommendations
+                        5. Security Findings & Technical Recommendations
                       </h2>
                       <span className="text-[11px] font-mono text-[#9EACC2] light:text-[#64748B]">
                         Prioritized Defensive Remediation Matrix
                       </span>
                     </div>
                   </div>
+                  <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase border bg-[#0D1728] light:bg-slate-100 border-[#24344B] text-[#9EACC2]">
+                    Findings: {analysisData?.findings?.length || 0}
+                  </span>
                 </div>
 
-                <div className="space-y-2.5 font-mono text-xs">
-                  {analysisData.findings.map((finding) => (
-                    <div
-                      key={finding.id}
-                      className="p-3.5 rounded-md bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0] space-y-1.5"
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-xs text-[#F1F5FF] light:text-[#172033]">
-                          {finding.title}
-                        </span>
-                        <span
-                          className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${
-                            finding.severity === 'HIGH'
-                              ? 'bg-rose-500/10 text-rose-400 border-rose-500/25'
-                              : finding.severity === 'MEDIUM'
-                              ? 'bg-amber-500/10 text-amber-400 border-amber-500/25'
-                              : 'bg-[#287FE9]/10 text-[#55B7FF] border-[#287FE9]/25'
-                          }`}
-                        >
-                          {finding.severity} SEVERITY
-                        </span>
+                {analysisData?.findings && analysisData.findings.length > 0 ? (
+                  <div className="space-y-2.5 font-mono text-xs">
+                    {analysisData.findings.map((finding, idx) => (
+                      <div
+                        key={finding?.id || idx}
+                        className="p-3.5 rounded-md bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0] space-y-1.5"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-xs text-[#F1F5FF] light:text-[#172033]">
+                            {finding?.title || 'Security Finding'}
+                          </span>
+                          <span
+                            className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${
+                              finding?.severity === 'CRITICAL' || finding?.severity === 'HIGH'
+                                ? 'bg-rose-500/10 text-rose-400 border-rose-500/25'
+                                : finding?.severity === 'MEDIUM' || finding?.severity === 'WARN'
+                                ? 'bg-amber-500/10 text-amber-400 border-amber-500/25'
+                                : 'bg-[#287FE9]/10 text-[#55B7FF] border-[#287FE9]/25'
+                            }`}
+                          >
+                            {finding?.severity || 'INFORMATIONAL'} SEVERITY
+                          </span>
+                        </div>
+                        {finding?.description && (
+                          <p className="text-[11px] text-[#9EACC2] light:text-[#64748B] leading-relaxed">
+                            {finding.description}
+                          </p>
+                        )}
+                        {finding?.recommendedAction && (
+                          <div className="text-[11px] text-emerald-400 light:text-emerald-700 pt-1">
+                            <span className="font-semibold">Recommended Fix:</span> {finding.recommendedAction}
+                          </div>
+                        )}
                       </div>
-                      <p className="text-[11px] text-[#9EACC2] light:text-[#64748B] leading-relaxed">
-                        {finding.description}
-                      </p>
-                      <div className="text-[11px] text-emerald-400 light:text-emerald-700 pt-1">
-                        <span className="font-semibold">Recommended Fix:</span> {finding.recommendedAction}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-4 rounded-md bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0] text-xs font-mono text-[#9EACC2]">
+                    No active vulnerabilities, TLS anomalies, or critical findings detected for this host.
+                  </div>
+                )}
               </div>
             </div>
           )}

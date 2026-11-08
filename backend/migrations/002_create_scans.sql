@@ -1,4 +1,4 @@
-CREATE TABLE scans (
+CREATE TABLE IF NOT EXISTS scans (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 
     user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -27,8 +27,8 @@ CREATE TABLE scans (
         CHECK (risk_score IS NULL OR risk_score BETWEEN 0 AND 100)
 );
 
-CREATE INDEX idx_scans_user_created
+CREATE INDEX IF NOT EXISTS idx_scans_user_created
 ON scans(user_id, created_at DESC);
 
-CREATE INDEX idx_scans_status
+CREATE INDEX IF NOT EXISTS idx_scans_status
 ON scans(status);

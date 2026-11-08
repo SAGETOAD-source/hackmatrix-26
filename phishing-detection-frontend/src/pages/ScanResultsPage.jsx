@@ -105,8 +105,10 @@ export default function ScanResultsPage() {
     URL.revokeObjectURL(url)
   }
 
-  const isPhish = scanResult?.prediction === 'phishing'
-  const isSuspicious = scanResult?.prediction === 'suspicious'
+  const verdictUpper = (scanResult?.verdict || scanResult?.prediction || '').toUpperCase()
+  const isPhish = verdictUpper === 'PHISHING' || (scanResult?.riskScore >= 60)
+  const isSuspicious = !isPhish && (verdictUpper === 'SUSPICIOUS' || (scanResult?.riskScore >= 30 && scanResult?.riskScore < 60))
+  const isPending = scanResult?.status === 'pending' || scanResult?.isPending
 
   return (
     <div className="min-h-screen bg-[#080F1E] light:bg-[#F5F7FC] text-[#F1F5FF] light:text-[#172033] transition-colors duration-200 flex">
@@ -212,7 +214,9 @@ export default function ScanResultsPage() {
               {/* Verdict & Score Banner (Clean, high-contrast, structured) */}
               <div
                 className={`cyber-card p-5 sm:p-6 border-l-4 ${
-                  isPhish
+                  isPending
+                    ? 'border-l-blue-500'
+                    : isPhish
                     ? 'border-l-rose-500'
                     : isSuspicious
                     ? 'border-l-amber-500'
@@ -224,14 +228,18 @@ export default function ScanResultsPage() {
                   <div className="flex items-start space-x-4 min-w-0">
                     <div
                       className={`w-12 h-12 rounded-lg flex items-center justify-center shrink-0 ${
-                        isPhish
+                        isPending
+                          ? 'bg-blue-500/10 text-blue-400 border border-blue-500/30'
+                          : isPhish
                           ? 'bg-rose-500/10 text-rose-400 border border-rose-500/30'
                           : isSuspicious
                           ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30'
                           : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
                       }`}
                     >
-                      {isPhish ? (
+                      {isPending ? (
+                        <RefreshCw className="w-6 h-6 animate-spin" />
+                      ) : isPhish ? (
                         <ShieldAlert className="w-6 h-6" />
                       ) : isSuspicious ? (
                         <AlertTriangle className="w-6 h-6" />
@@ -244,14 +252,16 @@ export default function ScanResultsPage() {
                       <div className="flex flex-wrap items-center gap-2 mb-1">
                         <span
                           className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase ${
-                            isPhish
+                            isPending
+                              ? 'bg-blue-500/10 text-blue-400 border border-blue-500/30'
+                              : isPhish
                               ? 'bg-rose-500/10 text-rose-400 border border-rose-500/30'
                               : isSuspicious
                               ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30'
                               : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'
                           }`}
                         >
-                          {scanResult.riskLevel} CLASSIFICATION
+                          {isPending ? 'PROCESSING TICKET' : `${scanResult.verdict || scanResult.prediction} VERDICT`}
                         </span>
                         <span className="text-[11px] font-mono text-[#9EACC2] light:text-[#64748B]">
                           Model Confidence: {Math.round((scanResult.confidence || 0.95) * 100)}%

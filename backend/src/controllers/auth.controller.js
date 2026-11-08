@@ -4,6 +4,43 @@ const {
   loginUser,
 } = require("../services/auth.service");
 
+function formatErrorDetails(error) {
+  if (!error) return "Unknown error";
+
+  // AggregateError from Node net.afterConnectMultiple
+  if (Array.isArray(error.errors) && error.errors.length > 0) {
+    const subMessages = error.errors.map(e => e.message || e.code || String(e)).join(", ");
+    return `${error.name || "AggregateError"}: ${subMessages}`;
+  }
+
+  if (error.message) {
+    let msg = error.message;
+    if (error.code) msg += ` (Code: ${error.code})`;
+    if (error.detail) msg += ` (Detail: ${error.detail})`;
+    return msg;
+  }
+
+  return String(error);
+}
+
+function isDatabaseConnectionError(error) {
+  const code = error?.code;
+  const msg = error?.message || "";
+  const subErrors = Array.isArray(error?.errors) ? error.errors : [];
+
+  const check = (c, m) =>
+    c === "ECONNREFUSED" ||
+    c === "ETIMEDOUT" ||
+    c === "EACCES" ||
+    c === "ENOTFOUND" ||
+    c === "28P01" || // auth failed
+    c === "3D000" || // database does not exist
+    /connection|connect|database|ECONNREFUSED/i.test(m);
+
+  if (check(code, msg)) return true;
+  return subErrors.some(sub => check(sub?.code, sub?.message));
+}
+
 async function register(req, res) {
   try {
     const user = await registerUser(req.body);
@@ -14,7 +51,11 @@ async function register(req, res) {
       data: { user },
     });
   } catch (error) {
-    console.error("Registration error:", error.message);
+    const formattedMsg = formatErrorDetails(error);
+    console.error("Registration error:", formattedMsg);
+    if (process.env.NODE_ENV !== "production" && error.stack) {
+      console.error(error.stack);
+    }
 
     if (error.code === "23505") {
       return res.status(409).json({
@@ -27,6 +68,13 @@ async function register(req, res) {
       return res.status(400).json({
         success: false,
         message: error.message,
+      });
+    }
+
+    if (isDatabaseConnectionError(error)) {
+      return res.status(503).json({
+        success: false,
+        message: "Database service unavailable. Ensure PostgreSQL is running on port " + (process.env.DB_PORT || 5432),
       });
     }
 
@@ -61,7 +109,18 @@ async function login(req, res) {
       },
     });
   } catch (error) {
-    console.error("Login error:", error.message);
+    const formattedMsg = formatErrorDetails(error);
+    console.error("Login error:", formattedMsg);
+    if (process.env.NODE_ENV !== "production" && error.stack) {
+      console.error(error.stack);
+    }
+
+    if (isDatabaseConnectionError(error)) {
+      return res.status(503).json({
+        success: false,
+        message: "Database service unavailable. Ensure PostgreSQL is running on port " + (process.env.DB_PORT || 5432),
+      });
+    }
 
     return res.status(500).json({
       success: false,
@@ -69,6 +128,7 @@ async function login(req, res) {
     });
   }
 }
+
 async function getMe(req, res) {
   try {
     const pool = require("../config/database");
@@ -96,7 +156,18 @@ async function getMe(req, res) {
       },
     });
   } catch (error) {
-    console.error("Get profile error:", error.message);
+    const formattedMsg = formatErrorDetails(error);
+    console.error("Get profile error:", formattedMsg);
+    if (process.env.NODE_ENV !== "production" && error.stack) {
+      console.error(error.stack);
+    }
+
+    if (isDatabaseConnectionError(error)) {
+      return res.status(503).json({
+        success: false,
+        message: "Database service unavailable. Ensure PostgreSQL is running on port " + (process.env.DB_PORT || 5432),
+      });
+    }
 
     return res.status(500).json({
       success: false,
@@ -104,8 +175,11 @@ async function getMe(req, res) {
     });
   }
 }
+
 module.exports = {
   register,
   login,
   getMe,
+  formatErrorDetails,
+  isDatabaseConnectionError,
 };

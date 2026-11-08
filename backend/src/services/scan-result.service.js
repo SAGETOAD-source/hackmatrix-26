@@ -1,12 +1,17 @@
 const pool = require("../config/database");
 
 async function saveScanResult(scanId, userId, result) {
-  const {
-    riskScore,
-    riskLevel,
-    verdict,
-    analysis
-  } = result;
+  const riskScore = typeof result?.riskScore === "number"
+    ? result.riskScore
+    : typeof result?.risk_score === "number"
+    ? result.risk_score
+    : null;
+
+  const riskLevel = result?.riskLevel || result?.risk_level;
+  const verdict = result?.verdict || result?.prediction;
+  const analysis = result?.analysis && typeof result?.analysis === "object"
+    ? result.analysis
+    : (result && typeof result === "object" ? result : {});
 
   if (
     !Number.isInteger(riskScore) ||

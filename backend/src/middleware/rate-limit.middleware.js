@@ -1,9 +1,11 @@
 
 const { rateLimit } = require("express-rate-limit");
 
+const isDev = process.env.NODE_ENV === "development" || process.env.NODE_ENV === "test";
+
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  limit: 5,
+  limit: isDev ? 100 : 5,
   standardHeaders: "draft-8",
   legacyHeaders: false,
   message: {
@@ -14,7 +16,7 @@ const loginLimiter = rateLimit({
 
 const registerLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  limit: 5,
+  limit: isDev ? 100 : 5,
   standardHeaders: "draft-8",
   legacyHeaders: false,
   message: {

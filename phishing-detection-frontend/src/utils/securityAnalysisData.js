@@ -317,6 +317,19 @@ export function getSecurityAnalysis(targetInput) {
     ]
   }
 
+  // Ensure both plural and singular aliases and standard securityStatus structure exist
+  if (dns) {
+    dns.aRecord = dns.aRecords || []
+    dns.aaaaRecord = dns.aaaaRecords || []
+    dns.mxRecord = dns.mxRecords || []
+    dns.nsRecord = dns.nsRecords || []
+    dns.securityStatus = {
+      status: dns.dnsSecurityStatus?.dnssecStatus === 'PASS' ? 'SECURE' : 'INSECURE',
+      dnssec: dns.dnsSecurityStatus?.dnssecStatus === 'PASS',
+      details: dns.dnsSecurityStatus?.dnssec || 'Not Configured',
+    }
+  }
+
   return {
     domain,
     cleanInput,

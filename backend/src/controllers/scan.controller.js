@@ -1,4 +1,6 @@
 const pool = require("../config/database");
+const { analyzeUrl } = require("../services/analysis.service");
+const { saveScanResult, markScanFailed } = require("../services/scan-result.service");
 
 async function createScan(req, res) {
   try {
@@ -14,10 +16,27 @@ async function createScan(req, res) {
       [userId, url, normalizedUrl]
     );
 
+    const scanRecord = result.rows[0];
+
+    // Asynchronously dispatch analysis to the ML/AI analysis pipeline
+    setImmediate(async () => {
+      try {
+        const analysisData = await analyzeUrl(normalizedUrl);
+        await saveScanResult(scanRecord.id, userId, analysisData);
+      } catch (err) {
+        console.error(`Analysis failed for scan #${scanRecord.id}:`, err.message);
+        try {
+          await markScanFailed(scanRecord.id, userId, err.message);
+        } catch (failErr) {
+          console.error(`Failed to mark scan #${scanRecord.id} as failed:`, failErr.message);
+        }
+      }
+    });
+
     return res.status(201).json({
       success: true,
       message: "Scan submitted successfully",
-      data: { scan: result.rows[0] },
+      data: { scan: scanRecord },
     });
   } catch (error) {
     console.error("Create scan error:", error.message);

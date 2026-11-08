@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Download,
@@ -75,6 +75,20 @@ export default function ScanHistoryPage() {
     }
   }
 
+  useEffect(() => {
+    let isMounted = true
+    fetchHistory()
+      .then((data) => {
+        if (isMounted && data) setScans(data)
+      })
+      .catch((err) => {
+        if (isMounted) setHistoryError(err.message || 'Failed to retrieve scan history from server.')
+      })
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
   // Handle URL Copy
   const handleCopyUrl = (id, url) => {
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -88,8 +102,16 @@ export default function ScanHistoryPage() {
   // Handle Deleting Individual Scan
   const handleDeleteItem = async (id) => {
     try {
-      const updated = await removeHistoryItem(id)
-      setScans(updated)
+      const res = await removeHistoryItem(id)
+      if (res && res.updatedList) {
+        setScans(res.updatedList)
+        if (!res.backendSupported) {
+          setHistoryError(res.message)
+          setTimeout(() => setHistoryError(null), 4000)
+        }
+      } else if (Array.isArray(res)) {
+        setScans(res)
+      }
     } catch (err) {
       setHistoryError(err.message || 'Failed to remove scan record.')
     }
@@ -98,9 +120,13 @@ export default function ScanHistoryPage() {
   // Handle Clear All
   const handleConfirmClear = async () => {
     try {
-      await clearAllHistory()
+      const res = await clearAllHistory()
       setScans([])
       setShowClearModal(false)
+      if (res && !res.backendSupported) {
+        setHistoryError(res.message)
+        setTimeout(() => setHistoryError(null), 4000)
+      }
     } catch (err) {
       setHistoryError(err.message || 'Failed to clear scan history.')
     }

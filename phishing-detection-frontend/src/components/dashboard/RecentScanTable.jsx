@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ShieldAlert, CheckCircle, AlertTriangle, Eye, Shield } from 'lucide-react'
 import { RECENT_SCANS } from '../../data/mockData'
 import { getScanHistory } from '../../utils/scanStorage'
+import { fetchHistory } from '../../services/historyService'
 
 const BADGE_CONFIG = {
   CRITICAL: {
@@ -29,10 +30,22 @@ const BADGE_CONFIG = {
 
 export default function RecentScanTable({ searchQuery = '' }) {
   const [filter, setFilter] = useState('ALL')
-  const [scans] = useState(() => {
+  const [scans, setScans] = useState(() => {
     const stored = getScanHistory()
     return stored && stored.length > 0 ? stored : RECENT_SCANS
   })
+
+  useEffect(() => {
+    let isMounted = true
+    fetchHistory().then((data) => {
+      if (isMounted && Array.isArray(data) && data.length > 0) {
+        setScans(data)
+      }
+    }).catch(() => {})
+    return () => {
+      isMounted = false
+    }
+  }, [])
 
   const filteredScans = scans.filter((scan) => {
     const matchesFilter =

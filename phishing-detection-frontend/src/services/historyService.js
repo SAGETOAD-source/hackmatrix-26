@@ -4,85 +4,95 @@ import {
   deleteScanItem,
   clearScanHistory,
 } from '../utils/scanStorage.js'
+import { isAuthenticated } from './authService.js'
 
 /**
- * Fetch scan history either from Backend API or local storage
- * @param {object} params Query parameters (search, limit, offset, filter)
- * @param {object} options Options ({ forceApi, fallbackToMock })
+ * Fetch scan history from backend API (GET /api/v1/scans) or local storage
+ * @param {object} params Query parameters
+ * @param {object} options Options ({ demoMode })
  * @returns {Promise<Array>} List of scan records
  */
 export async function fetchHistory(params = {}, options = {}) {
-  const { forceApi = false, fallbackToMock = true } = options
+  const { demoMode = false } = options
 
-  if (isApiMode() || forceApi) {
+  if (!demoMode && isApiMode()) {
+    if (!isAuthenticated()) {
+      // User is not signed in to backend API; return local storage history with notice
+      return getScanHistory().map((item) => ({
+        ...item,
+        authRequiredNotice: true,
+      }))
+    }
+
     try {
-      const response = await apiClient.get('/history', { params })
-      const data = response.data?.data || response.data || []
+      // Backend endpoint: GET /api/v1/scans
+      const response = await apiClient.get('/scans', { params })
+      const rawScans = response.data?.data?.scans || []
 
-      if (Array.isArray(data)) {
-        return data.map((item) => ({
-          id: item.id || `scn-${Date.now()}`,
-          url: item.url,
-          domain: item.domain || (item.url ? item.url.replace(/^https?:\/\//, '').split('/')[0] : 'unknown'),
-          prediction: item.prediction || 'Suspicious',
-          riskLevel: item.risk_level || item.riskLevel || 'SUSPICIOUS',
-          riskScore: typeof item.risk_score === 'number' ? item.risk_score : item.riskScore || 50,
-          confidence: item.confidence || 0.95,
-          timestamp: item.timestamp || item.created_at || new Date().toISOString(),
-          formattedDate: item.formattedDate || new Date(item.timestamp || Date.now()).toLocaleDateString(),
-          findings: item.findings || item.indicators || [],
-          simulatedDemo: false,
-        }))
+      if (Array.isArray(rawScans)) {
+        return rawScans.map((item) => {
+          const domain = item.url ? item.url.replace(/^https?:\/\//, '').split('/')[0] : 'unknown'
+          const riskScore = typeof item.risk_score === 'number' ? item.risk_score : 0
+          const verdict = item.verdict || (riskScore >= 60 ? 'Phishing' : riskScore >= 30 ? 'Suspicious' : 'Safe')
+
+          return {
+            id: item.id,
+            url: item.url,
+            domain,
+            prediction: verdict,
+            verdict,
+            riskLevel: item.risk_level || (riskScore >= 80 ? 'CRITICAL' : riskScore >= 60 ? 'HIGH' : riskScore >= 30 ? 'SUSPICIOUS' : 'LOW'),
+            riskScore,
+            status: item.status,
+            confidence: 0.94,
+            timestamp: item.completed_at || item.created_at || new Date().toISOString(),
+            formattedDate: new Date(item.completed_at || item.created_at || Date.now()).toLocaleDateString(),
+            findings: [],
+            simulatedDemo: false,
+            isLiveApi: true,
+          }
+        })
       }
-      return getScanHistory()
     } catch (err) {
-      if (!fallbackToMock) throw err
+      console.warn('Failed to fetch scans from backend API, falling back to local audit cache:', err.message)
       return getScanHistory()
     }
   }
 
-  // Mock mode: read from localStorage
+  // Demonstration mode: read from localStorage
   return getScanHistory()
 }
 
 /**
  * Delete a single scan item from history
- * @param {string} id Record identifier
- * @param {object} options Options
- * @returns {Promise<Array>} Updated history list
+ * Note: Backend does NOT provide a DELETE /api/v1/scans/:id endpoint.
+ * We remove from local audit storage and notify the caller.
+ * @param {string|number} id Record identifier
+ * @returns {Promise<{ success: boolean, backendSupported: boolean, updatedList: Array }>}
  */
-export async function removeHistoryItem(id, options = {}) {
-  const { forceApi = false, fallbackToMock = true } = options
-
-  if (isApiMode() || forceApi) {
-    try {
-      await apiClient.delete(`/history/${encodeURIComponent(id)}`)
-    } catch (err) {
-      if (!fallbackToMock) throw err
-    }
+export async function removeHistoryItem(id) {
+  // Backend lacks DELETE endpoint per inspection
+  const updatedList = deleteScanItem(id)
+  return {
+    success: true,
+    backendSupported: false,
+    message: 'Removed from local audit view. (Backend does not expose a DELETE /api/v1/scans endpoint).',
+    updatedList,
   }
-
-  // Always keep local storage synchronized
-  return deleteScanItem(id)
 }
 
 /**
  * Clear all scan history
- * @param {object} options Options
- * @returns {Promise<void>}
+ * Note: Backend does NOT provide a DELETE /api/v1/scans endpoint.
+ * @returns {Promise<{ success: boolean, backendSupported: boolean }>}
  */
-export async function clearAllHistory(options = {}) {
-  const { forceApi = false, fallbackToMock = true } = options
-
-  if (isApiMode() || forceApi) {
-    try {
-      await apiClient.delete('/history')
-    } catch (err) {
-      if (!fallbackToMock) throw err
-    }
-  }
-
+export async function clearAllHistory() {
   clearScanHistory()
+  return {
+    success: true,
+    backendSupported: false,
+    message: 'Local audit history cleared. (Backend does not expose a bulk DELETE endpoint).',
+  }
 }
 
 /**
@@ -92,14 +102,15 @@ export async function clearAllHistory(options = {}) {
 export function exportHistoryCSV(scans = []) {
   if (!scans || scans.length === 0) return
 
-  const headers = ['Scan ID', 'Target URL', 'Domain', 'Prediction', 'Risk Level', 'Risk Score', 'Timestamp']
+  const headers = ['Scan ID', 'Target URL', 'Domain', 'Prediction', 'Risk Level', 'Risk Score', 'Status', 'Timestamp']
   const rows = scans.map((s) => [
     `"${s.id || ''}"`,
     `"${(s.url || '').replace(/"/g, '""')}"`,
     `"${s.domain || ''}"`,
-    `"${s.prediction || ''}"`,
+    `"${s.prediction || s.verdict || ''}"`,
     `"${s.riskLevel || ''}"`,
     s.riskScore ?? 0,
+    `"${s.status || 'completed'}"`,
     `"${s.timestamp || ''}"`,
   ])
 
@@ -108,7 +119,7 @@ export function exportHistoryCSV(scans = []) {
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.href = url
-  link.download = `threat-sentinel-scan-history-${Date.now()}.csv`
+  link.download = `phishguard-scan-audit-${Date.now()}.csv`
   document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)

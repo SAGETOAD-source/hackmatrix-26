@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import {
   LayoutDashboard,
@@ -13,6 +14,13 @@ import { isApiMode, getApiBaseUrl } from '../../services/api'
 
 export default function Sidebar({ collapsed, setCollapsed }) {
   const location = useLocation()
+  const [apiActive, setApiActive] = useState(() => isApiMode())
+
+  useEffect(() => {
+    const handleMode = () => setApiActive(isApiMode())
+    window.addEventListener('phishguard:mode-changed', handleMode)
+    return () => window.removeEventListener('phishguard:mode-changed', handleMode)
+  }, [])
 
   const operationLinks = [
     { name: 'SOC Overview', path: '/dashboard', icon: LayoutDashboard },
@@ -154,14 +162,18 @@ export default function Sidebar({ collapsed, setCollapsed }) {
               </div>
               <div className="flex items-center justify-between text-[10px] font-mono text-[#9EACC2] light:text-[#64748B]">
                 <span>Pipeline Mode:</span>
-                <span className="px-1.5 py-0.5 rounded bg-[#111E32] light:bg-white border border-[#24344B] light:border-[#E2E8F0] font-bold text-[#F1F5FF] light:text-[#172033]">
-                  {isApiMode() ? 'API' : 'MOCK'}
+                <span className={`px-1.5 py-0.5 rounded border font-bold ${
+                  apiActive
+                    ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                    : 'bg-amber-500/10 border-amber-500/30 text-amber-400'
+                }`}>
+                  {apiActive ? 'LIVE API' : 'DEMO MODE'}
                 </span>
               </div>
             </div>
           ) : (
-            <div className="flex justify-center" title={isApiMode() ? `API Mode: ${getApiBaseUrl()}` : 'Mock Engine Mode'}>
-              <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <div className="flex justify-center" title={apiActive ? `API Mode: ${getApiBaseUrl()}` : 'Demonstration Mode'}>
+              <span className={`w-2 h-2 rounded-full ${apiActive ? 'bg-emerald-400' : 'bg-amber-400'}`}></span>
             </div>
           )}
         </div>

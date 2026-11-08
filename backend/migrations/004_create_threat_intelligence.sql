@@ -1,4 +1,4 @@
-CREATE TABLE threat_intelligence (
+CREATE TABLE IF NOT EXISTS threat_intelligence (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     indicator VARCHAR(2048) NOT NULL,
     indicator_type VARCHAR(50) NOT NULL,
@@ -10,8 +10,8 @@ CREATE TABLE threat_intelligence (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX idx_threat_intelligence_type
+CREATE INDEX IF NOT EXISTS idx_threat_intelligence_type
 ON threat_intelligence(indicator_type);
 
-CREATE INDEX idx_threat_intelligence_created
+CREATE INDEX IF NOT EXISTS idx_threat_intelligence_created
 ON threat_intelligence(created_at DESC);
