@@ -8,17 +8,17 @@ const ICON_MAP = {
 }
 
 const BADGE_MAP = {
-  primary: 'bg-[#287FE9]/10 text-[#55B7FF] light:text-[#2563EB] border-[#287FE9]/25',
-  danger: 'bg-rose-500/10 text-rose-400 light:text-rose-600 border-rose-500/25',
-  success: 'bg-emerald-500/10 text-emerald-400 light:text-emerald-600 border-emerald-500/25',
-  warning: 'bg-amber-500/10 text-amber-400 light:text-amber-600 border-amber-500/25',
+  primary: 'bg-[#7C5CFF]/15 text-[#A78BFF] light:text-[#5E3BEE] border-[#7C5CFF]/30',
+  danger: 'bg-[#FF4D6D]/15 text-[#FF4D6D] light:text-[#BE123C] border-[#FF4D6D]/30',
+  success: 'bg-[#34E0A1]/15 text-[#34E0A1] light:text-[#059669] border-[#34E0A1]/30',
+  warning: 'bg-[#FFB020]/15 text-[#FFB020] light:text-[#B45309] border-[#FFB020]/30',
 }
 
 const ICON_COLOR = {
-  primary: 'text-[#287FE9]',
-  danger: 'text-rose-400',
-  success: 'text-emerald-400',
-  warning: 'text-amber-400',
+  primary: 'text-[#A78BFF]',
+  danger: 'text-[#FF4D6D]',
+  success: 'text-[#34E0A1]',
+  warning: 'text-[#FFB020]',
 }
 
 export default function StatCard({ item }) {
@@ -28,29 +28,29 @@ export default function StatCard({ item }) {
   const isUp = item.trend === 'up'
 
   return (
-    <div className="cyber-card p-4 flex flex-col justify-between">
+    <div className="p-5 rounded-2xl bg-[#14122A] light:bg-white border border-[#2A2650] light:border-[#E2DEFA] shadow-sm flex flex-col justify-between transition-all duration-200 hover:border-[#7C5CFF]/40 hover:shadow-md hover:shadow-[#7C5CFF]/5">
       <div>
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-[11px] font-mono uppercase tracking-wider text-[#9EACC2] light:text-[#64748B]">
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-[11px] font-mono uppercase tracking-wider text-[#A29FC9] light:text-[#6E6893]">
             {item.title}
           </span>
-          <div className="w-7 h-7 rounded-md bg-[#0D1728] light:bg-slate-100 border border-[#24344B] light:border-[#E2E8F0] flex items-center justify-center">
-            <Icon className={`w-3.5 h-3.5 ${iconColor}`} />
+          <div className="w-8 h-8 rounded-lg bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA] flex items-center justify-center">
+            <Icon className={`w-4 h-4 ${iconColor}`} />
           </div>
         </div>
 
         <div className="flex items-baseline justify-between mt-1">
-          <h3 className="text-2xl font-bold font-mono tracking-tight text-[#F1F5FF] light:text-[#172033]">
+          <h3 className="text-2xl sm:text-3xl font-bold font-mono tracking-tight text-[#F2F0FF] light:text-[#1E1B4B]">
             {item.value}
           </h3>
-          <div className={`inline-flex items-center space-x-1 px-1.5 py-0.5 rounded text-[11px] font-mono font-medium border ${badgeStyle}`}>
+          <div className={`inline-flex items-center space-x-1 px-2 py-0.5 rounded-md text-[11px] font-mono font-bold border ${badgeStyle}`}>
             {isUp ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
             <span>{item.change}</span>
           </div>
         </div>
       </div>
 
-      <p className="mt-3 text-[11px] text-[#9EACC2] light:text-[#64748B] pt-2 border-t border-[#24344B]/60 light:border-[#E2E8F0]">
+      <p className="mt-4 text-[11px] text-[#A29FC9] light:text-[#6E6893] pt-3 border-t border-[#2A2650]/60 light:border-[#E2DEFA]">
         {item.description}
       </p>
     </div>

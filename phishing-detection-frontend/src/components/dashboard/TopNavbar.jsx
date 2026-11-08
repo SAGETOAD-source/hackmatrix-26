@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Search, Sun, Moon, User, Menu, Radio } from 'lucide-react'
+import { Search, Sun, Moon, User, Menu, Radio, Terminal } from 'lucide-react'
 import { useTheme } from '../../context/ThemeContext'
 import AnalystAuthModal from '../common/AnalystAuthModal'
 import { getStoredUser, isAuthenticated } from '../../services/authService'
@@ -32,7 +32,7 @@ export default function TopNavbar({ onSearch, searchQuery = '', collapsed, setCo
 
   return (
     <>
-      <header className="sticky top-0 z-30 h-16 transition-colors duration-200 border-b bg-[#080F1E]/95 light:bg-white/95 backdrop-blur-md border-[#24344B] light:border-[#E2E8F0] flex items-center justify-between px-4 sm:px-6">
+      <header className="sticky top-0 z-30 h-16 transition-colors duration-200 border-b bg-[#0B0A14]/90 light:bg-white/90 backdrop-blur-md border-[#2A2650] light:border-[#E2DEFA] flex items-center justify-between px-4 sm:px-6">
         {/* Mobile Sidebar Toggle & Search Bar */}
         <div className="flex items-center flex-1 max-w-md">
           {setCollapsed && (
@@ -40,21 +40,30 @@ export default function TopNavbar({ onSearch, searchQuery = '', collapsed, setCo
               type="button"
               onClick={() => setCollapsed(!collapsed)}
               aria-label="Toggle Navigation Menu"
-              className="md:hidden mr-2 p-1.5 rounded-md text-[#9EACC2] hover:text-[#F1F5FF] bg-[#111E32] light:bg-slate-100 border border-[#24344B] light:border-[#E2E8F0] cursor-pointer"
+              className="md:hidden mr-2 p-1.5 rounded-lg text-[#A29FC9] hover:text-[#F2F0FF] bg-[#14122A] light:bg-[#F2EDFF] border border-[#2A2650] light:border-[#E2DEFA] cursor-pointer"
             >
               <Menu className="w-4 h-4" />
             </button>
           )}
 
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#9EACC2]" />
+          <div className="relative flex-1 group">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#A29FC9] group-focus-within:text-[#A78BFF] transition-colors" />
             <input
               type="text"
-              placeholder="Search scans, domains, IOC hashes, or IPs..."
+              placeholder="Search threat telemetry, IOCs, domains (Ctrl+K)..."
               value={searchQuery}
               onChange={(e) => onSearch && onSearch(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 rounded-md text-xs bg-[#0B1629] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0] text-[#F1F5FF] light:text-[#172033] placeholder-[#9EACC2]/60 focus:outline-none focus:border-[#287FE9] transition-colors"
+              className="w-full pl-9 pr-14 py-1.5 rounded-lg text-xs bg-[#14122A] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA] text-[#F2F0FF] light:text-[#1E1B4B] placeholder-[#A29FC9]/60 focus:outline-none focus:border-[#7C5CFF] focus:ring-1 focus:ring-[#7C5CFF]/30 transition-all"
             />
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new CustomEvent('phishguard:open-command-palette'))}
+              title="Quick Action Command Bar"
+              className="absolute right-2 top-1/2 -translate-y-1/2 hidden sm:flex items-center px-1.5 py-0.5 rounded bg-[#1C1936] light:bg-[#EDE9FE] border border-[#2A2650] light:border-[#D4CDFA] text-[10px] font-mono text-[#A29FC9] light:text-[#6E6893] cursor-pointer hover:border-[#7C5CFF]/60 transition-colors"
+            >
+              <Terminal className="w-2.5 h-2.5 mr-1 text-[#A78BFF]" />
+              <span>⌘K</span>
+            </button>
           </div>
         </div>
 
@@ -64,27 +73,27 @@ export default function TopNavbar({ onSearch, searchQuery = '', collapsed, setCo
           <button
             type="button"
             onClick={() => setAuthModalOpen(true)}
-            title="Click to configure backend API connection or switch modes"
-            className={`hidden sm:flex items-center space-x-1.5 px-2.5 py-1 rounded-md border text-[11px] font-mono cursor-pointer transition-colors ${
+            title="Configure backend API connection or switch mode"
+            className={`hidden sm:flex items-center space-x-1.5 px-2.5 py-1 rounded-lg border text-[11px] font-mono cursor-pointer transition-all ${
               apiActive
-                ? 'bg-[#0D1728] light:bg-slate-50 border-[#24344B] light:border-[#E2E8F0] text-emerald-400 light:text-emerald-700 hover:border-emerald-500/50'
-                : 'bg-[#0D1728] light:bg-slate-50 border-[#24344B] light:border-[#E2E8F0] text-amber-400 light:text-amber-700 hover:border-amber-500/50'
+                ? 'bg-[#14122A] light:bg-[#F7F5FF] border-[#34E0A1]/40 text-[#34E0A1] hover:bg-[#34E0A1]/10'
+                : 'bg-[#14122A] light:bg-[#F7F5FF] border-[#FFB020]/40 text-[#FFB020] hover:bg-[#FFB020]/10'
             }`}
           >
             <Radio className="w-3 h-3 animate-pulse" />
-            <span>Engine: {apiActive ? 'Live API' : 'Demo Mode'}</span>
+            <span>Engine: {apiActive ? 'Live Backend' : 'Simulation'}</span>
           </button>
 
-          {/* Theme Toggle */}
+          {/* Theme Toggle with smooth UV styling */}
           <button
             onClick={toggleTheme}
             aria-label="Toggle Theme"
-            className="p-1.5 rounded-md text-[#9EACC2] light:text-[#64748B] hover:text-[#F1F5FF] light:hover:text-[#172033] bg-[#111E32] light:bg-white hover:bg-[#15253F] light:hover:bg-slate-100 border border-[#24344B] light:border-[#E2E8F0] transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg text-[#A29FC9] light:text-[#6E6893] hover:text-[#F2F0FF] light:hover:text-[#1E1B4B] bg-[#14122A] light:bg-white hover:bg-[#1C1936] light:hover:bg-[#F2EDFF] border border-[#2A2650] light:border-[#E2DEFA] transition-all cursor-pointer"
           >
             {isDark ? (
-              <Sun className="w-4 h-4 text-amber-400" />
+              <Sun className="w-4 h-4 text-[#C6FF3D]" />
             ) : (
-              <Moon className="w-4 h-4 text-[#2563EB]" />
+              <Moon className="w-4 h-4 text-[#7C5CFF]" />
             )}
           </button>
 
@@ -92,21 +101,21 @@ export default function TopNavbar({ onSearch, searchQuery = '', collapsed, setCo
           <button
             type="button"
             onClick={() => setAuthModalOpen(true)}
-            className="flex items-center space-x-2 pl-2 border-l border-[#24344B] light:border-[#E2E8F0] cursor-pointer text-left hover:opacity-90 transition-opacity"
+            className="flex items-center space-x-2 pl-2 border-l border-[#2A2650] light:border-[#E2DEFA] cursor-pointer text-left hover:opacity-90 transition-opacity"
           >
-            <div className={`w-7 h-7 rounded-md border flex items-center justify-center ${
+            <div className={`w-7 h-7 rounded-lg border flex items-center justify-center transition-colors ${
               authed
-                ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-400'
-                : 'bg-[#111E32] light:bg-slate-100 border-[#24344B] light:border-[#E2E8F0] text-[#287FE9]'
+                ? 'bg-[#34E0A1]/15 border-[#34E0A1]/40 text-[#34E0A1]'
+                : 'bg-[#14122A] light:bg-[#F2EDFF] border-[#2A2650] light:border-[#E2DEFA] text-[#A78BFF]'
             }`}>
               <User className="w-3.5 h-3.5" />
             </div>
             <div className="hidden lg:flex flex-col">
-              <span className="text-xs font-semibold text-[#F1F5FF] light:text-[#172033] leading-none">
-                {authed && user ? (user.name || 'Analyst') : 'Analyst Session'}
+              <span className="text-xs font-semibold text-[#F2F0FF] light:text-[#1E1B4B] leading-none">
+                {authed && user ? (user.name || 'Analyst') : 'Sentinel Session'}
               </span>
-              <span className="text-[10px] font-mono text-[#9EACC2] light:text-[#64748B] mt-0.5">
-                {authed ? 'Connected' : 'Click to Sign In'}
+              <span className="text-[10px] font-mono text-[#A29FC9] light:text-[#6E6893] mt-0.5">
+                {authed ? 'Authenticated' : 'Click to Login'}
               </span>
             </div>
           </button>

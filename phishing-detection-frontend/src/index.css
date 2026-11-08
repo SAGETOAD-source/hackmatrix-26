@@ -3,80 +3,100 @@
 @custom-variant light (&:where(.light, .light *));
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Tailwind v4 theme mapping */
+/* Tailwind v4 theme token mapping */
 @theme inline {
-  --color-primary: var(--primary);
-  --color-primary-hover: var(--primary-hover);
-  --color-accent: var(--accent);
   --color-bg-base: var(--bg-base);
-  --color-bg-secondary: var(--bg-secondary);
   --color-bg-surface: var(--bg-surface);
-  --color-bg-surface-hover: var(--bg-surface-hover);
-  --color-bg-input: var(--bg-input);
-  --color-border: var(--border);
-  --color-border-hover: var(--border-hover);
-  --color-text-main: var(--text-main);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-focus: var(--border-focus);
+
+  --color-text-primary: var(--text-primary);
   --color-text-muted: var(--text-muted);
 
-  --color-success: var(--success);
-  --color-warning: var(--warning);
-  --color-danger: var(--danger);
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-glow: var(--brand-glow);
+  --color-brand-accent: var(--brand-accent);
+  --color-brand-accent-text: var(--brand-accent-text);
 
+  /* Verdict Colors (Strictly reserved for risk status) */
+  --color-verdict-safe: var(--verdict-safe);
+  --color-verdict-suspicious: var(--verdict-suspicious);
+  --color-verdict-malicious: var(--verdict-malicious);
+  --color-verdict-unknown: var(--verdict-unknown);
+
+  /* Compatibility Aliases for existing components */
+  --color-primary: var(--brand-primary);
+  --color-primary-hover: var(--brand-glow);
+  --color-accent: var(--brand-accent);
+  --color-bg-secondary: var(--bg-surface);
+  --color-bg-input: var(--bg-elevated);
+  --color-border: var(--border-subtle);
+  --color-border-hover: var(--border-focus);
+  --color-text-main: var(--text-primary);
+  --color-success: var(--verdict-safe);
+  --color-warning: var(--verdict-suspicious);
+  --color-danger: var(--verdict-malicious);
+
+  /* Typography */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: 'Space Grotesk', 'Inter', -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 @layer base {
   :root {
-    /* DARK THEME (Enterprise SOC Cybersecurity Aesthetic) */
-    --bg-base: #080F1E;
-    --bg-secondary: #0D1728;
-    --bg-surface: #111E32;
-    --bg-surface-hover: #15253F;
-    --bg-input: #0B1629;
-    --border: #24344B;
-    --border-hover: #374D6E;
+    /* DARK THEME (Ultraviolet Sentinel) */
+    --bg-base: #0B0A14;          /* Void Ink */
+    --bg-surface: #14122A;       /* Deep Obsidian Surface */
+    --bg-elevated: #1C1936;      /* Elevated obsidian layer */
+    --border-subtle: #2A2650;    /* Indigo wire border */
+    --border-focus: #7C5CFF;     /* Ultraviolet active ring */
 
-    --primary: #287FE9;
-    --primary-hover: #1E6FD6;
-    --accent: #55B7FF;
+    --text-primary: #F2F0FF;     /* Silvermist text */
+    --text-muted: #A29FC9;       /* Soft Iris text */
 
-    --text-main: #F1F5FF;
-    --text-muted: #9EACC2;
+    --brand-primary: #7C5CFF;    /* Ultraviolet */
+    --brand-glow: #A78BFF;       /* Soft Lavender Glow */
+    --brand-accent: #C6FF3D;     /* Acid Lime Tactical Accent */
+    --brand-accent-text: #0B0A14;/* Dark text on Acid Lime */
 
-    --success: #22C55E;
-    --warning: #F59E0B;
-    --danger: #EF4444;
+    /* Verdict Colors (Reserved for risk meaning) */
+    --verdict-safe: #34E0A1;
+    --verdict-suspicious: #FFB020;
+    --verdict-malicious: #FF4D6D;
+    --verdict-unknown: #8B88B0;
 
-    --scroll-thumb: #24344B;
-    --scroll-thumb-hover: #287FE9;
+    --scroll-thumb: #2A2650;
+    --scroll-thumb-hover: #7C5CFF;
 
     color-scheme: dark;
   }
 
   .light {
-    /* LIGHT THEME (Clean Enterprise SaaS) */
-    --bg-base: #F5F7FC;
-    --bg-secondary: #EDF2F9;
-    --bg-surface: #FFFFFF;
-    --bg-surface-hover: #F8FAFD;
-    --bg-input: #FFFFFF;
-    --border: #E2E8F0;
-    --border-hover: #CBD5E1;
+    /* LIGHT THEME (Warm Pearl Sentinel) */
+    --bg-base: #F7F5FF;          /* Warm Pearl Background */
+    --bg-surface: #FFFFFF;       /* Pure White Surface */
+    --bg-elevated: #F0EDFF;      /* Soft Ultraviolet Tint */
+    --border-subtle: #DDD8F5;    /* Muted Lavender Wire */
+    --border-focus: #7C5CFF;     /* Ultraviolet Active Ring */
 
-    --primary: #2563EB;
-    --primary-hover: #1D4ED8;
-    --accent: #3B82F6;
+    --text-primary: #1E1B4B;     /* Deep Indigo Text */
+    --text-muted: #68648E;       /* Dusk Indigo Muted */
 
-    --text-main: #172033;
-    --text-muted: #64748B;
+    --brand-primary: #7C5CFF;    /* Ultraviolet */
+    --brand-glow: #6340EB;       /* Deep Ultraviolet */
+    --brand-accent: #5E8F00;     /* Darkened Acid Lime for WCAG AA (5.8:1) */
+    --brand-accent-text: #FFFFFF;/* White text on darkened lime */
 
-    --success: #16A34A;
-    --warning: #D97706;
-    --danger: #DC2626;
+    /* Verdict Colors (High contrast light mode) */
+    --verdict-safe: #0E9F6E;
+    --verdict-suspicious: #D97706;
+    --verdict-malicious: #E02424;
+    --verdict-unknown: #6B7280;
 
-    --scroll-thumb: #CBD5E1;
-    --scroll-thumb-hover: #94A3B8;
+    --scroll-thumb: #DDD8F5;
+    --scroll-thumb-hover: #7C5CFF;
 
     color-scheme: light;
   }
@@ -90,7 +110,7 @@
 
   body {
     background-color: var(--bg-base);
-    color: var(--text-main);
+    color: var(--text-primary);
     font-family: var(--font-sans);
     margin: 0;
     padding: 0;
@@ -98,145 +118,119 @@
     min-height: 100dvh;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    transition: background-color 0.2s ease, color 0.2s ease;
   }
 
-  ::selection {
-    background: rgba(40, 127, 233, 0.3);
-    color: #F1F5FF;
+  h1, h2, h3, h4, .font-heading {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
   }
 
+  code, pre, .font-mono {
+    font-family: var(--font-mono);
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--scroll-thumb);
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--scroll-thumb-hover);
+  }
+
+  /* Universal accessible focus ring using brand accent */
   :focus-visible {
-    outline: 2px solid var(--primary);
+    outline: 2px solid var(--brand-accent);
     outline-offset: 2px;
-    border-radius: 6px;
   }
 }
 
-/* Professional Surface Card */
-.cyber-card {
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-radius: 0.75rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.25), 0 1px 2px -1px rgba(0, 0, 0, 0.25);
-  transition: border-color 0.15s ease, background-color 0.15s ease;
-}
-
-.light .cyber-card {
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
-}
-
-.cyber-card:hover {
-  border-color: var(--border-hover);
-}
-
-/* Secondary Panel */
-.cyber-panel-secondary {
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: 0.5rem;
-}
-
-/* Purpose-Built Form Input */
-.cyber-input {
-  background-color: var(--bg-input);
-  border: 1px solid var(--border);
-  color: var(--text-main);
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}
-
-.cyber-input:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 1px var(--primary);
-  outline: none;
-}
-
-.cyber-input::placeholder {
-  color: var(--text-muted);
-  opacity: 0.7;
-}
-
-/* Primary Button (Clean, solid, non-garish) */
-.cyber-btn-primary {
-  background-color: var(--primary);
-  color: #FFFFFF;
-  font-weight: 500;
-  font-size: 0.875rem;
-  border-radius: 0.5rem;
-  padding: 0.5rem 1rem;
-  border: 1px solid transparent;
-  transition: background-color 0.15s ease, transform 0.1s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-}
-
-.cyber-btn-primary:hover {
-  background-color: var(--primary-hover);
-}
-
-.cyber-btn-primary:active {
-  transform: translateY(1px);
-}
-
-.cyber-btn-primary:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* Secondary Button */
-.cyber-btn-secondary {
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border);
-  color: var(--text-main);
-  font-weight: 500;
-  font-size: 0.875rem;
-  border-radius: 0.5rem;
-  padding: 0.5rem 1rem;
-  transition: background-color 0.15s ease, border-color 0.15s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.cyber-btn-secondary:hover {
-  background-color: var(--bg-surface-hover);
-  border-color: var(--border-hover);
-}
-
-/* Subtle Monospace Tag */
-.cyber-mono {
-  font-family: var(--font-mono);
-  letter-spacing: -0.025em;
-}
-
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: var(--scroll-thumb);
-  border-radius: 9999px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--scroll-thumb-hover);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
+/* Utilities for Ultraviolet Sentinel signature visuals */
+@layer utilities {
+  .uv-glass {
+    background: rgba(20, 18, 42, 0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
   }
-  * {
-    transition-duration: 0.01ms !important;
-    animation-duration: 0.01ms !important;
+
+  .light .uv-glass {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
   }
+
+  .uv-glow {
+    box-shadow: 0 0 35px -5px rgba(124, 92, 255, 0.35);
+  }
+
+  .uv-glow-sm {
+    box-shadow: 0 0 15px -3px rgba(124, 92, 255, 0.25);
+  }
+
+  .lime-glow {
+    box-shadow: 0 0 25px -4px rgba(198, 255, 61, 0.4);
+  }
+
+  .dot-grid {
+    background-image: radial-gradient(rgba(124, 92, 255, 0.15) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  .light .dot-grid {
+    background-image: radial-gradient(rgba(124, 92, 255, 0.12) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  .card-highlight {
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  .light .card-highlight {
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  }
+}
+
+/* UV Sweep Animation Keyframes */
+@keyframes uv-sweep {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+.animate-uv-sweep {
+  animation: uv-sweep 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* Subtle Pulse for Sentinel Radar */
+@keyframes sentinel-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.9;
+  }
+}
+
+.animate-sentinel-pulse {
+  animation: sentinel-pulse 4s ease-in-out infinite;
 }

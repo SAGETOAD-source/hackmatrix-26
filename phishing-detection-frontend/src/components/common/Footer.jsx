@@ -1,54 +1,61 @@
-import { Shield, CheckCircle2 } from 'lucide-react'
+import { Shield, CheckCircle2, Terminal } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 export default function Footer() {
   return (
-    <footer className="border-t bg-[#080F1E] light:bg-[#F5F7FC] border-[#24344B] light:border-[#E2E8F0] transition-colors duration-200">
+    <footer className="border-t bg-[#0B0A14] light:bg-[#F7F5FF] border-[#2A2650] light:border-[#E2DEFA] transition-colors duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* Col 1: Brand & Status */}
           <div className="md:col-span-1 space-y-3">
             <div className="flex items-center space-x-2.5">
-              <div className="w-7 h-7 rounded-md bg-[#111E32] light:bg-white border border-[#24344B] light:border-[#E2E8F0] flex items-center justify-center text-[#287FE9]">
-                <Shield className="w-4 h-4" />
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#7C5CFF] to-[#14122A] p-0.5 shadow-xs flex items-center justify-center">
+                <div className="w-full h-full rounded-[6px] bg-[#0B0A14] flex items-center justify-center">
+                  <Shield className="w-4 h-4 text-[#A78BFF]" />
+                </div>
               </div>
-              <span className="font-bold text-sm text-[#F1F5FF] light:text-[#172033] tracking-tight">
-                PhishGuard<span className="text-[#287FE9]">.SOC</span>
+              <span className="font-heading font-bold text-sm text-[#F2F0FF] light:text-[#1E1B4B] tracking-tight">
+                PhishGuard<span className="text-[#C6FF3D] light:text-[#5E8F00]">.UV</span>
               </span>
             </div>
-            <p className="text-xs text-[#9EACC2] light:text-[#64748B] leading-relaxed">
-              Multi-pillar cybersecurity intelligence platform combining machine learning URL inspection, transport cryptography, and threat feed correlation.
+            <p className="text-xs text-[#A29FC9] light:text-[#6E6893] leading-relaxed">
+              Ultraviolet Sentinel cybersecurity platform combining machine learning URL inference, transport cryptography, and continuous threat telemetry.
             </p>
-            <div className="inline-flex items-center space-x-2 px-2 py-0.5 rounded bg-[#0D1728] light:bg-emerald-50 border border-[#24344B] light:border-emerald-200 text-[11px] font-mono text-emerald-400 light:text-emerald-700">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            <div className="inline-flex items-center space-x-2 px-2.5 py-1 rounded-md bg-[#14122A] light:bg-[#EDE9FE] border border-[#2A2650] light:border-[#D4CDFA] text-[11px] font-mono text-[#34E0A1] light:text-[#059669]">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#34E0A1] animate-pulse"></span>
               <span>All Systems Operational (v2.4)</span>
             </div>
           </div>
 
           {/* Col 2: Platform Modules */}
           <div>
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-[#F1F5FF] light:text-[#172033] mb-3">
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-[#F2F0FF] light:text-[#1E1B4B] mb-3">
               Platform Modules
             </h4>
-            <ul className="space-y-1.5 text-xs text-[#9EACC2] light:text-[#64748B]">
+            <ul className="space-y-1.5 text-xs text-[#A29FC9] light:text-[#6E6893]">
               <li>
-                <Link to="/scanner" className="hover:text-[#287FE9] transition-colors">
+                <Link to="/scanner" className="hover:text-[#A78BFF] light:hover:text-[#7C5CFF] transition-colors">
                   URL Threat Scanner
                 </Link>
               </li>
               <li>
-                <Link to="/dashboard" className="hover:text-[#287FE9] transition-colors">
+                <Link to="/dashboard" className="hover:text-[#A78BFF] light:hover:text-[#7C5CFF] transition-colors">
                   SOC Telemetry Dashboard
                 </Link>
               </li>
               <li>
-                <Link to="/security-analysis" className="hover:text-[#287FE9] transition-colors">
+                <Link to="/security-analysis" className="hover:text-[#A78BFF] light:hover:text-[#7C5CFF] transition-colors">
                   SSL/TLS & HTTP Header Audit
                 </Link>
               </li>
               <li>
-                <Link to="/history" className="hover:text-[#287FE9] transition-colors">
+                <Link to="/history" className="hover:text-[#A78BFF] light:hover:text-[#7C5CFF] transition-colors">
                   Security Scan History
+                </Link>
+              </li>
+              <li>
+                <Link to="/styleguide" className="hover:text-[#A78BFF] light:hover:text-[#7C5CFF] transition-colors">
+                  Sentinel Design Tokens
                 </Link>
               </li>
             </ul>
@@ -56,24 +63,24 @@ export default function Footer() {
 
           {/* Col 3: Intelligence Ecosystem */}
           <div>
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-[#F1F5FF] light:text-[#172033] mb-3">
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-[#F2F0FF] light:text-[#1E1B4B] mb-3">
               Telemetry Standards
             </h4>
-            <ul className="space-y-1.5 text-xs text-[#9EACC2] light:text-[#64748B]">
+            <ul className="space-y-1.5 text-xs text-[#A29FC9] light:text-[#6E6893]">
               <li className="flex items-center space-x-1.5">
-                <CheckCircle2 className="w-3.5 h-3.5 text-[#287FE9]" />
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#7C5CFF]" />
                 <span>18 Lexical & Entropy Features</span>
               </li>
               <li className="flex items-center space-x-1.5">
-                <CheckCircle2 className="w-3.5 h-3.5 text-[#287FE9]" />
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#7C5CFF]" />
                 <span>RFC 1918 Private Range Guard</span>
               </li>
               <li className="flex items-center space-x-1.5">
-                <CheckCircle2 className="w-3.5 h-3.5 text-[#287FE9]" />
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#7C5CFF]" />
                 <span>Certificate Transparency Audit</span>
               </li>
               <li className="flex items-center space-x-1.5">
-                <CheckCircle2 className="w-3.5 h-3.5 text-[#287FE9]" />
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#7C5CFF]" />
                 <span>HSTS & CSP Compliance Scoring</span>
               </li>
             </ul>
@@ -81,27 +88,34 @@ export default function Footer() {
 
           {/* Col 4: Defensive Transparency Notice */}
           <div>
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-[#F1F5FF] light:text-[#172033] mb-3">
-              Operational Transparency
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-[#F2F0FF] light:text-[#1E1B4B] mb-3">
+              Sentinel Architecture
             </h4>
-            <div className="p-3 rounded-lg bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0] text-[11px] text-[#9EACC2] light:text-[#64748B] leading-relaxed">
-              <span className="font-semibold text-[#F1F5FF] light:text-[#172033] block mb-1">
-                Competition Demonstration Mode
+            <div className="p-3 rounded-lg bg-[#14122A] light:bg-[#FFFFFF] border border-[#2A2650] light:border-[#E2DEFA] text-[11px] text-[#A29FC9] light:text-[#6E6893] leading-relaxed">
+              <span className="font-semibold text-[#F2F0FF] light:text-[#1E1B4B] block mb-1">
+                Zero-Fabrication Assurance
               </span>
-              Sample detection vectors and telemetry values illustrate enterprise SOC workflows and heuristic scoring. No malicious probes are executed against live network destinations.
+              Telemetry values and heuristic scores are computed deterministically from genuine network probes and our Random Forest classifier.
             </div>
           </div>
         </div>
 
         {/* Bottom Copyright & Disclaimer */}
-        <div className="pt-6 border-t border-[#24344B] light:border-[#E2E8F0] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#9EACC2] light:text-[#64748B]">
+        <div className="pt-6 border-t border-[#2A2650] light:border-[#E2DEFA] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#A29FC9] light:text-[#6E6893]">
           <div>
-            &copy; {new Date().getFullYear()} PhishGuard SOC. Designed for high-assurance cybersecurity defense.
+            &copy; {new Date().getFullYear()} PhishGuard SOC. Built for high-assurance cybersecurity inspection.
           </div>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4 font-mono text-[11px]">
             <span>RFC 1918 / RFC 4193 SSRF Protected</span>
             <span>&bull;</span>
-            <span>Deterministic Heuristics</span>
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new CustomEvent('phishguard:open-command-palette'))}
+              className="inline-flex items-center space-x-1 text-[#A78BFF] hover:underline cursor-pointer"
+            >
+              <Terminal className="w-3 h-3" />
+              <span>⌘K Command Palette</span>
+            </button>
           </div>
         </div>
       </div>

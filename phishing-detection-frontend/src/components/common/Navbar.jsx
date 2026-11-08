@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Shield, Sun, Moon, Menu, X, ArrowRight, Terminal } from 'lucide-react'
 import { useTheme } from '../../context/ThemeContext'
+import Button from '../ui/Button'
 
 export default function Navbar() {
   const { toggleTheme, isDark } = useTheme()
@@ -10,8 +11,8 @@ export default function Navbar() {
 
   const navLinks = [
     { name: 'Overview', path: '/' },
-    { name: 'Live Scanner', path: '/scanner' },
-    { name: 'Security Analysis', path: '/security-analysis' },
+    { name: 'Threat Scanner', path: '/scanner' },
+    { name: 'Deep Audit', path: '/security-analysis' },
     { name: 'Scan History', path: '/history' },
     { name: 'SOC Console', path: '/dashboard' },
   ]
@@ -22,20 +23,22 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="sticky top-0 z-50 transition-colors duration-200 bg-[#080F1E]/95 light:bg-white/95 backdrop-blur-md border-b border-[#24344B] light:border-[#E2E8F0]">
+    <nav className="sticky top-0 z-50 transition-colors duration-200 bg-[#0B0A14]/90 light:bg-white/90 backdrop-blur-md border-b border-[#2A2650] light:border-[#E2DEFA]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Brand Logo */}
           <Link to="/" className="flex items-center space-x-3 group">
-            <div className="w-9 h-9 rounded-lg bg-[#111E32] light:bg-[#F0F4FF] border border-[#24344B] light:border-[#D0E0FF] flex items-center justify-center transition-colors group-hover:border-[#287FE9]">
-              <Shield className="w-5 h-5 text-[#287FE9] light:text-[#2563EB]" />
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#7C5CFF] to-[#14122A] p-0.5 shadow-md shadow-[#7C5CFF]/25 flex items-center justify-center transition-transform group-hover:scale-105">
+              <div className="w-full h-full rounded-[10px] bg-[#0B0A14] flex items-center justify-center">
+                <Shield className="w-4 h-4 text-[#A78BFF]" />
+              </div>
             </div>
             <div className="flex items-center space-x-2">
-              <span className="font-bold text-base tracking-tight text-[#F1F5FF] light:text-[#172033]">
-                PhishGuard<span className="text-[#287FE9]">.SOC</span>
+              <span className="font-heading font-bold text-base tracking-tight text-[#F2F0FF] light:text-[#1E1B4B]">
+                PhishGuard<span className="text-[#C6FF3D] light:text-[#5E8F00]">.UV</span>
               </span>
-              <span className="hidden sm:inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-medium bg-[#111E32] light:bg-slate-100 text-[#9EACC2] light:text-[#64748B] border border-[#24344B] light:border-[#E2E8F0]">
-                v2.4
+              <span className="hidden sm:inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-medium bg-[#14122A] light:bg-[#F2EDFF] text-[#A29FC9] light:text-[#6E6893] border border-[#2A2650] light:border-[#D4CDFA]">
+                SENTINEL
               </span>
             </div>
           </Link>
@@ -48,10 +51,10 @@ export default function Navbar() {
                 <Link
                   key={link.name}
                   to={link.path}
-                  className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 ${
                     active
-                      ? 'text-[#F1F5FF] light:text-[#172033] bg-[#111E32] light:bg-slate-100 border border-[#24344B] light:border-[#CBD5E1] font-semibold'
-                      : 'text-[#9EACC2] light:text-[#64748B] hover:text-[#F1F5FF] light:hover:text-[#172033] hover:bg-[#0D1728] light:hover:bg-slate-50'
+                      ? 'text-[#F2F0FF] light:text-[#5E3BEE] bg-[#7C5CFF]/15 light:bg-[#7C5CFF]/10 border border-[#7C5CFF]/40 light:border-[#7C5CFF]/30 font-semibold shadow-xs shadow-[#7C5CFF]/20'
+                      : 'text-[#A29FC9] light:text-[#6E6893] hover:text-[#F2F0FF] light:hover:text-[#1E1B4B] hover:bg-[#14122A] light:hover:bg-[#F7F5FF]'
                   }`}
                 >
                   {link.name}
@@ -63,8 +66,8 @@ export default function Navbar() {
           {/* Right Action Buttons */}
           <div className="hidden md:flex items-center space-x-3">
             {/* Live Operational Status */}
-            <div className="hidden lg:flex items-center space-x-2 px-2.5 py-1 rounded-md bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0] text-[11px] font-mono text-[#9EACC2] light:text-[#64748B]">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            <div className="hidden lg:flex items-center space-x-2 px-2.5 py-1 rounded-lg bg-[#14122A] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA] text-[11px] font-mono text-[#A29FC9] light:text-[#6E6893]">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#34E0A1] animate-pulse"></span>
               <span>Engines Operational</span>
             </div>
 
@@ -72,23 +75,25 @@ export default function Navbar() {
             <button
               onClick={toggleTheme}
               aria-label="Toggle Theme"
-              className="p-1.5 rounded-md text-[#9EACC2] light:text-[#64748B] hover:text-[#F1F5FF] light:hover:text-[#172033] bg-[#111E32] light:bg-white hover:bg-[#15253F] light:hover:bg-slate-100 border border-[#24344B] light:border-[#E2E8F0] transition-colors cursor-pointer"
+              className="p-1.5 rounded-lg text-[#A29FC9] light:text-[#6E6893] hover:text-[#F2F0FF] light:hover:text-[#1E1B4B] bg-[#14122A] light:bg-white hover:bg-[#1C1936] light:hover:bg-[#F2EDFF] border border-[#2A2650] light:border-[#E2DEFA] transition-all cursor-pointer"
             >
               {isDark ? (
-                <Sun className="w-4 h-4 text-amber-400" />
+                <Sun className="w-4 h-4 text-[#C6FF3D]" />
               ) : (
-                <Moon className="w-4 h-4 text-[#2563EB]" />
+                <Moon className="w-4 h-4 text-[#7C5CFF]" />
               )}
             </button>
 
             {/* Launch Scanner Button */}
-            <Link
+            <Button
+              as={Link}
               to="/scanner"
-              className="cyber-btn-primary text-xs font-medium space-x-1.5 py-1.5 px-3"
+              variant="primary"
+              size="sm"
+              icon={Terminal}
             >
-              <Terminal className="w-3.5 h-3.5" />
-              <span>Analyze URL</span>
-            </Link>
+              Analyze Target
+            </Button>
           </div>
 
           {/* Mobile Menu Button */}
@@ -96,14 +101,14 @@ export default function Navbar() {
             <button
               onClick={toggleTheme}
               aria-label="Toggle Theme"
-              className="p-1.5 rounded-md text-[#9EACC2] light:text-[#64748B] bg-[#111E32] light:bg-slate-100 border border-[#24344B] light:border-[#E2E8F0]"
+              className="p-1.5 rounded-lg text-[#A29FC9] light:text-[#6E6893] bg-[#14122A] light:bg-[#F2EDFF] border border-[#2A2650] light:border-[#E2DEFA]"
             >
-              {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-[#2563EB]" />}
+              {isDark ? <Sun className="w-4 h-4 text-[#C6FF3D]" /> : <Moon className="w-4 h-4 text-[#7C5CFF]" />}
             </button>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle Menu"
-              className="p-1.5 rounded-md text-[#9EACC2] light:text-[#64748B] hover:text-[#F1F5FF] bg-[#111E32] light:bg-slate-100 border border-[#24344B] light:border-[#E2E8F0]"
+              className="p-1.5 rounded-lg text-[#A29FC9] light:text-[#6E6893] hover:text-[#F2F0FF] bg-[#14122A] light:bg-[#F2EDFF] border border-[#2A2650] light:border-[#E2DEFA]"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -113,7 +118,7 @@ export default function Navbar() {
 
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-[#24344B] light:border-[#E2E8F0] bg-[#080F1E] light:bg-white px-4 pt-3 pb-4 space-y-1">
+        <div className="md:hidden border-t border-[#2A2650] light:border-[#E2DEFA] bg-[#0B0A14] light:bg-white px-4 pt-3 pb-4 space-y-1">
           {navLinks.map((link) => {
             const active = isActive(link.path)
             return (
@@ -121,25 +126,28 @@ export default function Navbar() {
                 key={link.name}
                 to={link.path}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`block px-3 py-2 rounded-md text-sm font-medium ${
+                className={`block px-3 py-2 rounded-lg text-sm font-medium ${
                   active
-                    ? 'text-[#287FE9] light:text-[#2563EB] bg-[#111E32] light:bg-blue-50 font-semibold'
-                    : 'text-[#9EACC2] light:text-[#64748B] hover:bg-[#111E32] light:hover:bg-slate-50'
+                    ? 'text-[#C6FF3D] light:text-[#5E3BEE] bg-[#7C5CFF]/15 light:bg-[#7C5CFF]/10 font-semibold'
+                    : 'text-[#A29FC9] light:text-[#6E6893] hover:bg-[#14122A] light:hover:bg-[#F7F5FF]'
                 }`}
               >
                 {link.name}
               </Link>
             )
           })}
-          <div className="pt-2 border-t border-[#24344B] light:border-[#E2E8F0]">
-            <Link
+          <div className="pt-2 border-t border-[#2A2650] light:border-[#E2DEFA]">
+            <Button
+              as={Link}
               to="/scanner"
               onClick={() => setMobileMenuOpen(false)}
-              className="cyber-btn-primary w-full text-xs font-semibold py-2 space-x-2"
+              variant="primary"
+              size="md"
+              className="w-full justify-center"
+              icon={ArrowRight}
             >
-              <span>Analyze URL</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
+              Analyze Target
+            </Button>
           </div>
         </div>
       )}

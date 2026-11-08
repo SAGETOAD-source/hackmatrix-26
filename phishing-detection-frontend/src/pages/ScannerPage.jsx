@@ -18,6 +18,8 @@ import { motion } from 'framer-motion'
 import Sidebar from '../components/dashboard/Sidebar'
 import TopNavbar from '../components/dashboard/TopNavbar'
 import Squares from '../components/backgrounds/Squares'
+import Button from '../components/ui/Button'
+import Badge from '../components/ui/Badge'
 import { isValidUrl } from '../utils/simulateScan'
 import { scanUrl } from '../services/scanService'
 import { isApiMode, getApiBaseUrl } from '../services/api'
@@ -97,10 +99,9 @@ export default function ScannerPage() {
       setCurrentStage(SCAN_STAGES.length - 1)
       setIsScanning(false)
 
-      // Navigate to results
       setTimeout(() => {
         navigate('/results')
-      }, 550)
+      }, 500)
     } catch (err) {
       clearInterval(interval)
       setIsScanning(false)
@@ -133,18 +134,18 @@ export default function ScannerPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-[#080F1E] light:bg-[#F5F7FC] text-[#F1F5FF] light:text-[#172033] transition-colors duration-200 flex relative overflow-hidden">
+    <div className="min-h-screen bg-[#0B0A14] light:bg-[#F7F5FF] text-[#F2F0FF] light:text-[#1E1B4B] transition-colors duration-200 flex relative overflow-hidden">
       {/* Restrained Technical Grid Background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
         <Squares
           direction="diagonal"
           speed={0.15}
           squareSize={48}
-          borderColor="rgba(36, 52, 75, 0.35)"
-          hoverFillColor="rgba(40, 127, 233, 0.08)"
+          borderColor="rgba(124, 92, 255, 0.08)"
+          hoverFillColor="rgba(124, 92, 255, 0.06)"
           className="opacity-40 dark:opacity-60"
         />
-        <div className="absolute inset-0 bg-[#080F1E]/70 light:bg-[#F5F7FC]/80 pointer-events-none"></div>
+        <div className="absolute inset-0 bg-[#0B0A14]/75 light:bg-[#F7F5FF]/85 pointer-events-none"></div>
       </div>
 
       <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
@@ -156,39 +157,39 @@ export default function ScannerPage() {
           {/* Header Title */}
           <div>
             <div className="flex items-center space-x-2">
-              <span className="text-xs font-mono font-semibold uppercase tracking-wider text-[#287FE9]">
+              <span className="text-xs font-mono font-semibold uppercase tracking-wider text-[#A78BFF]">
                 TARGET INGESTION
               </span>
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#F1F5FF] light:text-[#172033] mt-0.5">
-              URL & Phishing Security Scanner
+            <h1 className="font-heading text-2xl sm:text-3xl font-bold tracking-tight text-[#F2F0FF] light:text-[#1E1B4B] mt-0.5">
+              URL & Phishing Threat Scanner
             </h1>
-            <p className="text-xs text-[#9EACC2] light:text-[#64748B] mt-0.5">
+            <p className="text-xs text-[#A29FC9] light:text-[#6E6893] mt-1">
               Submit target web resource for explainable multi-pillar threat evaluation across lexical, cryptographic, and threat feed vectors.
             </p>
           </div>
 
-          {/* Mode & Demonstration Notice Banner */}
-          <div className="p-3 rounded-md bg-[#0D1728] light:bg-amber-50 border border-[#24344B] light:border-amber-200 text-xs text-[#9EACC2] light:text-amber-900 flex items-start sm:items-center justify-between gap-3">
+          {/* Mode & Operational Notice Banner */}
+          <div className="p-4 rounded-xl bg-[#14122A] light:bg-white border border-[#2A2650] light:border-[#E2DEFA] text-xs text-[#A29FC9] light:text-[#6E6893] flex items-start sm:items-center justify-between gap-3 shadow-xs">
             <div className="flex items-start sm:items-center space-x-2.5">
-              <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5 sm:mt-0" />
+              <AlertTriangle className="w-4 h-4 text-[#FFB020] shrink-0 mt-0.5 sm:mt-0" />
               <span>
-                <strong className="text-[#F1F5FF] light:text-amber-950 font-semibold font-mono">
-                  {isApiMode() ? 'BACKEND API MODE:' : 'DEMONSTRATION MODE:'}
+                <strong className="text-[#F2F0FF] light:text-[#1E1B4B] font-semibold font-mono">
+                  {isApiMode() ? 'BACKEND PIPELINE ACTIVE:' : 'DEMONSTRATION ENGINE:'}
                 </strong>{' '}
                 {isApiMode()
                   ? `Telemetry dispatched to ${getApiBaseUrl()}. Real-time scans and ML heuristics are evaluated by backend service.`
-                  : 'All telemetry, risk scores, and detections are computed client-side for UI/UX demonstration. No active malicious probes are transmitted.'}
+                  : 'All telemetry, risk scores, and detections are computed client-side for demonstration. No untrusted payloads executed.'}
               </span>
             </div>
-            <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider bg-[#111E32] light:bg-amber-100 text-[#9EACC2] light:text-amber-800 border border-[#24344B] light:border-amber-200 whitespace-nowrap">
-              {isApiMode() ? 'API Node' : 'Mock Heuristics'}
-            </span>
+            <Badge verdict={isApiMode() ? 'safe' : 'suspicious'} size="sm">
+              {isApiMode() ? 'Live Node' : 'Simulated'}
+            </Badge>
           </div>
 
           {/* Scan Error Banner with Retry */}
           {scanError && (
-            <div className="p-3.5 rounded-md bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2 font-mono">
+            <div className="p-4 rounded-xl bg-[#FF4D6D]/10 border border-[#FF4D6D]/30 text-[#FF4D6D] text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 font-mono">
               <div className="flex items-center space-x-2">
                 <XCircle className="w-4 h-4 shrink-0" />
                 <span><strong>Scan Error:</strong> {scanError}</span>
@@ -196,29 +197,33 @@ export default function ScannerPage() {
               <button
                 type="button"
                 onClick={() => performScan(targetUrl)}
-                className="self-end sm:self-auto px-2.5 py-1 rounded bg-rose-600 hover:bg-rose-500 text-white font-semibold text-xs flex items-center space-x-1 cursor-pointer transition-colors"
+                className="self-end sm:self-auto px-3 py-1.5 rounded-lg bg-[#FF4D6D] hover:bg-[#FF4D6D]/90 text-white font-semibold text-xs flex items-center space-x-1.5 cursor-pointer transition-colors"
               >
                 <RefreshCw className="w-3 h-3" />
-                <span>Retry</span>
+                <span>Retry Inspection</span>
               </button>
             </div>
           )}
 
           {/* Primary URL Input Card */}
-          <div className="cyber-card p-5 sm:p-6">
+          <div className="p-6 rounded-2xl bg-[#14122A] light:bg-white border border-[#2A2650] light:border-[#E2DEFA] shadow-md relative overflow-hidden">
+            {isScanning && (
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#C6FF3D] to-transparent animate-pulse"></div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-mono font-semibold uppercase tracking-wider text-[#9EACC2] light:text-[#64748B]">
+                <label className="text-xs font-mono font-semibold uppercase tracking-wider text-[#A29FC9] light:text-[#6E6893]">
                   Target Uniform Resource Locator (URL)
                 </label>
-                <span className="text-[11px] font-mono text-[#9EACC2] light:text-[#64748B]">
+                <span className="text-[11px] font-mono text-[#A29FC9] light:text-[#6E6893]">
                   RFC 3986 Syntax Normalizer
                 </span>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-2">
-                <div className="relative flex-1">
-                  <Terminal className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9EACC2]" />
+              <div className="flex flex-col sm:flex-row gap-2.5">
+                <div className="relative flex-1 group">
+                  <Terminal className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A29FC9] group-focus-within:text-[#A78BFF] transition-colors" />
                   <input
                     type="text"
                     value={targetUrl}
@@ -228,44 +233,37 @@ export default function ScannerPage() {
                     }}
                     placeholder="https://example.com or http://target-domain.xyz/auth/verify..."
                     disabled={isScanning}
-                    className={`w-full pl-10 pr-16 py-2.5 rounded-md text-xs font-mono bg-[#0B1629] light:bg-slate-50 border ${
+                    className={`w-full pl-10 pr-16 py-2.5 rounded-xl text-xs font-mono bg-[#0B0A14] light:bg-[#F7F5FF] border ${
                       urlError
-                        ? 'border-rose-500 focus:ring-1 focus:ring-rose-500'
-                        : 'border-[#24344B] light:border-[#E2E8F0] focus:border-[#287FE9]'
-                    } text-[#F1F5FF] light:text-[#172033] placeholder-[#9EACC2]/60 focus:outline-none transition-colors`}
+                        ? 'border-[#FF4D6D] focus:ring-1 focus:ring-[#FF4D6D]'
+                        : 'border-[#2A2650] light:border-[#E2DEFA] focus:border-[#7C5CFF] focus:ring-2 focus:ring-[#7C5CFF]/20'
+                    } text-[#F2F0FF] light:text-[#1E1B4B] placeholder-[#A29FC9]/60 focus:outline-none transition-all`}
                   />
                   {targetUrl && !isScanning && (
                     <button
                       type="button"
                       onClick={() => setTargetUrl('')}
-                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[11px] font-mono text-[#9EACC2] hover:text-[#F1F5FF] light:hover:text-[#172033] px-1.5 py-0.5 rounded cursor-pointer"
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[11px] font-mono text-[#A29FC9] hover:text-[#F2F0FF] light:hover:text-[#1E1B4B] px-2 py-0.5 rounded cursor-pointer"
                     >
                       CLEAR
                     </button>
                   )}
                 </div>
 
-                <button
+                <Button
                   type="submit"
                   disabled={isScanning || !targetUrl.trim()}
-                  className="cyber-btn-primary text-xs font-semibold py-2.5 px-5 whitespace-nowrap shrink-0 space-x-1.5"
+                  variant="primary"
+                  size="md"
+                  className="whitespace-nowrap shrink-0"
+                  icon={isScanning ? Loader2 : ArrowRight}
                 >
-                  {isScanning ? (
-                    <>
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      <span>Auditing Host...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>Execute Inspection</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </>
-                  )}
-                </button>
+                  {isScanning ? 'Auditing Host...' : 'Execute Inspection'}
+                </Button>
               </div>
 
               {urlError && (
-                <div className="flex items-center space-x-1.5 text-xs text-rose-400 font-mono">
+                <div className="flex items-center space-x-1.5 text-xs text-[#FF4D6D] font-mono">
                   <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
                   <span>{urlError}</span>
                 </div>
@@ -273,8 +271,8 @@ export default function ScannerPage() {
             </form>
 
             {/* Test Presets */}
-            <div className="mt-4 pt-3.5 border-t border-[#24344B] light:border-[#E2E8F0]">
-              <span className="text-[11px] font-mono text-[#9EACC2] light:text-[#64748B] block mb-2">
+            <div className="mt-5 pt-4 border-t border-[#2A2650] light:border-[#E2DEFA]">
+              <span className="text-[11px] font-mono text-[#A29FC9] light:text-[#6E6893] block mb-2.5">
                 Demonstration Attack Vectors:
               </span>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -286,12 +284,12 @@ export default function ScannerPage() {
                       setTargetUrl(preset.url)
                       if (urlError) setUrlError(null)
                     }}
-                    className="p-2 rounded bg-[#0D1728] light:bg-slate-50 hover:bg-[#15253F] light:hover:bg-slate-100 border border-[#24344B] light:border-[#E2E8F0] text-left transition-colors cursor-pointer group"
+                    className="p-2.5 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] hover:bg-[#1C1936] light:hover:bg-[#EDE9FE] border border-[#2A2650] light:border-[#E2DEFA] text-left transition-all cursor-pointer group"
                   >
-                    <div className="text-[11px] font-mono font-semibold text-[#F1F5FF] light:text-[#172033] group-hover:text-[#287FE9]">
+                    <div className="text-[11px] font-mono font-semibold text-[#F2F0FF] light:text-[#1E1B4B] group-hover:text-[#A78BFF] light:group-hover:text-[#7C5CFF]">
                       {preset.label}
                     </div>
-                    <div className="text-[10px] font-mono text-[#9EACC2] light:text-[#64748B] truncate mt-0.5">
+                    <div className="text-[10px] font-mono text-[#A29FC9] light:text-[#6E6893] truncate mt-0.5">
                       {preset.url}
                     </div>
                   </button>
@@ -305,21 +303,29 @@ export default function ScannerPage() {
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="cyber-card p-5 space-y-4"
+              className="p-6 rounded-2xl bg-[#14122A] light:bg-white border border-[#2A2650] light:border-[#E2DEFA] shadow-md space-y-4"
             >
-              <div className="flex items-center justify-between pb-3 border-b border-[#24344B] light:border-[#E2E8F0]">
-                <div className="flex items-center space-x-2">
-                  <Loader2 className="w-4 h-4 text-[#287FE9] animate-spin" />
-                  <h3 className="font-bold text-xs uppercase tracking-wider font-mono text-[#F1F5FF] light:text-[#172033]">
+              <div className="flex items-center justify-between pb-3.5 border-b border-[#2A2650] light:border-[#E2DEFA]">
+                <div className="flex items-center space-x-2.5">
+                  <Loader2 className="w-4 h-4 text-[#C6FF3D] light:text-[#5E8F00] animate-spin" />
+                  <h3 className="font-heading font-bold text-xs uppercase tracking-wider font-mono text-[#F2F0FF] light:text-[#1E1B4B]">
                     Multi-Pillar Triage In Progress (Stage {currentStage + 1} of {SCAN_STAGES.length})
                   </h3>
                 </div>
-                <span className="text-[11px] font-mono text-[#287FE9] font-bold">
+                <span className="text-[11px] font-mono text-[#C6FF3D] light:text-[#5E8F00] font-bold">
                   {Math.round(((currentStage + 1) / SCAN_STAGES.length) * 100)}%
                 </span>
               </div>
 
-              <div className="space-y-2">
+              {/* Progress Bar with Ultraviolet glow */}
+              <div className="w-full h-1.5 rounded-full bg-[#0B0A14] light:bg-[#EDE9FE] overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-[#7C5CFF] to-[#C6FF3D] transition-all duration-300"
+                  style={{ width: `${Math.round(((currentStage + 1) / SCAN_STAGES.length) * 100)}%` }}
+                ></div>
+              </div>
+
+              <div className="space-y-2.5 pt-2">
                 {SCAN_STAGES.map((stage, idx) => {
                   const Icon = stage.icon
                   const isDone = idx < currentStage
@@ -328,30 +334,30 @@ export default function ScannerPage() {
                   return (
                     <div
                       key={idx}
-                      className={`p-3 rounded-md border text-xs transition-colors ${
+                      className={`p-3.5 rounded-xl border text-xs transition-all ${
                         isCurrent
-                          ? 'bg-[#111E32] light:bg-blue-50/60 border-[#287FE9]/60'
+                          ? 'bg-[#7C5CFF]/15 light:bg-[#7C5CFF]/10 border-[#7C5CFF]/50 shadow-xs'
                           : isDone
-                          ? 'bg-[#0D1728] light:bg-slate-50 border-[#24344B] light:border-[#E2E8F0] opacity-80'
-                          : 'bg-[#080F1E] light:bg-white border-[#24344B]/40 light:border-slate-200 opacity-40'
+                          ? 'bg-[#0B0A14] light:bg-[#F7F5FF] border-[#2A2650] light:border-[#E2DEFA] opacity-90'
+                          : 'bg-[#0B0A14]/40 light:bg-white border-[#2A2650]/40 light:border-slate-200 opacity-40'
                       }`}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-2.5 font-mono">
-                          <Icon className={`w-3.5 h-3.5 ${isCurrent ? 'text-[#287FE9]' : isDone ? 'text-emerald-400' : 'text-[#9EACC2]'}`} />
-                          <span className={`font-semibold ${isCurrent ? 'text-[#F1F5FF] light:text-[#172033]' : 'text-[#9EACC2]'}`}>
+                          <Icon className={`w-3.5 h-3.5 ${isCurrent ? 'text-[#C6FF3D] light:text-[#5E8F00]' : isDone ? 'text-[#34E0A1]' : 'text-[#A29FC9]'}`} />
+                          <span className={`font-semibold ${isCurrent ? 'text-[#F2F0FF] light:text-[#1E1B4B]' : 'text-[#A29FC9] light:text-[#6E6893]'}`}>
                             {stage.title}
                           </span>
                         </div>
                         {isDone ? (
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                          <CheckCircle2 className="w-3.5 h-3.5 text-[#34E0A1]" />
                         ) : isCurrent ? (
-                          <Loader2 className="w-3.5 h-3.5 text-[#287FE9] animate-spin" />
+                          <Loader2 className="w-3.5 h-3.5 text-[#C6FF3D] light:text-[#5E8F00] animate-spin" />
                         ) : (
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#24344B]"></span>
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#2A2650]"></span>
                         )}
                       </div>
-                      <p className="mt-1 text-[11px] text-[#9EACC2] light:text-[#64748B] pl-6 leading-relaxed">
+                      <p className="mt-1 text-[11px] text-[#A29FC9] light:text-[#6E6893] pl-6 leading-relaxed">
                         {stage.desc}
                       </p>
                     </div>
@@ -362,8 +368,8 @@ export default function ScannerPage() {
           )}
 
           {/* Engine Explanation Architecture Card */}
-          <div className="cyber-panel-secondary p-4 text-xs font-mono text-[#9EACC2] light:text-[#64748B]">
-            <span className="text-[#F1F5FF] light:text-[#172033] font-semibold block mb-1">
+          <div className="p-4 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA] text-xs font-mono text-[#A29FC9] light:text-[#6E6893]">
+            <span className="text-[#F2F0FF] light:text-[#1E1B4B] font-semibold block mb-1">
               Methodology & Technical Safeguards
             </span>
             Target URLs are validated against private non-routable IPv4/IPv6 address blocks (RFC 1918, RFC 4193) prior to socket-level handshake simulation. All heuristic evaluations, Shannon entropy calculations, and SSL/TLS certificate transparency lookups operate passively without executing untrusted scripts or browser payloads.

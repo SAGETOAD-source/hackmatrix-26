@@ -15,6 +15,9 @@ import {
 } from 'lucide-react'
 import Sidebar from '../components/dashboard/Sidebar'
 import TopNavbar from '../components/dashboard/TopNavbar'
+import Button from '../components/ui/Button'
+import Badge from '../components/ui/Badge'
+import CertificateStepper from '../components/ui/CertificateStepper'
 import { SIMULATION_DISCLAIMER } from '../data/mockData'
 import { fetchSecurityAnalysis } from '../services/securityService'
 import { isApiMode, getApiBaseUrl } from '../services/api'
@@ -98,50 +101,25 @@ function normalizeAnalysisPayload(data, targetFallback = 'github.com') {
       ? dns.aRecord
       : Array.isArray(dns.aRecords)
       ? dns.aRecords
-      : Array.isArray(dns.a_records)
-      ? dns.a_records
-      : dns.aRecord
-      ? [dns.aRecord]
       : []
 
     const aaaaRecords = Array.isArray(dns.aaaaRecord)
       ? dns.aaaaRecord
       : Array.isArray(dns.aaaaRecords)
       ? dns.aaaaRecords
-      : Array.isArray(dns.aaaa_records)
-      ? dns.aaaa_records
-      : dns.aaaaRecord
-      ? [dns.aaaaRecord]
       : []
 
     const mxRecords = Array.isArray(dns.mxRecord)
       ? dns.mxRecord
       : Array.isArray(dns.mxRecords)
       ? dns.mxRecords
-      : Array.isArray(dns.mx_records)
-      ? dns.mx_records
-      : dns.mxRecord
-      ? [dns.mxRecord]
       : []
 
     const nsRecords = Array.isArray(dns.nsRecord)
       ? dns.nsRecord
       : Array.isArray(dns.nsRecords)
       ? dns.nsRecords
-      : Array.isArray(dns.ns_records)
-      ? dns.ns_records
-      : dns.nsRecord
-      ? [dns.nsRecord]
       : []
-
-    const isDnssecActive =
-      dns.securityStatus?.dnssec === true ||
-      dns.securityStatus?.status === 'SECURE' ||
-      dns.dnsSecurityStatus?.dnssecStatus === 'PASS' ||
-      (typeof dns.dnsSecurityStatus?.dnssec === 'string' && /signed|active|pass/i.test(dns.dnsSecurityStatus.dnssec))
-
-    const isDnssecEvaluated =
-      dns.securityStatus !== undefined || dns.dnsSecurityStatus !== undefined
 
     dns = {
       ...dns,
@@ -149,13 +127,22 @@ function normalizeAnalysisPayload(data, targetFallback = 'github.com') {
       aaaaRecord: aaaaRecords,
       mxRecord: mxRecords,
       nsRecord: nsRecords,
-      securityStatus: {
-        status: isDnssecActive ? 'SECURE' : 'INSECURE',
-        dnssec: isDnssecActive,
-        isEvaluated: isDnssecEvaluated,
-        label: isDnssecEvaluated ? (isDnssecActive ? 'Active' : 'Disabled / Unsigned') : 'Not Evaluated',
+      securityStatus: dns.securityStatus || {
+        status: dns.dnssec ? 'SECURE' : 'INSECURE',
+        label: dns.dnssec ? 'DNSSEC Verified' : 'DNSSEC Not Configured',
+        isEvaluated: Boolean(dns.dnssec !== undefined),
       },
     }
+  }
+
+  // Safe redirects normalization
+  let redirects = []
+  if (Array.isArray(data.redirects)) {
+    redirects = data.redirects
+  } else if (Array.isArray(data.redirectChain)) {
+    redirects = data.redirectChain
+  } else if (Array.isArray(data.redirect_chain)) {
+    redirects = data.redirect_chain
   }
 
   // Safe findings normalization
@@ -163,37 +150,20 @@ function normalizeAnalysisPayload(data, targetFallback = 'github.com') {
   if (Array.isArray(data.findings)) {
     findings = data.findings
   } else if (Array.isArray(data.suspiciousIndicators)) {
-    findings = data.suspiciousIndicators.map((ind, i) => ({
-      id: `ind-${i}`,
-      title: typeof ind === 'string' ? ind : ind.title || 'Security Indicator',
-      severity: ind.severity || 'MEDIUM',
-      description: ind.description || (typeof ind === 'string' ? ind : 'Suspicious indicator flagged during analysis.'),
-      recommendedAction: ind.recommendation || ind.recommendedAction || 'Review host security configurations.',
-    }))
-  } else if (Array.isArray(data.suspicious_indicators)) {
-    findings = data.suspicious_indicators.map((ind, i) => ({
-      id: `ind-${i}`,
-      title: typeof ind === 'string' ? ind : ind.title || 'Security Indicator',
-      severity: ind.severity || 'MEDIUM',
-      description: ind.description || (typeof ind === 'string' ? ind : 'Suspicious indicator flagged during analysis.'),
-      recommendedAction: ind.recommendation || ind.recommendedAction || 'Review host security configurations.',
+    findings = data.suspiciousIndicators.map((item, idx) => ({
+      id: `ind-${idx}`,
+      title: item.title || 'Security Anomaly',
+      severity: item.severity || 'WARN',
+      description: item.description || '',
+      recommendedAction: item.remediation || 'Inspect destination posture.',
     }))
   }
 
-  // Safe redirects normalization
-  const redirects = Array.isArray(data.redirects)
-    ? data.redirects
-    : Array.isArray(data.redirectChain)
-    ? data.redirectChain
-    : Array.isArray(data.redirect_chain)
-    ? data.redirect_chain
-    : []
-
   return {
     domain,
-    cleanInput: data.cleanInput || targetFallback,
+    cleanInput: data.cleanInput || domain,
     isHttps,
-    isPhish: Boolean(data.isPhish),
+    isPhish: Boolean(data.isPhish || data.is_phishing),
     isSuspicious: Boolean(data.isSuspicious),
     certificate: cert,
     httpHeaders: headers,
@@ -212,22 +182,32 @@ export default function SecurityAnalysisPage() {
   const [targetInput, setTargetInput] = useState('github.com')
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [analysisError, setAnalysisError] = useState(null)
-  const [analysisData, setAnalysisData] = useState(() =>
-    normalizeAnalysisPayload(getSecurityAnalysis('github.com'), 'github.com')
-  )
   const rawId = useId()
 
-  const handleAnalyze = async (inputToAnalyze) => {
-    const target = (inputToAnalyze || targetInput).trim()
-    if (!target) return
+  const [analysisData, setAnalysisData] = useState(() => {
+    try {
+      const initial = getSecurityAnalysis('github.com')
+      return normalizeAnalysisPayload(initial, 'github.com')
+    } catch {
+      return normalizeAnalysisPayload(null, 'github.com')
+    }
+  })
+
+  const handleAnalyze = async (domainToAnalyze) => {
+    const trimmed = (domainToAnalyze || '').trim()
+    if (!trimmed) return
 
     setIsAnalyzing(true)
     setAnalysisError(null)
+
     try {
-      const data = await fetchSecurityAnalysis(target)
-      setAnalysisData(normalizeAnalysisPayload(data, target))
+      const result = await fetchSecurityAnalysis(trimmed)
+      setAnalysisData(normalizeAnalysisPayload(result, trimmed))
     } catch (err) {
-      setAnalysisError(err.message || 'Failed to inspect security parameters for the target host.')
+      console.warn('Analysis error:', err.message)
+      setAnalysisError(err.message || 'Deep security inspection probe failed.')
+      const fallback = getSecurityAnalysis(trimmed)
+      setAnalysisData(normalizeAnalysisPayload(fallback, trimmed))
     } finally {
       setIsAnalyzing(false)
     }
@@ -242,59 +222,53 @@ export default function SecurityAnalysisPage() {
   const dns = analysisData?.dns
 
   return (
-    <div className="min-h-screen bg-[#080F1E] light:bg-[#F5F7FC] text-[#F1F5FF] light:text-[#172033] transition-colors duration-200 flex">
+    <div className="min-h-screen bg-[#0B0A14] light:bg-[#F7F5FF] text-[#F2F0FF] light:text-[#1E1B4B] transition-colors duration-200 flex">
       <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
 
-      <div className={`flex-1 flex flex-col min-h-screen transition-all duration-200 ${collapsed ? 'ml-0 md:ml-18' : 'ml-0 md:ml-60'}`}>
+      <div
+        className={`flex-1 flex flex-col min-h-screen transition-all duration-200 ease-in-out ${
+          collapsed ? 'ml-0 md:ml-18' : 'ml-0 md:ml-60'
+        }`}
+      >
         <TopNavbar collapsed={collapsed} setCollapsed={setCollapsed} />
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8 space-y-6 max-w-5xl w-full mx-auto">
           {/* Header Title */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <div className="flex items-center space-x-2">
-                <span className="text-xs font-mono font-semibold uppercase tracking-wider text-[#287FE9]">
-                  INFRASTRUCTURE AUDIT
-                </span>
-              </div>
-              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#F1F5FF] light:text-[#172033] mt-0.5">
-                Website Security & TLS Cryptography Studio
-              </h1>
-              <p className="text-xs text-[#9EACC2] light:text-[#64748B] mt-0.5">
-                Passive inspection of transport layer cryptography, HTTP response hygiene, and DNS zone configurations.
-              </p>
-            </div>
-          </div>
-
-          {/* Mode & Demonstration Notice Banner */}
-          <div className="p-3 rounded-md bg-[#0D1728] light:bg-amber-50 border border-[#24344B] light:border-amber-200 text-xs text-[#9EACC2] light:text-amber-900 flex items-start sm:items-center justify-between gap-3 font-mono">
-            <div className="flex items-start sm:items-center space-x-2.5">
-              <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5 sm:mt-0" />
-              <span>
-                <strong className="text-[#F1F5FF] light:text-amber-950 font-semibold">
-                  {isApiMode() ? 'LIVE PROBE MODE:' : 'SIMULATED DEMONSTRATION MODE:'}
-                </strong>{' '}
-                {isApiMode()
-                  ? `Active API endpoint: ${getApiBaseUrl()}. TLS certificates and DNS records are requested via backend probes.`
-                  : 'All certificate chains, DNS zone records, and HTTP header audits are simulated client-side for architecture inspection.'}
+          <div>
+            <div className="flex items-center space-x-2">
+              <span className="text-xs font-mono font-semibold uppercase tracking-wider text-[#A78BFF]">
+                INFRASTRUCTURE RECONNAISSANCE
               </span>
             </div>
-            <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-[#111E32] light:bg-amber-100 text-[#9EACC2] light:text-amber-800 border border-[#24344B] light:border-amber-200 whitespace-nowrap">
-              {isApiMode() ? 'API Node' : 'Mock Heuristics'}
-            </span>
+            <h1 className="font-heading text-2xl sm:text-3xl font-extrabold tracking-tight text-[#F2F0FF] light:text-[#1E1B4B] mt-0.5">
+              Security & Transport Audit Console
+            </h1>
+            <p className="text-xs text-[#A29FC9] light:text-[#6E6893] mt-1">
+              Deep-dive inspection across cryptographic TLS certificates, passive HTTP headers, authoritative DNS records, and redirect chains.
+            </p>
           </div>
 
-          {/* Backend Gateway Architecture Notice */}
-          {analysisData?.backendNotice && (
-            <div className="p-3 rounded-md bg-blue-500/10 border border-blue-500/30 text-blue-300 text-xs flex items-start space-x-2 font-mono">
-              <Shield className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
-              <span>{analysisData.backendNotice}</span>
+          {/* Mode & Operational Notice Banner */}
+          <div className="p-3.5 rounded-xl bg-[#14122A] light:bg-white border border-[#2A2650] light:border-[#E2DEFA] text-xs text-[#A29FC9] light:text-[#6E6893] flex items-start sm:items-center justify-between gap-3 shadow-xs">
+            <div className="flex items-start sm:items-center space-x-2.5">
+              <AlertTriangle className="w-4 h-4 text-[#FFB020] shrink-0 mt-0.5 sm:mt-0" />
+              <span>
+                <strong className="text-[#F2F0FF] light:text-[#1E1B4B] font-semibold font-mono">
+                  {analysisData?.isLiveApi ? 'LIVE BACKEND AUDIT:' : 'SIMULATED DEMONSTRATION ENGINE:'}
+                </strong>{' '}
+                {analysisData?.isLiveApi
+                  ? `Telemetry returned live from API server (${getApiBaseUrl()}).`
+                  : 'Displaying synthetic telemetry and deterministic OWASP heuristics for interface evaluation.'}
+              </span>
             </div>
-          )}
+            <Badge verdict={analysisData?.isLiveApi ? 'safe' : 'suspicious'} size="sm">
+              {analysisData?.isLiveApi ? 'Live API' : 'Simulated'}
+            </Badge>
+          </div>
 
           {/* Analysis Error Banner with Retry */}
           {analysisError && (
-            <div className="p-3.5 rounded-md bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs flex items-center justify-between gap-3 font-mono">
+            <div className="p-3.5 rounded-xl bg-[#FF4D6D]/10 border border-[#FF4D6D]/30 text-[#FF4D6D] text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2 font-mono">
               <div className="flex items-center space-x-2">
                 <XCircle className="w-4 h-4 shrink-0" />
                 <span><strong>Analysis Error:</strong> {analysisError}</span>
@@ -302,7 +276,7 @@ export default function SecurityAnalysisPage() {
               <button
                 type="button"
                 onClick={() => handleAnalyze(targetInput)}
-                className="px-2.5 py-1 rounded bg-rose-600 hover:bg-rose-500 text-white font-semibold text-xs flex items-center space-x-1 cursor-pointer"
+                className="px-2.5 py-1 rounded bg-[#FF4D6D] hover:bg-[#FF4D6D]/90 text-white font-semibold text-xs flex items-center space-x-1 cursor-pointer"
               >
                 <RefreshCw className="w-3 h-3" />
                 <span>Retry</span>
@@ -311,67 +285,60 @@ export default function SecurityAnalysisPage() {
           )}
 
           {/* Domain Query Bar & Sample Pickers */}
-          <div className="cyber-card p-4 sm:p-5 space-y-3">
+          <div className="p-5 sm:p-6 rounded-2xl bg-[#14122A] light:bg-white border border-[#2A2650] light:border-[#E2DEFA] shadow-md space-y-4">
             <form
               onSubmit={(e) => {
                 e.preventDefault()
                 handleAnalyze(targetInput)
               }}
-              className="flex flex-col sm:flex-row gap-2"
+              className="flex flex-col sm:flex-row gap-2.5"
             >
-              <div className="relative flex-1">
-                <Terminal className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9EACC2]" />
+              <div className="relative flex-1 group">
+                <Terminal className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A29FC9] group-focus-within:text-[#A78BFF] transition-colors" />
                 <input
                   type="text"
                   value={targetInput}
                   onChange={(e) => setTargetInput(e.target.value)}
                   placeholder="Enter target domain or URL (e.g. github.com, paypal.com.verify.xyz)..."
-                  className="w-full pl-10 pr-3 py-2 rounded-md text-xs font-mono bg-[#0B1629] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0] text-[#F1F5FF] light:text-[#172033] placeholder-[#9EACC2]/60 focus:outline-none focus:border-[#287FE9]"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl text-xs font-mono bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA] text-[#F2F0FF] light:text-[#1E1B4B] placeholder-[#A29FC9]/60 focus:outline-none focus:border-[#7C5CFF] focus:ring-2 focus:ring-[#7C5CFF]/20 transition-all"
                 />
               </div>
 
-              <button
+              <Button
                 type="submit"
                 disabled={isAnalyzing || !targetInput.trim()}
-                className="cyber-btn-primary text-xs font-semibold py-2 px-4 whitespace-nowrap shrink-0 space-x-1.5"
+                variant="primary"
+                size="md"
+                className="whitespace-nowrap shrink-0"
+                icon={isAnalyzing ? Loader2 : Server}
               >
-                {isAnalyzing ? (
-                  <>
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    <span>Auditing Host...</span>
-                  </>
-                ) : (
-                  <>
-                    <Server className="w-3.5 h-3.5" />
-                    <span>Audit Security Posture</span>
-                  </>
-                )}
-              </button>
+                {isAnalyzing ? 'Auditing Host...' : 'Audit Security Posture'}
+              </Button>
             </form>
 
             {/* Quick Target Chips */}
-            <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-[#24344B] light:border-[#E2E8F0] text-xs font-mono">
-              <span className="text-[#9EACC2] light:text-[#64748B] text-[11px] mr-1">
+            <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-[#2A2650] light:border-[#E2DEFA] text-xs font-mono">
+              <span className="text-[#A29FC9] light:text-[#6E6893] text-[11px] mr-1">
                 Preset Hosts:
               </span>
               <button
                 type="button"
                 onClick={() => handlePresetSelect('github.com')}
-                className="px-2 py-0.5 rounded bg-[#0D1728] light:bg-slate-100 hover:bg-[#15253F] light:hover:bg-slate-200 text-emerald-400 border border-[#24344B] light:border-[#E2E8F0] transition-colors cursor-pointer text-[11px]"
+                className="px-2.5 py-1 rounded-lg bg-[#0B0A14] light:bg-[#F7F5FF] hover:bg-[#1C1936] text-[#34E0A1] border border-[#2A2650] light:border-[#E2DEFA] transition-all cursor-pointer text-[11px]"
               >
                 github.com (Clean EV/OV)
               </button>
               <button
                 type="button"
                 onClick={() => handlePresetSelect('http://paypal.com.account-verification-notice.xyz')}
-                className="px-2 py-0.5 rounded bg-[#0D1728] light:bg-slate-100 hover:bg-[#15253F] light:hover:bg-slate-200 text-rose-400 border border-[#24344B] light:border-[#E2E8F0] transition-colors cursor-pointer text-[11px]"
+                className="px-2.5 py-1 rounded-lg bg-[#0B0A14] light:bg-[#F7F5FF] hover:bg-[#1C1936] text-[#FF4D6D] border border-[#2A2650] light:border-[#E2DEFA] transition-all cursor-pointer text-[11px]"
               >
                 paypal.xyz (Phish/No TLS)
               </button>
               <button
                 type="button"
                 onClick={() => handlePresetSelect('https://cloud-storage-temporary-share-98.top')}
-                className="px-2 py-0.5 rounded bg-[#0D1728] light:bg-slate-100 hover:bg-[#15253F] light:hover:bg-slate-200 text-amber-400 border border-[#24344B] light:border-[#E2E8F0] transition-colors cursor-pointer text-[11px]"
+                className="px-2.5 py-1 rounded-lg bg-[#0B0A14] light:bg-[#F7F5FF] hover:bg-[#1C1936] text-[#FFB020] border border-[#2A2650] light:border-[#E2DEFA] transition-all cursor-pointer text-[11px]"
               >
                 cloud-storage.top (Suspicious DV)
               </button>
@@ -379,30 +346,30 @@ export default function SecurityAnalysisPage() {
           </div>
 
           {isAnalyzing ? (
-            <div className="p-12 text-center rounded-lg cyber-card space-y-3 font-mono">
-              <Loader2 className="w-6 h-6 text-[#287FE9] animate-spin mx-auto" />
-              <h3 className="font-bold text-[#F1F5FF] light:text-[#172033] text-sm">
+            <div className="p-12 text-center rounded-2xl bg-[#14122A] light:bg-white border border-[#2A2650] light:border-[#E2DEFA] shadow-md space-y-3 font-mono">
+              <Loader2 className="w-8 h-8 text-[#C6FF3D] light:text-[#5E8F00] animate-spin mx-auto" />
+              <h3 className="font-heading font-bold text-[#F2F0FF] light:text-[#1E1B4B] text-base">
                 Initiating Socket Handshake Simulation...
               </h3>
-              <p className="text-xs text-[#9EACC2] light:text-[#64748B]">
+              <p className="text-xs text-[#A29FC9] light:text-[#6E6893]">
                 Evaluating cipher suites, DNS resource records, and security headers.
               </p>
             </div>
           ) : (
-            <div key={(analysisData?.domain || 'unknown') + '-' + rawId} className="space-y-5">
+            <div key={(analysisData?.domain || 'unknown') + '-' + rawId} className="space-y-6">
               {/* 1. SSL/TLS CERTIFICATE CARD */}
-              <div className="cyber-card p-5 space-y-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#24344B] light:border-[#E2E8F0] pb-3">
-                  <div className="flex items-center space-x-2.5">
-                    <div className="w-8 h-8 rounded-md bg-[#0D1728] border border-[#24344B] text-[#287FE9] flex items-center justify-center">
+              <div className="p-6 rounded-2xl bg-[#14122A] light:bg-white border border-[#2A2650] light:border-[#E2DEFA] shadow-md space-y-5">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#2A2650] light:border-[#E2DEFA] pb-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-9 h-9 rounded-xl bg-[#7C5CFF]/15 border border-[#7C5CFF]/30 text-[#A78BFF] flex items-center justify-center">
                       <Lock className="w-4 h-4" />
                     </div>
                     <div>
-                      <h2 className="font-bold text-xs uppercase tracking-wider text-[#F1F5FF] light:text-[#172033]">
+                      <h2 className="font-heading font-bold text-xs uppercase tracking-wider text-[#F2F0FF] light:text-[#1E1B4B]">
                         1. SSL/TLS Certificate Posture
                       </h2>
-                      <span className="text-[11px] font-mono text-[#9EACC2] light:text-[#64748B]">
-                        Host: {analysisData?.domain || targetInput}
+                      <span className="text-[11px] font-mono text-[#A29FC9] light:text-[#6E6893]">
+                        Target Host: {analysisData?.domain || targetInput}
                       </span>
                     </div>
                   </div>
@@ -410,97 +377,99 @@ export default function SecurityAnalysisPage() {
                   {/* Validity Badge */}
                   {cert ? (
                     <div className="flex items-center space-x-2 font-mono">
-                      <span
-                        className={`inline-flex items-center space-x-1 px-2.5 py-0.5 rounded text-[11px] font-bold uppercase border ${
-                          cert?.validityBadge?.color === 'emerald'
-                            ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-                            : cert?.validityBadge?.color === 'amber'
-                            ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
-                            : 'bg-rose-500/10 text-rose-400 border-rose-500/30'
-                        }`}
-                      >
-                        {cert?.validityBadge?.color === 'emerald' ? (
-                          <CheckCircle2 className="w-3 h-3" />
-                        ) : (
-                          <XCircle className="w-3 h-3" />
-                        )}
-                        <span>{cert?.validityBadge?.label || cert?.status || 'Active'}</span>
-                      </span>
+                      <Badge verdict={cert?.validityBadge?.color === 'emerald' ? 'safe' : cert?.validityBadge?.color === 'amber' ? 'suspicious' : 'malicious'} size="sm">
+                        {cert?.validityBadge?.label || cert?.status || 'Active'}
+                      </Badge>
 
-                      <span className="px-2 py-0.5 rounded bg-[#0D1728] light:bg-slate-100 text-[#287FE9] text-[11px] font-bold border border-[#24344B] light:border-[#E2E8F0]">
-                        Days Remaining: {cert?.daysRemaining ?? 'N/A'}
+                      <span className="px-2.5 py-0.5 rounded-lg bg-[#0B0A14] light:bg-[#EDE9FE] text-[#A78BFF] light:text-[#7C5CFF] text-[11px] font-bold border border-[#2A2650] light:border-[#D4CDFA]">
+                        Days Left: {cert?.daysRemaining ?? 'N/A'}
                       </span>
                     </div>
                   ) : (
-                    <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase border bg-amber-500/10 text-amber-400 border-amber-500/25">
+                    <Badge verdict="suspicious" size="sm">
                       No Certificate Telemetry
-                    </span>
+                    </Badge>
                   )}
                 </div>
 
+                {/* PKI Certificate Stepper Visual Trust Chain */}
+                {cert && (
+                  <div>
+                    <h4 className="text-[11px] font-mono uppercase tracking-wider text-[#A29FC9] light:text-[#6E6893] mb-3">
+                      Certificate Trust Path
+                    </h4>
+                    <CertificateStepper
+                      rootCA="Root Authority (ISRG Root X1 / DigiCert)"
+                      intermediateCA={cert.issuer || "Let's Encrypt Authority"}
+                      leafDomain={analysisData?.domain || "Target Destination"}
+                      validTo={cert.expiryDate}
+                    />
+                  </div>
+                )}
+
                 {cert ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs font-mono">
-                    <div className="p-3 rounded bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0]">
-                      <span className="text-[10px] uppercase text-[#9EACC2] block mb-1">Status</span>
-                      <span className="font-bold text-[#F1F5FF] light:text-[#172033]">{cert.status || 'Active'}</span>
+                    <div className="p-3.5 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA]">
+                      <span className="text-[10px] uppercase text-[#A29FC9] block mb-1">Status</span>
+                      <span className="font-bold text-[#F2F0FF] light:text-[#1E1B4B]">{cert.status || 'Active'}</span>
                     </div>
-                    <div className="p-3 rounded bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0]">
-                      <span className="text-[10px] uppercase text-[#9EACC2] block mb-1">Certificate Issuer</span>
-                      <span className="font-bold text-[#F1F5FF] light:text-[#172033] truncate block" title={cert.issuer}>
+                    <div className="p-3.5 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA]">
+                      <span className="text-[10px] uppercase text-[#A29FC9] block mb-1">Certificate Issuer</span>
+                      <span className="font-bold text-[#F2F0FF] light:text-[#1E1B4B] truncate block" title={cert.issuer}>
                         {cert.issuer || 'Information Not Provided'}
                       </span>
                     </div>
-                    <div className="p-3 rounded bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0]">
-                      <span className="text-[10px] uppercase text-[#9EACC2] block mb-1">Subject Common Name</span>
-                      <span className="font-bold text-[#F1F5FF] light:text-[#172033] truncate block" title={cert.subject}>
+                    <div className="p-3.5 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA]">
+                      <span className="text-[10px] uppercase text-[#A29FC9] block mb-1">Subject Common Name</span>
+                      <span className="font-bold text-[#F2F0FF] light:text-[#1E1B4B] truncate block" title={cert.subject}>
                         {cert.subject || `CN=${analysisData?.domain}`}
                       </span>
                     </div>
-                    <div className="p-3 rounded bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0]">
-                      <span className="text-[10px] uppercase text-[#9EACC2] block mb-1">Valid From</span>
-                      <span className="text-[#F1F5FF] light:text-[#172033]">{cert.validFrom || 'N/A'}</span>
+                    <div className="p-3.5 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA]">
+                      <span className="text-[10px] uppercase text-[#A29FC9] block mb-1">Valid From</span>
+                      <span className="text-[#F2F0FF] light:text-[#1E1B4B]">{cert.validFrom || 'N/A'}</span>
                     </div>
-                    <div className="p-3 rounded bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0]">
-                      <span className="text-[10px] uppercase text-[#9EACC2] block mb-1">Expiry Horizon</span>
-                      <span className="text-[#F1F5FF] light:text-[#172033]">{cert.expiryDate || 'N/A'}</span>
+                    <div className="p-3.5 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA]">
+                      <span className="text-[10px] uppercase text-[#A29FC9] block mb-1">Expiry Horizon</span>
+                      <span className="text-[#F2F0FF] light:text-[#1E1B4B]">{cert.expiryDate || 'N/A'}</span>
                     </div>
-                    <div className="p-3 rounded bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0]">
-                      <span className="text-[10px] uppercase text-[#9EACC2] block mb-1">Key Length & Hash</span>
-                      <span className="text-[#F1F5FF] light:text-[#172033]">
+                    <div className="p-3.5 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA]">
+                      <span className="text-[10px] uppercase text-[#A29FC9] block mb-1">Key Length & Hash</span>
+                      <span className="text-[#F2F0FF] light:text-[#1E1B4B]">
                         {cert.keySize || 'N/A'} {cert.signatureAlgorithm ? `/ ${cert.signatureAlgorithm}` : ''}
                       </span>
                     </div>
                   </div>
                 ) : (
-                  <div className="p-4 rounded-md bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0] text-xs font-mono text-[#9EACC2]">
+                  <div className="p-4 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA] text-xs font-mono text-[#A29FC9]">
                     No cryptographic TLS/SSL certificate parameters detected or reported for this target host.
                   </div>
                 )}
               </div>
 
               {/* 2. HTTP SECURITY HEADERS */}
-              <div className="cyber-card p-5 space-y-4">
-                <div className="flex items-center justify-between border-b border-[#24344B] light:border-[#E2E8F0] pb-3">
-                  <div className="flex items-center space-x-2.5">
-                    <div className="w-8 h-8 rounded-md bg-[#0D1728] border border-[#24344B] text-[#287FE9] flex items-center justify-center">
+              <div className="p-6 rounded-2xl bg-[#14122A] light:bg-white border border-[#2A2650] light:border-[#E2DEFA] shadow-md space-y-4">
+                <div className="flex items-center justify-between border-b border-[#2A2650] light:border-[#E2DEFA] pb-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-9 h-9 rounded-xl bg-[#7C5CFF]/15 border border-[#7C5CFF]/30 text-[#A78BFF] flex items-center justify-center">
                       <Shield className="w-4 h-4" />
                     </div>
                     <div>
-                      <h2 className="font-bold text-xs uppercase tracking-wider text-[#F1F5FF] light:text-[#172033]">
+                      <h2 className="font-heading font-bold text-xs uppercase tracking-wider text-[#F2F0FF] light:text-[#1E1B4B]">
                         2. HTTP Security Response Headers
                       </h2>
-                      <span className="text-[11px] font-mono text-[#9EACC2] light:text-[#64748B]">
+                      <span className="text-[11px] font-mono text-[#A29FC9] light:text-[#6E6893]">
                         OWASP Defensive Header Hygiene Audit
                       </span>
                     </div>
                   </div>
-                  <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase border bg-[#0D1728] light:bg-slate-100 border-[#24344B] text-[#9EACC2]">
+                  <span className="px-2.5 py-0.5 rounded-lg text-[10px] font-mono font-bold uppercase border bg-[#0B0A14] light:bg-[#F7F5FF] border-[#2A2650] light:border-[#E2DEFA] text-[#A29FC9]">
                     Headers Audited: {analysisData?.httpHeaders?.length || 0}
                   </span>
                 </div>
 
                 {analysisData?.httpHeaders && analysisData.httpHeaders.length > 0 ? (
-                  <div className="space-y-2 font-mono text-xs">
+                  <div className="space-y-2.5 font-mono text-xs">
                     {analysisData.httpHeaders.map((hdr, idx) => {
                       const isGood = hdr?.status === 'GOOD' || hdr?.status === 'PASS'
                       const isWarn = hdr?.status === 'WARN'
@@ -508,31 +477,23 @@ export default function SecurityAnalysisPage() {
                       return (
                         <div
                           key={idx}
-                          className="p-3 rounded-md bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0] space-y-1.5"
+                          className="p-3.5 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA] space-y-1.5"
                         >
                           <div className="flex items-center justify-between">
-                            <span className="font-bold text-xs text-[#F1F5FF] light:text-[#172033]">
+                            <span className="font-bold text-xs text-[#F2F0FF] light:text-[#1E1B4B]">
                               {hdr?.name || `Header #${idx + 1}`}
                             </span>
-                            <span
-                              className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${
-                                isGood
-                                  ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/25'
-                                  : isWarn
-                                  ? 'bg-amber-500/10 text-amber-400 border-amber-500/25'
-                                  : 'bg-rose-500/10 text-rose-400 border-rose-500/25'
-                              }`}
-                            >
+                            <Badge verdict={isGood ? 'safe' : isWarn ? 'suspicious' : 'malicious'} size="sm">
                               {hdr?.statusBadge || hdr?.status || 'OBSERVED'}
-                            </span>
+                            </Badge>
                           </div>
                           {hdr?.explanation && (
-                            <p className="text-[11px] text-[#9EACC2] light:text-[#64748B] leading-relaxed">
+                            <p className="text-[11px] text-[#A29FC9] light:text-[#6E6893] leading-relaxed">
                               {hdr.explanation}
                             </p>
                           )}
                           {hdr?.recommendation && (
-                            <div className="text-[11px] text-[#287FE9] pt-1">
+                            <div className="text-[11px] text-[#A78BFF] light:text-[#7C5CFF] pt-1">
                               <span className="font-semibold">Remediation:</span> {hdr.recommendation}
                             </div>
                           )}
@@ -541,94 +502,86 @@ export default function SecurityAnalysisPage() {
                     })}
                   </div>
                 ) : (
-                  <div className="p-4 rounded-md bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0] text-xs font-mono text-[#9EACC2]">
+                  <div className="p-4 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA] text-xs font-mono text-[#A29FC9]">
                     No HTTP security response header records (HSTS, CSP, X-Frame-Options) were returned for this target.
                   </div>
                 )}
               </div>
 
               {/* 3. DNS INFORMATION */}
-              <div className="cyber-card p-5 space-y-4">
-                <div className="flex items-center justify-between border-b border-[#24344B] light:border-[#E2E8F0] pb-3">
-                  <div className="flex items-center space-x-2.5">
-                    <div className="w-8 h-8 rounded-md bg-[#0D1728] border border-[#24344B] text-[#287FE9] flex items-center justify-center">
+              <div className="p-6 rounded-2xl bg-[#14122A] light:bg-white border border-[#2A2650] light:border-[#E2DEFA] shadow-md space-y-4">
+                <div className="flex items-center justify-between border-b border-[#2A2650] light:border-[#E2DEFA] pb-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-9 h-9 rounded-xl bg-[#7C5CFF]/15 border border-[#7C5CFF]/30 text-[#A78BFF] flex items-center justify-center">
                       <Globe className="w-4 h-4" />
                     </div>
                     <div>
-                      <h2 className="font-bold text-xs uppercase tracking-wider text-[#F1F5FF] light:text-[#172033]">
+                      <h2 className="font-heading font-bold text-xs uppercase tracking-wider text-[#F2F0FF] light:text-[#1E1B4B]">
                         3. DNS Zone Records & Infrastructure
                       </h2>
-                      <span className="text-[11px] font-mono text-[#9EACC2] light:text-[#64748B]">
+                      <span className="text-[11px] font-mono text-[#A29FC9] light:text-[#6E6893]">
                         Authoritative Resource Records
                       </span>
                     </div>
                   </div>
 
                   {/* DNSSEC Status Badge with Safe Fallback */}
-                  <span
-                    className={`px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase border ${
-                      dns?.securityStatus?.status === 'SECURE'
-                        ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/25'
-                        : dns?.securityStatus?.isEvaluated
-                        ? 'bg-amber-500/10 text-amber-400 border-amber-500/25'
-                        : 'bg-[#111E32] text-[#9EACC2] border-[#24344B]'
-                    }`}
-                  >
+                  <Badge verdict={dns?.securityStatus?.status === 'SECURE' ? 'safe' : 'suspicious'} size="sm">
                     DNSSEC: {dns?.securityStatus?.label || 'Not Evaluated'}
-                  </span>
+                  </Badge>
                 </div>
 
                 {dns ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
-                    <div className="p-3 rounded bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0]">
-                      <span className="text-[10px] uppercase text-[#9EACC2] block mb-1">A Record (IPv4)</span>
-                      <span className="text-[#F1F5FF] light:text-[#172033] font-bold block truncate">
+                    <div className="p-3.5 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA]">
+                      <span className="text-[10px] uppercase text-[#A29FC9] block mb-1">A Record (IPv4)</span>
+                      <span className="text-[#F2F0FF] light:text-[#1E1B4B] font-bold block truncate">
                         {dns.aRecord?.length > 0 ? dns.aRecord.join(', ') : 'Not Configured / None'}
                       </span>
                     </div>
-                    <div className="p-3 rounded bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0]">
-                      <span className="text-[10px] uppercase text-[#9EACC2] block mb-1">AAAA Record (IPv6)</span>
-                      <span className="text-[#F1F5FF] light:text-[#172033] font-bold block truncate">
+                    <div className="p-3.5 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA]">
+                      <span className="text-[10px] uppercase text-[#A29FC9] block mb-1">AAAA Record (IPv6)</span>
+                      <span className="text-[#F2F0FF] light:text-[#1E1B4B] font-bold block truncate">
                         {dns.aaaaRecord?.length > 0 ? dns.aaaaRecord.join(', ') : 'Not Configured / None'}
                       </span>
                     </div>
-                    <div className="p-3 rounded bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0]">
-                      <span className="text-[10px] uppercase text-[#9EACC2] block mb-1">MX Records (Mail Exchanger)</span>
-                      <span className="text-[#F1F5FF] light:text-[#172033] block truncate">
+                    <div className="p-3.5 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA]">
+                      <span className="text-[10px] uppercase text-[#A29FC9] block mb-1">MX Records (Mail Exchanger)</span>
+                      <span className="text-[#F2F0FF] light:text-[#1E1B4B] block truncate">
                         {dns.mxRecord?.length > 0 ? dns.mxRecord.join(', ') : 'Not Configured / None'}
                       </span>
                     </div>
-                    <div className="p-3 rounded bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0]">
-                      <span className="text-[10px] uppercase text-[#9EACC2] block mb-1">Authoritative NS (Nameservers)</span>
-                      <span className="text-[#F1F5FF] light:text-[#172033] block truncate">
+                    <div className="p-3.5 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA]">
+                      <span className="text-[10px] uppercase text-[#A29FC9] block mb-1">Authoritative NS (Nameservers)</span>
+                      <span className="text-[#F2F0FF] light:text-[#1E1B4B] block truncate">
                         {dns.nsRecord?.length > 0 ? dns.nsRecord.join(', ') : 'Not Configured / None'}
                       </span>
                     </div>
                   </div>
                 ) : (
-                  <div className="p-4 rounded-md bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0] text-xs font-mono text-[#9EACC2]">
+                  <div className="p-4 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA] text-xs font-mono text-[#A29FC9]">
                     No DNS zone resource records were returned for this target host.
                   </div>
                 )}
               </div>
 
               {/* 4. REDIRECT CHAIN & TRAJECTORY */}
-              <div className="cyber-card p-5 space-y-4">
-                <div className="flex items-center justify-between border-b border-[#24344B] light:border-[#E2E8F0] pb-3">
-                  <div className="flex items-center space-x-2.5">
-                    <div className="w-8 h-8 rounded-md bg-[#0D1728] border border-[#24344B] text-[#287FE9] flex items-center justify-center">
+              <div className="p-6 rounded-2xl bg-[#14122A] light:bg-white border border-[#2A2650] light:border-[#E2DEFA] shadow-md space-y-4">
+                <div className="flex items-center justify-between border-b border-[#2A2650] light:border-[#E2DEFA] pb-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-9 h-9 rounded-xl bg-[#7C5CFF]/15 border border-[#7C5CFF]/30 text-[#A78BFF] flex items-center justify-center">
                       <ArrowRight className="w-4 h-4" />
                     </div>
                     <div>
-                      <h2 className="font-bold text-xs uppercase tracking-wider text-[#F1F5FF] light:text-[#172033]">
+                      <h2 className="font-heading font-bold text-xs uppercase tracking-wider text-[#F2F0FF] light:text-[#1E1B4B]">
                         4. Redirect Chain & Hop Trajectory
                       </h2>
-                      <span className="text-[11px] font-mono text-[#9EACC2] light:text-[#64748B]">
+                      <span className="text-[11px] font-mono text-[#A29FC9] light:text-[#6E6893]">
                         HTTP Status Hop Trajectory
                       </span>
                     </div>
                   </div>
-                  <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase border bg-[#0D1728] light:bg-slate-100 border-[#24344B] text-[#9EACC2]">
+                  <span className="px-2.5 py-0.5 rounded-lg text-[10px] font-mono font-bold uppercase border bg-[#0B0A14] light:bg-[#F7F5FF] border-[#2A2650] light:border-[#E2DEFA] text-[#A29FC9]">
                     Hops: {analysisData?.redirects?.length || 0}
                   </span>
                 </div>
@@ -636,82 +589,80 @@ export default function SecurityAnalysisPage() {
                 {analysisData?.redirects && analysisData.redirects.length > 0 ? (
                   <div className="space-y-2 text-xs font-mono">
                     {analysisData.redirects.map((hop, idx) => (
-                      <div key={idx} className="p-2.5 rounded bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0] flex items-center justify-between">
-                        <span className="text-[#F1F5FF] light:text-[#172033] truncate max-w-md">
+                      <div key={idx} className="p-3 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA] flex items-center justify-between">
+                        <span className="text-[#F2F0FF] light:text-[#1E1B4B] truncate max-w-md">
                           {typeof hop === 'string' ? hop : hop.url || `Hop ${idx + 1}`}
                         </span>
-                        <span className="text-[#287FE9] font-bold">
+                        <span className="text-[#A78BFF] light:text-[#7C5CFF] font-bold">
                           {typeof hop === 'object' && hop.statusCode ? hop.statusCode : '301 / 302'}
                         </span>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="p-3 rounded bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0] text-xs font-mono text-[#9EACC2]">
+                  <div className="p-3.5 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA] text-xs font-mono text-[#A29FC9]">
                     Direct connection established (0 intermediate hops) or redirect trajectory was not reported by host probes.
                   </div>
                 )}
               </div>
 
               {/* 5. SECURITY FINDINGS */}
-              <div className="cyber-card p-5 space-y-4">
-                <div className="flex items-center justify-between border-b border-[#24344B] light:border-[#E2E8F0] pb-3">
-                  <div className="flex items-center space-x-2.5">
-                    <div className="w-8 h-8 rounded-md bg-[#0D1728] border border-[#24344B] text-[#287FE9] flex items-center justify-center">
+              <div className="p-6 rounded-2xl bg-[#14122A] light:bg-white border border-[#2A2650] light:border-[#E2DEFA] shadow-md space-y-4">
+                <div className="flex items-center justify-between border-b border-[#2A2650] light:border-[#E2DEFA] pb-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-9 h-9 rounded-xl bg-[#7C5CFF]/15 border border-[#7C5CFF]/30 text-[#A78BFF] flex items-center justify-center">
                       <ShieldAlert className="w-4 h-4" />
                     </div>
                     <div>
-                      <h2 className="font-bold text-xs uppercase tracking-wider text-[#F1F5FF] light:text-[#172033]">
+                      <h2 className="font-heading font-bold text-xs uppercase tracking-wider text-[#F2F0FF] light:text-[#1E1B4B]">
                         5. Security Findings & Technical Recommendations
                       </h2>
-                      <span className="text-[11px] font-mono text-[#9EACC2] light:text-[#64748B]">
+                      <span className="text-[11px] font-mono text-[#A29FC9] light:text-[#6E6893]">
                         Prioritized Defensive Remediation Matrix
                       </span>
                     </div>
                   </div>
-                  <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase border bg-[#0D1728] light:bg-slate-100 border-[#24344B] text-[#9EACC2]">
+                  <span className="px-2.5 py-0.5 rounded-lg text-[10px] font-mono font-bold uppercase border bg-[#0B0A14] light:bg-[#F7F5FF] border-[#2A2650] light:border-[#E2DEFA] text-[#A29FC9]">
                     Findings: {analysisData?.findings?.length || 0}
                   </span>
                 </div>
 
                 {analysisData?.findings && analysisData.findings.length > 0 ? (
-                  <div className="space-y-2.5 font-mono text-xs">
-                    {analysisData.findings.map((finding, idx) => (
-                      <div
-                        key={finding?.id || idx}
-                        className="p-3.5 rounded-md bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0] space-y-1.5"
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className="font-bold text-xs text-[#F1F5FF] light:text-[#172033]">
-                            {finding?.title || 'Security Finding'}
-                          </span>
-                          <span
-                            className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${
-                              finding?.severity === 'CRITICAL' || finding?.severity === 'HIGH'
-                                ? 'bg-rose-500/10 text-rose-400 border-rose-500/25'
-                                : finding?.severity === 'MEDIUM' || finding?.severity === 'WARN'
-                                ? 'bg-amber-500/10 text-amber-400 border-amber-500/25'
-                                : 'bg-[#287FE9]/10 text-[#55B7FF] border-[#287FE9]/25'
-                            }`}
-                          >
-                            {finding?.severity || 'INFORMATIONAL'} SEVERITY
-                          </span>
-                        </div>
-                        {finding?.description && (
-                          <p className="text-[11px] text-[#9EACC2] light:text-[#64748B] leading-relaxed">
-                            {finding.description}
-                          </p>
-                        )}
-                        {finding?.recommendedAction && (
-                          <div className="text-[11px] text-emerald-400 light:text-emerald-700 pt-1">
-                            <span className="font-semibold">Recommended Fix:</span> {finding.recommendedAction}
+                  <div className="space-y-3 font-mono text-xs">
+                    {analysisData.findings.map((finding, idx) => {
+                      const isCrit = finding?.severity === 'CRITICAL' || finding?.severity === 'HIGH'
+                      const isWarn = finding?.severity === 'MEDIUM' || finding?.severity === 'WARN'
+                      const verdict = isCrit ? 'malicious' : isWarn ? 'suspicious' : 'safe'
+
+                      return (
+                        <div
+                          key={finding?.id || idx}
+                          className="p-4 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA] space-y-2"
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="font-bold text-xs text-[#F2F0FF] light:text-[#1E1B4B]">
+                              {finding?.title || 'Security Finding'}
+                            </span>
+                            <Badge verdict={verdict} size="sm">
+                              {finding?.severity || 'INFORMATIONAL'}
+                            </Badge>
                           </div>
-                        )}
-                      </div>
-                    ))}
+                          {finding?.description && (
+                            <p className="text-[11px] text-[#A29FC9] light:text-[#6E6893] leading-relaxed">
+                              {finding.description}
+                            </p>
+                          )}
+                          {finding?.recommendedAction && (
+                            <div className="text-[11px] text-[#34E0A1] light:text-[#059669] pt-1">
+                              <span className="font-semibold">Recommended Fix:</span> {finding.recommendedAction}
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })}
                   </div>
                 ) : (
-                  <div className="p-4 rounded-md bg-[#0D1728] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0] text-xs font-mono text-[#9EACC2]">
+                  <div className="p-4 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA] text-xs font-mono text-[#A29FC9]">
                     No active vulnerabilities, TLS anomalies, or critical findings detected for this host.
                   </div>
                 )}
@@ -720,7 +671,7 @@ export default function SecurityAnalysisPage() {
           )}
 
           {/* Demonstration Notice Footer */}
-          <div className="p-2 text-center text-[11px] font-mono text-[#9EACC2] italic">
+          <div className="p-2 text-center text-[11px] font-mono text-[#A29FC9] light:text-[#6E6893] italic">
             {SIMULATION_DISCLAIMER}
           </div>
         </main>

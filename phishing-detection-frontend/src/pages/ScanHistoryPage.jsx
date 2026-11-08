@@ -4,9 +4,6 @@ import {
   Download,
   Trash2,
   Search,
-  ShieldAlert,
-  ShieldCheck,
-  CheckCircle,
   Eye,
   Copy,
   Check,
@@ -17,6 +14,8 @@ import {
 } from 'lucide-react'
 import Sidebar from '../components/dashboard/Sidebar'
 import TopNavbar from '../components/dashboard/TopNavbar'
+import Button from '../components/ui/Button'
+import Badge from '../components/ui/Badge'
 import { SIMULATION_DISCLAIMER } from '../data/mockData'
 import {
   fetchHistory,
@@ -26,27 +25,17 @@ import {
 } from '../services/historyService'
 import { getScanHistory } from '../utils/scanStorage'
 
-const RISK_BADGES = {
-  CRITICAL: {
-    bg: 'bg-rose-500/10 text-rose-400 border-rose-500/25',
-    icon: ShieldAlert,
-    label: 'Critical Risk',
-  },
-  HIGH: {
-    bg: 'bg-orange-500/10 text-orange-400 border-orange-500/25',
-    icon: ShieldAlert,
-    label: 'High Risk',
-  },
-  SUSPICIOUS: {
-    bg: 'bg-amber-500/10 text-amber-400 border-amber-500/25',
-    icon: ShieldCheck,
-    label: 'Suspicious',
-  },
-  LOW: {
-    bg: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/25',
-    icon: CheckCircle,
-    label: 'Legitimate',
-  },
+function getVerdictType(riskLevel) {
+  if (riskLevel === 'CRITICAL' || riskLevel === 'HIGH' || riskLevel === 'MALICIOUS') return 'malicious'
+  if (riskLevel === 'SUSPICIOUS') return 'suspicious'
+  if (riskLevel === 'LOW' || riskLevel === 'SAFE') return 'safe'
+  return 'unknown'
+}
+
+function getScoreColor(score) {
+  if (score >= 70) return 'text-[#FF4D6D]'
+  if (score >= 40) return 'text-[#FFB020]'
+  return 'text-[#34E0A1]'
 }
 
 export default function ScanHistoryPage() {
@@ -142,14 +131,14 @@ export default function ScanHistoryPage() {
 
       const matchesRisk =
         riskFilter === 'ALL' ||
-        (riskFilter === 'CRITICAL' && scan.riskLevel === 'CRITICAL') ||
+        (riskFilter === 'CRITICAL' && (scan.riskLevel === 'CRITICAL' || scan.riskLevel === 'HIGH')) ||
         (riskFilter === 'HIGH' && scan.riskLevel === 'HIGH') ||
         (riskFilter === 'SUSPICIOUS' && scan.riskLevel === 'SUSPICIOUS') ||
-        (riskFilter === 'LOW' && scan.riskLevel === 'LOW')
+        (riskFilter === 'LOW' && (scan.riskLevel === 'LOW' || scan.riskLevel === 'SAFE'))
 
       const matchesPrediction =
         predictionFilter === 'ALL' ||
-        scan.prediction.toLowerCase() === predictionFilter.toLowerCase()
+        scan.prediction?.toLowerCase() === predictionFilter.toLowerCase()
 
       return matchesSearch && matchesRisk && matchesPrediction
     })
@@ -176,7 +165,7 @@ export default function ScanHistoryPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#080F1E] light:bg-[#F5F7FC] text-[#F1F5FF] light:text-[#172033] transition-colors duration-200 flex">
+    <div className="min-h-screen bg-[#0B0A14] light:bg-[#F7F5FF] text-[#F2F0FF] light:text-[#1E1B4B] transition-colors duration-200 flex">
       <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
 
       <div className={`flex-1 flex flex-col min-h-screen transition-all duration-200 ${collapsed ? 'ml-0 md:ml-18' : 'ml-0 md:ml-60'}`}>
@@ -184,66 +173,68 @@ export default function ScanHistoryPage() {
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8 space-y-6 max-w-6xl w-full mx-auto">
           {/* Header & Primary Actions */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <div className="flex items-center space-x-2">
-                <span className="text-xs font-mono font-semibold uppercase tracking-wider text-[#287FE9]">
-                  AUDIT LOGS
+                <span className="text-xs font-mono font-semibold uppercase tracking-wider text-[#A78BFF]">
+                  AUDIT LOG ARCHIVE
                 </span>
               </div>
-              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#F1F5FF] light:text-[#172033] mt-0.5">
+              <h1 className="font-heading text-2xl sm:text-3xl font-extrabold tracking-tight text-[#F2F0FF] light:text-[#1E1B4B] mt-0.5">
                 Security Scan History & Archive
               </h1>
-              <p className="text-xs text-[#9EACC2] light:text-[#64748B] mt-0.5">
+              <p className="text-xs text-[#A29FC9] light:text-[#6E6893] mt-1">
                 Historical record of audited targets, lexical feature scores, and classification telemetry.
               </p>
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
-              <button
-                type="button"
+              <Button
                 onClick={loadHistory}
                 disabled={isLoading}
-                title="Reload history"
-                className="px-2.5 py-1.5 rounded-md text-xs font-mono bg-[#111E32] light:bg-white hover:bg-[#15253F] light:hover:bg-slate-100 text-[#9EACC2] light:text-[#172033] border border-[#24344B] light:border-[#E2E8F0] flex items-center space-x-1.5 transition-colors cursor-pointer"
+                variant="outline"
+                size="sm"
+                icon={RefreshCw}
               >
-                <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
-                <span className="hidden sm:inline">Refresh</span>
-              </button>
+                Refresh
+              </Button>
 
-              <button
-                type="button"
+              <Button
                 onClick={handleExportCSV}
                 disabled={filteredScans.length === 0}
-                className="px-3 py-1.5 rounded-md text-xs font-mono bg-[#111E32] light:bg-white hover:bg-[#15253F] light:hover:bg-slate-100 text-[#9EACC2] light:text-[#172033] border border-[#24344B] light:border-[#E2E8F0] flex items-center space-x-1.5 disabled:opacity-50 transition-colors cursor-pointer"
+                variant="outline"
+                size="sm"
+                icon={Download}
               >
-                <Download className="w-3.5 h-3.5" />
-                <span>Export CSV</span>
-              </button>
+                Export CSV
+              </Button>
 
-              <button
-                type="button"
+              <Button
                 onClick={() => setShowClearModal(true)}
                 disabled={scans.length === 0}
-                className="px-3 py-1.5 rounded-md text-xs font-mono bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 flex items-center space-x-1.5 disabled:opacity-50 transition-colors cursor-pointer"
+                variant="outline"
+                size="sm"
+                icon={Trash2}
+                className="text-[#FF4D6D] hover:bg-[#FF4D6D]/10 hover:border-[#FF4D6D]/40"
               >
-                <Trash2 className="w-3.5 h-3.5" />
-                <span>Clear</span>
-              </button>
+                Clear Archive
+              </Button>
 
-              <Link
+              <Button
+                as={Link}
                 to="/scanner"
-                className="cyber-btn-primary px-3 py-1.5 text-xs font-semibold inline-flex items-center space-x-1.5"
+                variant="primary"
+                size="sm"
+                icon={Plus}
               >
-                <Plus className="w-3.5 h-3.5" />
-                <span>New Scan</span>
-              </Link>
+                New Scan
+              </Button>
             </div>
           </div>
 
           {/* History Error Banner */}
           {historyError && (
-            <div className="p-3.5 rounded-md bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs flex items-center justify-between gap-3 font-mono">
+            <div className="p-4 rounded-xl bg-[#FF4D6D]/10 border border-[#FF4D6D]/30 text-[#FF4D6D] text-xs flex items-center justify-between gap-3 font-mono">
               <div className="flex items-center space-x-2">
                 <AlertTriangle className="w-4 h-4 shrink-0" />
                 <span>{historyError}</span>
@@ -251,7 +242,7 @@ export default function ScanHistoryPage() {
               <button
                 type="button"
                 onClick={loadHistory}
-                className="px-2.5 py-1 rounded bg-rose-600 hover:bg-rose-500 text-white font-semibold text-xs"
+                className="px-2.5 py-1 rounded bg-[#FF4D6D] hover:bg-[#FF4D6D]/90 text-white font-semibold text-xs"
               >
                 Retry
               </button>
@@ -259,17 +250,17 @@ export default function ScanHistoryPage() {
           )}
 
           {/* Filter, Search & Sort Toolbar */}
-          <div className="cyber-card p-3 sm:p-4 space-y-3 font-mono">
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-2.5">
+          <div className="p-4 sm:p-5 rounded-2xl bg-[#14122A] light:bg-white border border-[#2A2650] light:border-[#E2DEFA] shadow-sm space-y-3 font-mono">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
               {/* Search input */}
-              <div className="md:col-span-5 relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#9EACC2]" />
+              <div className="md:col-span-5 relative group">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#A29FC9] group-focus-within:text-[#A78BFF] transition-colors" />
                 <input
                   type="text"
                   placeholder="Filter by domain or URL string..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-9 pr-3 py-1.5 rounded-md text-xs bg-[#0B1629] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0] text-[#F1F5FF] light:text-[#172033] placeholder-[#9EACC2]/60 focus:outline-none focus:border-[#287FE9]"
+                  className="w-full pl-9 pr-3 py-2 rounded-xl text-xs bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA] text-[#F2F0FF] light:text-[#1E1B4B] placeholder-[#A29FC9]/60 focus:outline-none focus:border-[#7C5CFF]"
                 />
               </div>
 
@@ -278,10 +269,10 @@ export default function ScanHistoryPage() {
                 <select
                   value={riskFilter}
                   onChange={(e) => setRiskFilter(e.target.value)}
-                  className="w-full px-2.5 py-1.5 rounded-md text-xs bg-[#0B1629] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0] text-[#F1F5FF] light:text-[#172033] focus:outline-none focus:border-[#287FE9]"
+                  className="w-full px-3 py-2 rounded-xl text-xs bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA] text-[#F2F0FF] light:text-[#1E1B4B] focus:outline-none focus:border-[#7C5CFF]"
                 >
                   <option value="ALL">All Risk Levels</option>
-                  <option value="CRITICAL">Critical Risk</option>
+                  <option value="CRITICAL">Critical Phishing</option>
                   <option value="HIGH">High Risk</option>
                   <option value="SUSPICIOUS">Suspicious</option>
                   <option value="LOW">Legitimate / Safe</option>
@@ -293,7 +284,7 @@ export default function ScanHistoryPage() {
                 <select
                   value={predictionFilter}
                   onChange={(e) => setPredictionFilter(e.target.value)}
-                  className="w-full px-2.5 py-1.5 rounded-md text-xs bg-[#0B1629] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0] text-[#F1F5FF] light:text-[#172033] focus:outline-none focus:border-[#287FE9]"
+                  className="w-full px-3 py-2 rounded-xl text-xs bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA] text-[#F2F0FF] light:text-[#1E1B4B] focus:outline-none focus:border-[#7C5CFF]"
                 >
                   <option value="ALL">All Verdicts</option>
                   <option value="PHISHING">Phishing</option>
@@ -307,7 +298,7 @@ export default function ScanHistoryPage() {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="w-full px-2.5 py-1.5 rounded-md text-xs bg-[#0B1629] light:bg-slate-50 border border-[#24344B] light:border-[#E2E8F0] text-[#F1F5FF] light:text-[#172033] focus:outline-none focus:border-[#287FE9]"
+                  className="w-full px-3 py-2 rounded-xl text-xs bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA] text-[#F2F0FF] light:text-[#1E1B4B] focus:outline-none focus:border-[#7C5CFF]"
                 >
                   <option value="NEWEST">Newest First</option>
                   <option value="OLDEST">Oldest First</option>
@@ -318,7 +309,7 @@ export default function ScanHistoryPage() {
             </div>
 
             {/* Active filter count indicator */}
-            <div className="flex items-center justify-between text-[11px] text-[#9EACC2] light:text-[#64748B] pt-1 border-t border-[#24344B]/60 light:border-[#E2E8F0]">
+            <div className="flex items-center justify-between text-[11px] text-[#A29FC9] light:text-[#6E6893] pt-2 border-t border-[#2A2650]/60 light:border-[#E2DEFA]">
               <span>Showing {filteredScans.length} of {scans.length} historical audit records</span>
               {(search || riskFilter !== 'ALL' || predictionFilter !== 'ALL') && (
                 <button
@@ -328,7 +319,7 @@ export default function ScanHistoryPage() {
                     setRiskFilter('ALL')
                     setPredictionFilter('ALL')
                   }}
-                  className="text-[#287FE9] hover:underline cursor-pointer"
+                  className="text-[#A78BFF] light:text-[#7C5CFF] hover:underline cursor-pointer"
                 >
                   Reset Filters
                 </button>
@@ -337,43 +328,43 @@ export default function ScanHistoryPage() {
           </div>
 
           {/* Table Container */}
-          <div className="cyber-card overflow-hidden">
+          <div className="rounded-2xl bg-[#14122A] light:bg-white border border-[#2A2650] light:border-[#E2DEFA] shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs font-mono">
-                <thead className="bg-[#0D1728] light:bg-slate-50 text-[10px] uppercase text-[#9EACC2] light:text-[#64748B] border-b border-[#24344B] light:border-[#E2E8F0]">
+                <thead className="bg-[#0B0A14]/70 light:bg-[#F7F5FF] text-[10px] uppercase text-[#A29FC9] light:text-[#6E6893] border-b border-[#2A2650] light:border-[#E2DEFA]">
                   <tr>
-                    <th className="py-2.5 px-4">Target Resource</th>
-                    <th className="py-2.5 px-4">Score</th>
-                    <th className="py-2.5 px-4">Classification</th>
-                    <th className="py-2.5 px-4">Timestamp</th>
-                    <th className="py-2.5 px-4 text-right">Actions</th>
+                    <th className="py-3 px-5">Target Resource</th>
+                    <th className="py-3 px-5">Score</th>
+                    <th className="py-3 px-5">Classification</th>
+                    <th className="py-3 px-5">Timestamp</th>
+                    <th className="py-3 px-5 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#24344B]/60 light:divide-[#E2E8F0]">
+                <tbody className="divide-y divide-[#2A2650]/60 light:divide-[#E2DEFA]">
                   {filteredScans.length > 0 ? (
                     filteredScans.map((scan) => {
-                      const badge = RISK_BADGES[scan.riskLevel] || RISK_BADGES.LOW
-                      const BadgeIcon = badge.icon
+                      const verdict = getVerdictType(scan.riskLevel)
+                      const scoreColor = getScoreColor(scan.riskScore)
 
                       return (
                         <tr
                           key={scan.id}
-                          className="hover:bg-[#15253F]/40 light:hover:bg-slate-50 transition-colors"
+                          className="hover:bg-[#1C1936]/40 light:hover:bg-[#F7F5FF] transition-colors"
                         >
-                          <td className="py-3 px-4 max-w-xs md:max-w-sm">
-                            <div className="font-semibold text-xs text-[#F1F5FF] light:text-[#172033] truncate">
+                          <td className="py-3.5 px-5 max-w-xs md:max-w-sm">
+                            <div className="font-semibold text-xs text-[#F2F0FF] light:text-[#1E1B4B] truncate">
                               {scan.domain}
                             </div>
-                            <div className="text-[11px] text-[#9EACC2] light:text-[#64748B] truncate flex items-center space-x-1.5 mt-0.5">
+                            <div className="text-[11px] text-[#A29FC9] light:text-[#6E6893] truncate flex items-center space-x-1.5 mt-0.5">
                               <span className="truncate" title={scan.url}>{scan.url}</span>
                               <button
                                 type="button"
                                 onClick={() => handleCopyUrl(scan.id, scan.url)}
                                 title="Copy URL"
-                                className="text-[#9EACC2] hover:text-[#F1F5FF] p-0.5 shrink-0"
+                                className="text-[#A29FC9] hover:text-[#F2F0FF] p-0.5 shrink-0 cursor-pointer"
                               >
                                 {copiedId === scan.id ? (
-                                  <Check className="w-3 h-3 text-emerald-400" />
+                                  <Check className="w-3 h-3 text-[#34E0A1]" />
                                 ) : (
                                   <Copy className="w-3 h-3" />
                                 )}
@@ -381,28 +372,27 @@ export default function ScanHistoryPage() {
                             </div>
                           </td>
 
-                          <td className="py-3 px-4 whitespace-nowrap">
-                            <span className="font-bold text-xs text-[#F1F5FF] light:text-[#172033]">
+                          <td className="py-3.5 px-5 whitespace-nowrap">
+                            <span className={`font-bold text-sm ${scoreColor}`}>
                               {scan.riskScore}
                             </span>
-                            <span className="text-[10px] text-[#9EACC2]">/100</span>
+                            <span className="text-[10px] text-[#A29FC9] light:text-[#6E6893]">/100</span>
                           </td>
 
-                          <td className="py-3 px-4 whitespace-nowrap">
-                            <span className={`inline-flex items-center space-x-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${badge.bg}`}>
-                              <BadgeIcon className="w-3 h-3 shrink-0" />
-                              <span>{badge.label}</span>
-                            </span>
+                          <td className="py-3.5 px-5 whitespace-nowrap">
+                            <Badge verdict={verdict} size="sm">
+                              {scan.prediction || scan.riskLevel}
+                            </Badge>
                           </td>
 
-                          <td className="py-3 px-4 text-[11px] text-[#9EACC2] light:text-[#64748B] whitespace-nowrap">
+                          <td className="py-3.5 px-5 text-[11px] text-[#A29FC9] light:text-[#6E6893] whitespace-nowrap">
                             {scan.timestamp || 'Just now'}
                           </td>
 
-                          <td className="py-3 px-4 text-right whitespace-nowrap space-x-1.5">
+                          <td className="py-3.5 px-5 text-right whitespace-nowrap space-x-2">
                             <Link
                               to={`/results?url=${encodeURIComponent(scan.url)}`}
-                              className="inline-flex items-center space-x-1 px-2 py-1 rounded bg-[#0D1728] light:bg-slate-100 hover:bg-[#15253F] light:hover:bg-slate-200 border border-[#24344B] light:border-[#E2E8F0] text-[11px] text-[#287FE9]"
+                              className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-[#0B0A14] light:bg-white hover:bg-[#1C1936] light:hover:bg-[#F2EDFF] border border-[#2A2650] light:border-[#E2DEFA] text-[11px] text-[#A78BFF] light:text-[#7C5CFF] transition-all"
                             >
                               <Eye className="w-3 h-3" />
                               <span>View</span>
@@ -412,7 +402,7 @@ export default function ScanHistoryPage() {
                               type="button"
                               onClick={() => handleDeleteItem(scan.id)}
                               title="Delete record"
-                              className="p-1 rounded text-[#9EACC2] hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                              className="p-1 rounded-lg text-[#A29FC9] hover:text-[#FF4D6D] hover:bg-[#FF4D6D]/10 transition-colors cursor-pointer"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
@@ -422,7 +412,7 @@ export default function ScanHistoryPage() {
                     })
                   ) : (
                     <tr>
-                      <td colSpan="5" className="py-12 text-center text-xs text-[#9EACC2] light:text-[#64748B]">
+                      <td colSpan="5" className="py-12 text-center text-xs text-[#A29FC9] light:text-[#6E6893]">
                         No matching scan records found in the archive.
                       </td>
                     </tr>
@@ -434,40 +424,40 @@ export default function ScanHistoryPage() {
 
           {/* Clear Confirmation Modal */}
           {showClearModal && (
-            <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-xs">
-              <div className="cyber-card p-5 max-w-sm w-full space-y-3 font-mono">
+            <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+              <div className="p-6 rounded-2xl bg-[#14122A] light:bg-white border border-[#2A2650] light:border-[#E2DEFA] max-w-sm w-full space-y-4 font-mono shadow-2xl">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2 text-rose-400">
+                  <div className="flex items-center space-x-2 text-[#FF4D6D]">
                     <AlertTriangle className="w-4 h-4" />
-                    <h3 className="font-bold text-xs uppercase tracking-wider text-[#F1F5FF] light:text-[#172033]">
+                    <h3 className="font-bold text-xs uppercase tracking-wider text-[#F2F0FF] light:text-[#1E1B4B]">
                       Confirm Log Clear
                     </h3>
                   </div>
                   <button
                     type="button"
                     onClick={() => setShowClearModal(false)}
-                    className="text-[#9EACC2] hover:text-[#F1F5FF]"
+                    className="text-[#A29FC9] hover:text-[#F2F0FF]"
                   >
                     <X className="w-4 h-4" />
                   </button>
                 </div>
 
-                <p className="text-xs text-[#9EACC2] light:text-[#64748B] leading-relaxed">
+                <p className="text-xs text-[#A29FC9] light:text-[#6E6893] leading-relaxed">
                   Are you sure you want to clear all {scans.length} historical audit telemetry records? This action cannot be reversed.
                 </p>
 
                 <div className="pt-2 flex items-center justify-end space-x-2 text-xs">
-                  <button
-                    type="button"
+                  <Button
                     onClick={() => setShowClearModal(false)}
-                    className="cyber-btn-secondary py-1.5 px-3 text-xs"
+                    variant="outline"
+                    size="sm"
                   >
                     Cancel
-                  </button>
+                  </Button>
                   <button
                     type="button"
                     onClick={handleConfirmClear}
-                    className="px-3 py-1.5 rounded-md bg-rose-600 hover:bg-rose-500 text-white font-semibold text-xs"
+                    className="px-3 py-1.5 rounded-lg bg-[#FF4D6D] hover:bg-[#FF4D6D]/90 text-white font-semibold text-xs cursor-pointer"
                   >
                     Clear All
                   </button>
@@ -477,7 +467,7 @@ export default function ScanHistoryPage() {
           )}
 
           {/* Disclaimer Footer */}
-          <div className="p-2 text-center text-[11px] font-mono text-[#9EACC2] italic">
+          <div className="p-2 text-center text-[11px] font-mono text-[#A29FC9] light:text-[#6E6893] italic">
             {SIMULATION_DISCLAIMER}
           </div>
         </main>

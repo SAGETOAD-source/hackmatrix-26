@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { ThemeProvider } from './context/ThemeContext'
 import LandingPage from './pages/LandingPage'
 import DashboardPage from './pages/DashboardPage'
@@ -6,11 +6,15 @@ import ScannerPage from './pages/ScannerPage'
 import ScanResultsPage from './pages/ScanResultsPage'
 import SecurityAnalysisPage from './pages/SecurityAnalysisPage'
 import ScanHistoryPage from './pages/ScanHistoryPage'
+import StyleguidePage from './pages/StyleguidePage'
+import NotFoundPage from './pages/NotFoundPage'
+import CommandPalette from './components/ui/CommandPalette'
 
 export default function App() {
   return (
     <ThemeProvider>
       <BrowserRouter>
+        <CommandPalette />
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
@@ -19,7 +23,8 @@ export default function App() {
           <Route path="/security" element={<SecurityAnalysisPage />} />
           <Route path="/security-analysis" element={<SecurityAnalysisPage />} />
           <Route path="/history" element={<ScanHistoryPage />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="/styleguide" element={<StyleguidePage />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

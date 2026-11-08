@@ -1,31 +1,22 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { ShieldAlert, CheckCircle, AlertTriangle, Eye, Shield } from 'lucide-react'
+import { Eye, Shield, Terminal } from 'lucide-react'
 import { RECENT_SCANS } from '../../data/mockData'
 import { getScanHistory } from '../../utils/scanStorage'
 import { fetchHistory } from '../../services/historyService'
+import Badge from '../ui/Badge'
 
-const BADGE_CONFIG = {
-  CRITICAL: {
-    label: 'Critical Phishing',
-    bg: 'bg-rose-500/10 text-rose-400 light:text-rose-700 border-rose-500/30',
-    icon: ShieldAlert,
-  },
-  HIGH: {
-    label: 'High Risk',
-    bg: 'bg-orange-500/10 text-orange-400 light:text-orange-700 border-orange-500/30',
-    icon: ShieldAlert,
-  },
-  SUSPICIOUS: {
-    label: 'Suspicious',
-    bg: 'bg-amber-500/10 text-amber-400 light:text-amber-700 border-amber-500/30',
-    icon: AlertTriangle,
-  },
-  LOW: {
-    label: 'Legitimate',
-    bg: 'bg-emerald-500/10 text-emerald-400 light:text-emerald-700 border-emerald-500/30',
-    icon: CheckCircle,
-  },
+function getVerdict(riskLevel) {
+  if (riskLevel === 'CRITICAL' || riskLevel === 'HIGH' || riskLevel === 'MALICIOUS') return 'malicious'
+  if (riskLevel === 'SUSPICIOUS') return 'suspicious'
+  if (riskLevel === 'LOW' || riskLevel === 'SAFE') return 'safe'
+  return 'unknown'
+}
+
+function getScoreColor(score) {
+  if (score >= 70) return 'text-[#FF4D6D]'
+  if (score >= 40) return 'text-[#FFB020]'
+  return 'text-[#34E0A1]'
 }
 
 export default function RecentScanTable({ searchQuery = '' }) {
@@ -50,9 +41,9 @@ export default function RecentScanTable({ searchQuery = '' }) {
   const filteredScans = scans.filter((scan) => {
     const matchesFilter =
       filter === 'ALL' ||
-      (filter === 'PHISHING' && (scan.riskLevel === 'CRITICAL' || scan.riskLevel === 'HIGH')) ||
+      (filter === 'PHISHING' && (scan.riskLevel === 'CRITICAL' || scan.riskLevel === 'HIGH' || scan.riskLevel === 'MALICIOUS')) ||
       (filter === 'SUSPICIOUS' && scan.riskLevel === 'SUSPICIOUS') ||
-      (filter === 'SAFE' && scan.riskLevel === 'LOW')
+      (filter === 'SAFE' && (scan.riskLevel === 'LOW' || scan.riskLevel === 'SAFE'))
 
     const matchesSearch =
       !searchQuery ||
@@ -64,23 +55,25 @@ export default function RecentScanTable({ searchQuery = '' }) {
   })
 
   return (
-    <div className="cyber-card overflow-hidden">
+    <div className="rounded-2xl bg-[#14122A] light:bg-white border border-[#2A2650] light:border-[#E2DEFA] shadow-sm overflow-hidden">
       {/* Header and Filter Tabs */}
-      <div className="p-4 sm:p-5 border-b border-[#24344B] light:border-[#E2E8F0] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+      <div className="p-5 border-b border-[#2A2650] light:border-[#E2DEFA] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center space-x-2">
-            <Shield className="w-4 h-4 text-[#287FE9]" />
-            <h3 className="text-sm font-bold uppercase tracking-wider text-[#F1F5FF] light:text-[#172033]">
+          <div className="flex items-center space-x-2.5">
+            <div className="w-7 h-7 rounded-lg bg-[#7C5CFF]/15 border border-[#7C5CFF]/30 flex items-center justify-center text-[#A78BFF]">
+              <Shield className="w-3.5 h-3.5" />
+            </div>
+            <h3 className="font-heading font-bold text-sm tracking-wide text-[#F2F0FF] light:text-[#1E1B4B]">
               Ingested Target Audit Feed
             </h3>
           </div>
-          <p className="text-xs text-[#9EACC2] light:text-[#64748B] mt-0.5">
+          <p className="text-xs text-[#A29FC9] light:text-[#6E6893] mt-1">
             Chronological inspection records with composite risk scores and model verdicts
           </p>
         </div>
 
         {/* Filter buttons */}
-        <div className="flex items-center space-x-1 p-0.5 rounded-md bg-[#0D1728] light:bg-slate-100 border border-[#24344B] light:border-[#E2E8F0] text-xs font-mono">
+        <div className="flex items-center space-x-1 p-1 rounded-lg bg-[#0B0A14] light:bg-[#F2EDFF] border border-[#2A2650] light:border-[#E2DEFA] text-xs font-mono">
           {[
             { id: 'ALL', label: 'All' },
             { id: 'PHISHING', label: 'Phishing' },
@@ -90,10 +83,10 @@ export default function RecentScanTable({ searchQuery = '' }) {
             <button
               key={tab.id}
               onClick={() => setFilter(tab.id)}
-              className={`px-2.5 py-1 rounded text-[11px] font-semibold transition-colors cursor-pointer ${
+              className={`px-3 py-1 rounded-md text-[11px] font-semibold transition-all cursor-pointer ${
                 filter === tab.id
-                  ? 'bg-[#287FE9] text-white'
-                  : 'text-[#9EACC2] light:text-[#64748B] hover:text-[#F1F5FF] light:hover:text-[#172033]'
+                  ? 'bg-[#7C5CFF] text-[#F2F0FF] shadow-xs'
+                  : 'text-[#A29FC9] light:text-[#6E6893] hover:text-[#F2F0FF] light:hover:text-[#1E1B4B]'
               }`}
             >
               {tab.label}
@@ -104,60 +97,59 @@ export default function RecentScanTable({ searchQuery = '' }) {
 
       {/* Table Content */}
       <div className="overflow-x-auto">
-        <table className="w-full text-left text-xs text-[#F1F5FF] light:text-[#172033]">
-          <thead className="bg-[#0D1728] light:bg-slate-50 uppercase tracking-wider text-[10px] font-mono text-[#9EACC2] light:text-[#64748B] border-b border-[#24344B] light:border-[#E2E8F0] font-semibold">
+        <table className="w-full text-left text-xs text-[#F2F0FF] light:text-[#1E1B4B]">
+          <thead className="bg-[#0B0A14]/70 light:bg-[#F7F5FF] uppercase tracking-wider text-[10px] font-mono text-[#A29FC9] light:text-[#6E6893] border-b border-[#2A2650] light:border-[#E2DEFA] font-semibold">
             <tr>
-              <th className="py-2.5 px-4">Target Resource</th>
-              <th className="py-2.5 px-4">Risk Score</th>
-              <th className="py-2.5 px-4">Classification</th>
-              <th className="py-2.5 px-4 hidden md:table-cell">Timestamp</th>
-              <th className="py-2.5 px-4 text-right">Action</th>
+              <th className="py-3 px-5">Target Resource</th>
+              <th className="py-3 px-5">Risk Score</th>
+              <th className="py-3 px-5">Classification</th>
+              <th className="py-3 px-5 hidden md:table-cell">Timestamp</th>
+              <th className="py-3 px-5 text-right">Action</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#24344B]/60 light:divide-[#E2E8F0] font-mono text-xs">
+          <tbody className="divide-y divide-[#2A2650]/60 light:divide-[#E2DEFA] font-mono text-xs">
             {filteredScans.length > 0 ? (
-              filteredScans.slice(0, 7).map((scan) => {
-                const badge = BADGE_CONFIG[scan.riskLevel] || BADGE_CONFIG.LOW
-                const BadgeIcon = badge.icon
+              filteredScans.slice(0, 8).map((scan) => {
+                const verdict = getVerdict(scan.riskLevel)
+                const scoreColor = getScoreColor(scan.riskScore)
 
                 return (
                   <tr
                     key={scan.id}
-                    className="hover:bg-[#15253F]/60 light:hover:bg-slate-50 transition-colors"
+                    className="hover:bg-[#1C1936]/50 light:hover:bg-[#F7F5FF] transition-colors"
                   >
-                    <td className="py-3 px-4 max-w-xs md:max-w-sm">
-                      <div className="font-semibold text-xs text-[#F1F5FF] light:text-[#172033] truncate">
+                    <td className="py-3.5 px-5 max-w-xs md:max-w-sm">
+                      <div className="font-semibold text-xs text-[#F2F0FF] light:text-[#1E1B4B] truncate">
                         {scan.domain}
                       </div>
-                      <div className="text-[11px] text-[#9EACC2] light:text-[#64748B] truncate" title={scan.url}>
+                      <div className="text-[11px] text-[#A29FC9] light:text-[#6E6893] truncate" title={scan.url}>
                         {scan.url}
                       </div>
                     </td>
 
-                    <td className="py-3 px-4 whitespace-nowrap">
+                    <td className="py-3.5 px-5 whitespace-nowrap">
                       <div className="flex items-center space-x-1.5">
-                        <span className="font-bold text-xs font-mono text-[#F1F5FF] light:text-[#172033]">
+                        <span className={`font-bold text-sm font-mono ${scoreColor}`}>
                           {scan.riskScore}
                         </span>
-                        <span className="text-[10px] text-[#9EACC2] light:text-[#64748B]">/100</span>
+                        <span className="text-[10px] text-[#A29FC9] light:text-[#6E6893]">/100</span>
                       </div>
                     </td>
 
-                    <td className="py-3 px-4 whitespace-nowrap">
-                      <span className={`inline-flex items-center space-x-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${badge.bg}`}>
-                        <BadgeIcon className="w-3 h-3 shrink-0" />
-                        <span>{badge.label}</span>
-                      </span>
+                    <td className="py-3.5 px-5 whitespace-nowrap">
+                      <Badge verdict={verdict} size="sm">
+                        {scan.prediction || scan.riskLevel}
+                      </Badge>
                     </td>
 
-                    <td className="py-3 px-4 text-[11px] text-[#9EACC2] light:text-[#64748B] whitespace-nowrap hidden md:table-cell">
+                    <td className="py-3.5 px-5 text-[11px] text-[#A29FC9] light:text-[#6E6893] whitespace-nowrap hidden md:table-cell">
                       {scan.timestamp || 'Just now'}
                     </td>
 
-                    <td className="py-3 px-4 text-right whitespace-nowrap">
+                    <td className="py-3.5 px-5 text-right whitespace-nowrap">
                       <Link
                         to={`/results?url=${encodeURIComponent(scan.url)}`}
-                        className="inline-flex items-center space-x-1 px-2 py-1 rounded bg-[#0D1728] light:bg-slate-100 hover:bg-[#15253F] light:hover:bg-slate-200 border border-[#24344B] light:border-[#E2E8F0] text-[11px] font-medium text-[#287FE9] transition-colors"
+                        className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-[#0B0A14] light:bg-white hover:bg-[#1C1936] light:hover:bg-[#F2EDFF] border border-[#2A2650] light:border-[#E2DEFA] text-[11px] font-medium text-[#A78BFF] light:text-[#7C5CFF] transition-all"
                       >
                         <Eye className="w-3 h-3" />
                         <span>Audit</span>
@@ -168,7 +160,7 @@ export default function RecentScanTable({ searchQuery = '' }) {
               })
             ) : (
               <tr>
-                <td colSpan="5" className="py-8 text-center text-xs text-[#9EACC2] light:text-[#64748B]">
+                <td colSpan="5" className="py-10 text-center text-xs text-[#A29FC9] light:text-[#6E6893]">
                   No matching telemetry records found for "{searchQuery}".
                 </td>
               </tr>

@@ -18,30 +18,32 @@ export default function ActivityChart() {
   const [timeframe, setTimeframe] = useState('7d')
 
   return (
-    <div className="cyber-card p-4 sm:p-5">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-3.5 mb-3.5 border-b border-[#24344B] light:border-[#E2E8F0] gap-3">
+    <div className="p-5 sm:p-6 rounded-2xl bg-[#14122A] light:bg-white border border-[#2A2650] light:border-[#E2DEFA] shadow-sm">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-4 mb-4 border-b border-[#2A2650] light:border-[#E2DEFA] gap-3">
         <div>
-          <div className="flex items-center space-x-2">
-            <Activity className="w-4 h-4 text-[#287FE9]" />
-            <h3 className="text-sm font-bold uppercase tracking-wider text-[#F1F5FF] light:text-[#172033]">
+          <div className="flex items-center space-x-2.5">
+            <div className="w-7 h-7 rounded-lg bg-[#7C5CFF]/15 border border-[#7C5CFF]/30 flex items-center justify-center text-[#A78BFF]">
+              <Activity className="w-3.5 h-3.5" />
+            </div>
+            <h3 className="font-heading font-bold text-sm tracking-wide text-[#F2F0FF] light:text-[#1E1B4B]">
               Telemetry Throughput & Detection Trends
             </h3>
           </div>
-          <p className="text-xs text-[#9EACC2] light:text-[#64748B] mt-0.5">
+          <p className="text-xs text-[#A29FC9] light:text-[#6E6893] mt-1">
             Aggregated classification breakdown across Safe, Suspicious, and Phishing vectors
           </p>
         </div>
 
         {/* Timeframe pill tabs */}
-        <div className="flex items-center space-x-1 p-0.5 rounded-md bg-[#0D1728] light:bg-slate-100 border border-[#24344B] light:border-[#E2E8F0] text-xs font-mono">
+        <div className="flex items-center space-x-1 p-1 rounded-lg bg-[#0B0A14] light:bg-[#F2EDFF] border border-[#2A2650] light:border-[#E2DEFA] text-xs font-mono">
           {['7d', '30d', '90d'].map((t) => (
             <button
               key={t}
               onClick={() => setTimeframe(t)}
-              className={`px-2 py-0.5 rounded text-[11px] font-semibold transition-colors cursor-pointer ${
+              className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-all cursor-pointer ${
                 timeframe === t
-                  ? 'bg-[#287FE9] text-white'
-                  : 'text-[#9EACC2] light:text-[#64748B] hover:text-[#F1F5FF] light:hover:text-[#172033]'
+                  ? 'bg-[#7C5CFF] text-[#F2F0FF] shadow-xs'
+                  : 'text-[#A29FC9] light:text-[#6E6893] hover:text-[#F2F0FF] light:hover:text-[#1E1B4B]'
               }`}
             >
               {t.toUpperCase()}
@@ -55,33 +57,33 @@ export default function ActivityChart() {
           <AreaChart data={SCAN_ACTIVITY_DATA} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
             <defs>
               <linearGradient id="colorSafe" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#22C55E" stopOpacity={0.25} />
-                <stop offset="95%" stopColor="#22C55E" stopOpacity={0.0} />
+                <stop offset="5%" stopColor="#34E0A1" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="#34E0A1" stopOpacity={0.0} />
               </linearGradient>
               <linearGradient id="colorSuspicious" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#F59E0B" stopOpacity={0.25} />
-                <stop offset="95%" stopColor="#F59E0B" stopOpacity={0.0} />
+                <stop offset="5%" stopColor="#FFB020" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="#FFB020" stopOpacity={0.0} />
               </linearGradient>
               <linearGradient id="colorPhishing" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#EF4444" stopOpacity={0.3} />
-                <stop offset="95%" stopColor="#EF4444" stopOpacity={0.0} />
+                <stop offset="5%" stopColor="#FF4D6D" stopOpacity={0.35} />
+                <stop offset="95%" stopColor="#FF4D6D" stopOpacity={0.0} />
               </linearGradient>
             </defs>
             <CartesianGrid
               strokeDasharray="3 3"
-              stroke={isDark ? '#24344B' : '#E2E8F0'}
+              stroke={isDark ? '#2A2650' : '#E2DEFA'}
               vertical={false}
             />
             <XAxis
               dataKey="day"
-              stroke={isDark ? '#9EACC2' : '#64748B'}
+              stroke={isDark ? '#A29FC9' : '#6E6893'}
               fontSize={11}
               fontFamily="var(--font-mono)"
               tickLine={false}
               axisLine={false}
             />
             <YAxis
-              stroke={isDark ? '#9EACC2' : '#64748B'}
+              stroke={isDark ? '#A29FC9' : '#6E6893'}
               fontSize={11}
               fontFamily="var(--font-mono)"
               tickLine={false}
@@ -89,16 +91,17 @@ export default function ActivityChart() {
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: isDark ? '#111E32' : '#FFFFFF',
-                borderColor: isDark ? '#24344B' : '#E2E8F0',
-                borderRadius: '0.5rem',
-                color: isDark ? '#F1F5FF' : '#172033',
+                backgroundColor: isDark ? '#14122A' : '#FFFFFF',
+                borderColor: isDark ? '#2A2650' : '#E2DEFA',
+                borderRadius: '0.75rem',
+                color: isDark ? '#F2F0FF' : '#1E1B4B',
                 fontSize: '11px',
                 fontFamily: 'var(--font-mono)',
+                boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.3)',
               }}
             />
             <Legend
-              wrapperStyle={{ paddingTop: '8px', fontSize: '11px', fontFamily: 'var(--font-mono)' }}
+              wrapperStyle={{ paddingTop: '10px', fontSize: '11px', fontFamily: 'var(--font-mono)' }}
               iconType="circle"
               iconSize={8}
             />
@@ -106,8 +109,8 @@ export default function ActivityChart() {
               type="monotone"
               dataKey="safe"
               name="Legitimate"
-              stroke="#22C55E"
-              strokeWidth={1.5}
+              stroke="#34E0A1"
+              strokeWidth={2}
               fillOpacity={1}
               fill="url(#colorSafe)"
             />
@@ -115,8 +118,8 @@ export default function ActivityChart() {
               type="monotone"
               dataKey="suspicious"
               name="Suspicious"
-              stroke="#F59E0B"
-              strokeWidth={1.5}
+              stroke="#FFB020"
+              strokeWidth={2}
               fillOpacity={1}
               fill="url(#colorSuspicious)"
             />
@@ -124,8 +127,8 @@ export default function ActivityChart() {
               type="monotone"
               dataKey="phishing"
               name="Phishing Confirmed"
-              stroke="#EF4444"
-              strokeWidth={1.5}
+              stroke="#FF4D6D"
+              strokeWidth={2}
               fillOpacity={1}
               fill="url(#colorPhishing)"
             />

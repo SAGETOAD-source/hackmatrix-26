@@ -1,69 +1,93 @@
+import { useState } from 'react'
+import { ChevronDown, ChevronUp, AlertCircle, AlertTriangle, ShieldCheck, Info } from 'lucide-react'
+import Badge from '../ui/Badge'
+
 const SEVERITY_CONFIG = {
   CRITICAL: {
-    border: 'border-l-rose-500',
-    bg: 'bg-rose-500/10 light:bg-rose-50',
-    text: 'text-rose-400 light:text-rose-700',
-    badgeBorder: 'border-rose-500/30',
-    label: 'Critical',
+    verdict: 'malicious',
+    label: 'Critical Risk',
+    border: 'border-l-[#FF4D6D]',
+    icon: AlertCircle,
+    color: '#FF4D6D'
   },
   HIGH: {
-    border: 'border-l-orange-500',
-    bg: 'bg-orange-500/10 light:bg-orange-50',
-    text: 'text-orange-400 light:text-orange-700',
-    badgeBorder: 'border-orange-500/30',
+    verdict: 'malicious',
     label: 'High Risk',
+    border: 'border-l-[#FF4D6D]',
+    icon: AlertCircle,
+    color: '#FF4D6D'
   },
   MEDIUM: {
-    border: 'border-l-amber-500',
-    bg: 'bg-amber-500/10 light:bg-amber-50',
-    text: 'text-amber-400 light:text-amber-700',
-    badgeBorder: 'border-amber-500/30',
-    label: 'Medium',
+    verdict: 'suspicious',
+    label: 'Medium Risk',
+    border: 'border-l-[#FFB020]',
+    icon: AlertTriangle,
+    color: '#FFB020'
   },
   LOW: {
-    border: 'border-l-[#287FE9]',
-    bg: 'bg-[#287FE9]/10 light:bg-blue-50',
-    text: 'text-[#55B7FF] light:text-[#2563EB]',
-    badgeBorder: 'border-[#287FE9]/30',
+    verdict: 'safe',
     label: 'Low Risk',
+    border: 'border-l-[#34E0A1]',
+    icon: ShieldCheck,
+    color: '#34E0A1'
   },
   INFO: {
-    border: 'border-l-[#9EACC2]',
-    bg: 'bg-slate-500/10 light:bg-slate-100',
-    text: 'text-[#9EACC2] light:text-[#64748B]',
-    badgeBorder: 'border-slate-500/30',
+    verdict: 'unknown',
     label: 'Informational',
+    border: 'border-l-[#8B88B0]',
+    icon: Info,
+    color: '#8B88B0'
   },
 }
 
-export default function FindingCard({ title, severity = 'INFO', description, icon: Icon }) {
+export default function FindingCard({ title, severity = 'INFO', description, details, icon: CustomIcon }) {
+  const [expanded, setExpanded] = useState(false)
   const config = SEVERITY_CONFIG[severity] || SEVERITY_CONFIG.INFO
+  const IconComponent = CustomIcon || config.icon
 
   return (
-    <div className={`cyber-card p-3.5 border-l-4 ${config.border}`}>
+    <div className={`p-4 rounded-xl bg-[#14122A] light:bg-white border border-[#2A2650] light:border-[#E2DEFA] border-l-4 ${config.border} shadow-sm transition-all hover:border-[#7C5CFF]/30`}>
       <div className="flex items-start justify-between gap-3">
-        <div className="flex items-start space-x-2.5 min-w-0">
-          {Icon && (
-            <div className={`mt-0.5 shrink-0 ${config.text}`}>
-              <Icon size={16} />
-            </div>
-          )}
+        <div className="flex items-start space-x-3 min-w-0">
+          <div className="mt-0.5 shrink-0" style={{ color: config.color }}>
+            <IconComponent size={18} />
+          </div>
           <div className="min-w-0">
-            <h4 className="font-semibold text-xs text-[#F1F5FF] light:text-[#172033] leading-snug">
+            <h4 className="font-semibold text-xs text-[#F2F0FF] light:text-[#1E1B4B] leading-snug">
               {title}
             </h4>
             {description && (
-              <p className="mt-1 text-xs text-[#9EACC2] light:text-[#64748B] leading-relaxed">
+              <p className="mt-1 text-xs text-[#A29FC9] light:text-[#6E6893] leading-relaxed">
                 {description}
               </p>
+            )}
+
+            {details && (
+              <div className="mt-2">
+                <button
+                  type="button"
+                  onClick={() => setExpanded(!expanded)}
+                  className="inline-flex items-center space-x-1 text-[11px] font-mono text-[#A78BFF] light:text-[#7C5CFF] hover:underline cursor-pointer"
+                >
+                  <span>{expanded ? 'Hide telemetry evidence' : 'View telemetry evidence'}</span>
+                  {expanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+                </button>
+                {expanded && (
+                  <div className="mt-2 p-2.5 rounded-lg bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA] text-[11px] font-mono text-[#A29FC9] light:text-[#6E6893] whitespace-pre-wrap break-all">
+                    {typeof details === 'object' ? JSON.stringify(details, null, 2) : details}
+                  </div>
+                )}
+              </div>
             )}
           </div>
         </div>
 
-        {/* Severity badge */}
-        <span className={`shrink-0 rounded px-2 py-0.5 text-[10px] font-mono font-bold uppercase border ${config.bg} ${config.text} ${config.badgeBorder}`}>
-          {config.label}
-        </span>
+        {/* Verdict Badge */}
+        <div className="shrink-0">
+          <Badge verdict={config.verdict} size="sm">
+            {config.label}
+          </Badge>
+        </div>
       </div>
     </div>
   )

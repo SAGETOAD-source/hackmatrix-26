@@ -8,7 +8,9 @@ import {
   History,
   ChevronLeft,
   ChevronRight,
-  Shield
+  Shield,
+  Palette,
+  Terminal
 } from 'lucide-react'
 import { isApiMode, getApiBaseUrl } from '../../services/api'
 
@@ -31,6 +33,7 @@ export default function Sidebar({ collapsed, setCollapsed }) {
   const analysisLinks = [
     { name: 'Security & TLS Audit', path: '/security-analysis', icon: ShieldCheck, alias: '/security' },
     { name: 'Audit Scan History', path: '/history', icon: History },
+    { name: 'Design Tokens', path: '/styleguide', icon: Palette },
   ]
 
   const isLinkActive = (item) => {
@@ -45,12 +48,12 @@ export default function Sidebar({ collapsed, setCollapsed }) {
       {!collapsed && (
         <div
           onClick={() => setCollapsed(true)}
-          className="fixed inset-0 bg-black/60 z-30 md:hidden backdrop-blur-xs transition-opacity"
+          className="fixed inset-0 bg-black/70 z-30 md:hidden backdrop-blur-sm transition-opacity"
         />
       )}
 
       <aside
-        className={`fixed top-0 left-0 z-40 h-screen transition-all duration-200 ease-in-out border-r bg-[#080F1E] light:bg-white border-[#24344B] light:border-[#E2E8F0] flex flex-col justify-between ${
+        className={`fixed top-0 left-0 z-40 h-screen transition-all duration-200 ease-in-out border-r bg-[#0B0A14] light:bg-white border-[#2A2650] light:border-[#E2DEFA] flex flex-col justify-between ${
           collapsed
             ? 'w-18 -translate-x-full md:translate-x-0'
             : 'w-60 translate-x-0'
@@ -58,18 +61,20 @@ export default function Sidebar({ collapsed, setCollapsed }) {
       >
         {/* Top Header & Brand */}
         <div>
-          <div className="h-16 flex items-center justify-between px-3.5 border-b border-[#24344B] light:border-[#E2E8F0]">
-            <Link to="/" className="flex items-center space-x-2.5 overflow-hidden">
-              <div className="w-8 h-8 rounded-md bg-[#111E32] light:bg-blue-50 border border-[#24344B] light:border-blue-200 flex items-center justify-center shrink-0">
-                <Shield className="w-4 h-4 text-[#287FE9]" />
+          <div className="h-16 flex items-center justify-between px-3.5 border-b border-[#2A2650] light:border-[#E2DEFA]">
+            <Link to="/" className="flex items-center space-x-2.5 overflow-hidden group">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#7C5CFF] to-[#14122A] p-0.5 shadow-md shadow-[#7C5CFF]/20 flex items-center justify-center shrink-0">
+                <div className="w-full h-full rounded-[6px] bg-[#0B0A14] flex items-center justify-center group-hover:bg-[#14122A] transition-colors">
+                  <Shield className="w-4 h-4 text-[#A78BFF]" />
+                </div>
               </div>
               {!collapsed && (
                 <div className="flex flex-col">
-                  <span className="font-bold text-xs tracking-tight text-[#F1F5FF] light:text-[#172033] whitespace-nowrap">
-                    PhishGuard<span className="text-[#287FE9]">.SOC</span>
+                  <span className="font-heading font-bold text-xs tracking-tight text-[#F2F0FF] light:text-[#1E1B4B] whitespace-nowrap">
+                    PhishGuard<span className="text-[#C6FF3D] light:text-[#5E8F00]">.UV</span>
                   </span>
-                  <span className="text-[10px] font-mono text-[#9EACC2] light:text-[#64748B]">
-                    Threat Console
+                  <span className="text-[10px] font-mono text-[#A29FC9] light:text-[#6E6893]">
+                    Sentinel SOC Console
                   </span>
                 </div>
               )}
@@ -77,7 +82,7 @@ export default function Sidebar({ collapsed, setCollapsed }) {
             <button
               onClick={() => setCollapsed(!collapsed)}
               aria-label="Toggle Sidebar"
-              className="p-1.5 rounded-md text-[#9EACC2] hover:text-[#F1F5FF] light:hover:text-[#172033] hover:bg-[#111E32] light:hover:bg-slate-100 transition-colors cursor-pointer"
+              className="p-1.5 rounded-lg text-[#A29FC9] hover:text-[#F2F0FF] light:hover:text-[#1E1B4B] hover:bg-[#1C1936] light:hover:bg-[#F2EDFF] transition-colors cursor-pointer"
             >
               {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
             </button>
@@ -88,7 +93,7 @@ export default function Sidebar({ collapsed, setCollapsed }) {
             {/* Section 1: Operations */}
             <div>
               {!collapsed && (
-                <p className="px-2.5 py-1 text-[10px] font-mono font-semibold uppercase tracking-wider text-[#9EACC2] light:text-[#64748B]">
+                <p className="px-2.5 py-1 text-[10px] font-mono font-semibold uppercase tracking-wider text-[#A29FC9] light:text-[#6E6893]">
                   Operations
                 </p>
               )}
@@ -102,13 +107,13 @@ export default function Sidebar({ collapsed, setCollapsed }) {
                       key={item.name}
                       to={item.path}
                       title={collapsed ? item.name : undefined}
-                      className={`flex items-center space-x-2.5 px-2.5 py-2 rounded-md text-xs font-medium transition-colors ${
+                      className={`flex items-center space-x-2.5 px-2.5 py-2 rounded-lg text-xs font-medium transition-all duration-150 ${
                         active
-                          ? 'bg-[#111E32] light:bg-slate-100 text-[#F1F5FF] light:text-[#172033] border border-[#24344B] light:border-[#CBD5E1] font-semibold'
-                          : 'text-[#9EACC2] light:text-[#64748B] hover:text-[#F1F5FF] light:hover:text-[#172033] hover:bg-[#0D1728] light:hover:bg-slate-50'
+                          ? 'bg-[#7C5CFF]/15 light:bg-[#7C5CFF]/10 text-[#F2F0FF] light:text-[#5E3BEE] border border-[#7C5CFF]/40 light:border-[#7C5CFF]/30 font-semibold shadow-xs shadow-[#7C5CFF]/20'
+                          : 'text-[#A29FC9] light:text-[#6E6893] hover:text-[#F2F0FF] light:hover:text-[#1E1B4B] hover:bg-[#14122A] light:hover:bg-[#F7F5FF]'
                       } ${collapsed ? 'justify-center px-0' : ''}`}
                     >
-                      <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-[#287FE9]' : 'text-[#9EACC2] light:text-[#64748B]'}`} />
+                      <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-[#C6FF3D] light:text-[#5E8F00]' : 'text-[#A29FC9] light:text-[#6E6893]'}`} />
                       {!collapsed && <span className="truncate">{item.name}</span>}
                     </Link>
                   )
@@ -119,8 +124,8 @@ export default function Sidebar({ collapsed, setCollapsed }) {
             {/* Section 2: Deep Analysis */}
             <div>
               {!collapsed && (
-                <p className="px-2.5 py-1 text-[10px] font-mono font-semibold uppercase tracking-wider text-[#9EACC2] light:text-[#64748B]">
-                  Intelligence
+                <p className="px-2.5 py-1 text-[10px] font-mono font-semibold uppercase tracking-wider text-[#A29FC9] light:text-[#6E6893]">
+                  Intelligence & Audit
                 </p>
               )}
               <div className="space-y-1">
@@ -133,13 +138,13 @@ export default function Sidebar({ collapsed, setCollapsed }) {
                       key={item.name}
                       to={item.path}
                       title={collapsed ? item.name : undefined}
-                      className={`flex items-center space-x-2.5 px-2.5 py-2 rounded-md text-xs font-medium transition-colors ${
+                      className={`flex items-center space-x-2.5 px-2.5 py-2 rounded-lg text-xs font-medium transition-all duration-150 ${
                         active
-                          ? 'bg-[#111E32] light:bg-slate-100 text-[#F1F5FF] light:text-[#172033] border border-[#24344B] light:border-[#CBD5E1] font-semibold'
-                          : 'text-[#9EACC2] light:text-[#64748B] hover:text-[#F1F5FF] light:hover:text-[#172033] hover:bg-[#0D1728] light:hover:bg-slate-50'
+                          ? 'bg-[#7C5CFF]/15 light:bg-[#7C5CFF]/10 text-[#F2F0FF] light:text-[#5E3BEE] border border-[#7C5CFF]/40 light:border-[#7C5CFF]/30 font-semibold shadow-xs shadow-[#7C5CFF]/20'
+                          : 'text-[#A29FC9] light:text-[#6E6893] hover:text-[#F2F0FF] light:hover:text-[#1E1B4B] hover:bg-[#14122A] light:hover:bg-[#F7F5FF]'
                       } ${collapsed ? 'justify-center px-0' : ''}`}
                     >
-                      <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-[#287FE9]' : 'text-[#9EACC2] light:text-[#64748B]'}`} />
+                      <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-[#C6FF3D] light:text-[#5E8F00]' : 'text-[#A29FC9] light:text-[#6E6893]'}`} />
                       {!collapsed && <span className="truncate">{item.name}</span>}
                     </Link>
                   )
@@ -149,31 +154,54 @@ export default function Sidebar({ collapsed, setCollapsed }) {
           </div>
         </div>
 
-        {/* Bottom Mode Status Indicator */}
-        <div className="p-3 border-t border-[#24344B] light:border-[#E2E8F0] bg-[#0D1728] light:bg-slate-50">
+        {/* Bottom Mode Status & Quick Palette Hint */}
+        <div className="p-3 border-t border-[#2A2650] light:border-[#E2DEFA] bg-[#14122A]/50 light:bg-[#F7F5FF] space-y-2">
           {!collapsed ? (
             <div className="space-y-1.5">
               <div className="flex items-center justify-between text-[11px] font-mono">
-                <span className="text-[#9EACC2] light:text-[#64748B]">Engine Node:</span>
-                <span className="text-emerald-400 font-semibold flex items-center space-x-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                  <span>ONLINE</span>
+                <span className="text-[#A29FC9] light:text-[#6E6893]">Sentinel Core:</span>
+                <span className="text-[#34E0A1] font-semibold flex items-center space-x-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#34E0A1] animate-pulse"></span>
+                  <span>ACTIVE</span>
                 </span>
               </div>
-              <div className="flex items-center justify-between text-[10px] font-mono text-[#9EACC2] light:text-[#64748B]">
+              <div className="flex items-center justify-between text-[10px] font-mono text-[#A29FC9] light:text-[#6E6893]">
                 <span>Pipeline Mode:</span>
                 <span className={`px-1.5 py-0.5 rounded border font-bold ${
                   apiActive
-                    ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
-                    : 'bg-amber-500/10 border-amber-500/30 text-amber-400'
+                    ? 'bg-[#34E0A1]/10 border-[#34E0A1]/30 text-[#34E0A1]'
+                    : 'bg-[#FFB020]/10 border-[#FFB020]/30 text-[#FFB020]'
                 }`}>
                   {apiActive ? 'LIVE API' : 'DEMO MODE'}
                 </span>
               </div>
+
+              {/* Quick shortcut indicator */}
+              <button
+                type="button"
+                onClick={() => {
+                  window.dispatchEvent(new CustomEvent('phishguard:open-command-palette'))
+                }}
+                className="w-full mt-2 flex items-center justify-between px-2 py-1.5 rounded-md bg-[#0B0A14] light:bg-white border border-[#2A2650] light:border-[#E2DEFA] text-[10px] font-mono text-[#A29FC9] light:text-[#6E6893] hover:border-[#7C5CFF]/50 transition-colors cursor-pointer"
+              >
+                <span className="flex items-center space-x-1.5">
+                  <Terminal className="w-3 h-3 text-[#A78BFF]" />
+                  <span>Command Bar</span>
+                </span>
+                <kbd className="px-1.5 py-0.5 rounded bg-[#1C1936] light:bg-[#EDE9FE] border border-[#2A2650] light:border-[#D4CDFA] text-[9px]">Ctrl+K</kbd>
+              </button>
             </div>
           ) : (
-            <div className="flex justify-center" title={apiActive ? `API Mode: ${getApiBaseUrl()}` : 'Demonstration Mode'}>
-              <span className={`w-2 h-2 rounded-full ${apiActive ? 'bg-emerald-400' : 'bg-amber-400'}`}></span>
+            <div className="flex flex-col items-center space-y-2" title={apiActive ? `API Mode: ${getApiBaseUrl()}` : 'Demonstration Mode'}>
+              <span className={`w-2 h-2 rounded-full ${apiActive ? 'bg-[#34E0A1] animate-pulse' : 'bg-[#FFB020]'}`}></span>
+              <button
+                type="button"
+                onClick={() => window.dispatchEvent(new CustomEvent('phishguard:open-command-palette'))}
+                title="Open Command Palette (Ctrl+K)"
+                className="p-1 rounded text-[#A29FC9] hover:text-[#F2F0FF] hover:bg-[#1C1936] transition-colors cursor-pointer"
+              >
+                <Terminal className="w-3.5 h-3.5 text-[#A78BFF]" />
+              </button>
             </div>
           )}
         </div>
