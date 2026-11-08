@@ -14,7 +14,7 @@
 const tls = require("tls");
 const dns = require("dns").promises;
 const { predictUrl } = require("./ml.service");
-const pool = require("../config/database");
+const { lookupThreatIntelligence } = require("./threat-intel.service");
 
 const SHORTENER_DOMAINS = new Set([
   "bit.ly",
@@ -330,25 +330,6 @@ async function inspectHttpHeaders(targetUrl, timeoutMs = 5000) {
   }
 
   return result;
-}
-
-/**
- * Check if domain or URL matches known indicators in threat_intelligence table
- */
-async function lookupThreatIntelligence(hostname, targetUrl) {
-  try {
-    const query = `
-      SELECT id, indicator, indicator_type, source, severity, description
-      FROM threat_intelligence
-      WHERE indicator = $1 OR indicator = $2
-      LIMIT 10
-    `;
-    const res = await pool.query(query, [hostname, targetUrl]);
-    return res.rows || [];
-  } catch (err) {
-    // If table doesn't exist or DB offline, return empty list gracefully
-    return [];
-  }
 }
 
 /**
