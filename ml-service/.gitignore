@@ -2,6 +2,6 @@
 __pycache__/
 *.pyc
 models/*.joblib
+!models/ensemble.joblib
 data/raw/
 data/processed/
-data/reference/
