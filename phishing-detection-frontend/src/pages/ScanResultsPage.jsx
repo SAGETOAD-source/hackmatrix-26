@@ -33,6 +33,30 @@ import { generateReportText, simulateScan } from '../utils/simulateScan'
 import { getLatestScan, setLatestScan } from '../services/scanService'
 import { getApiBaseUrl } from '../services/api'
 
+const BRAND_DOMAINS = {
+  paypal: 'paypal.com',
+  apple: 'apple.com',
+  google: 'google.com',
+  microsoft: 'microsoft.com',
+  amazon: 'amazon.com',
+  netflix: 'netflix.com',
+}
+
+function detectBrandSpoof(rawUrl) {
+  try {
+    const host = new URL(/^https?:\/\//i.test(rawUrl) ? rawUrl : 'http://' + rawUrl)
+      .hostname.toLowerCase().replace(/^www\./, '')
+    for (const [brand, canon] of Object.entries(BRAND_DOMAINS)) {
+      if (host.includes(brand) && host !== canon && !host.endsWith('.' + canon)) {
+        return { brand, canon }
+      }
+    }
+  } catch {
+    /* ignore invalid URLs */
+  }
+  return null
+}
+
 function getInitialScan(urlParam) {
   const stored = getLatestScan()
   if (stored) {
@@ -141,7 +165,8 @@ export default function ScanResultsPage() {
   const isPending = scanResult?.status === 'pending' || scanResult?.isPending
 
   // Detect brand impersonation heuristic
-  const isSpoofed = scanResult?.urlCharacteristics?.suspiciousKeywords?.length > 0 || (scanResult?.url && /paypal|apple|google|microsoft|amazon|netflix/i.test(scanResult.url))
+  const spoof = scanResult?.url ? detectBrandSpoof(scanResult.url) : null
+  const isSpoofed = Boolean(spoof) && verdict !== 'safe'
 
   // Ambient Aurora color palette reflecting security posture
   const auroraStops = isPending
@@ -347,9 +372,9 @@ export default function ScanResultsPage() {
               {/* Brand Impersonation Warning Banner if applicable */}
               {isSpoofed && (
                 <BrandImpersonationDiff
-                  targetUrl={scanResult.url}
-                  canonicalDomain="paypal.com"
-                  similarityScore={Math.min(96, scanResult.riskScore || 88)}
+                  suspiciousUrl={scanResult.url}
+                  legitimateUrl={`https://www.${spoof.canon}`}
+                  brandName={spoof.brand.charAt(0).toUpperCase() + spoof.brand.slice(1)}
                 />
               )}
 
@@ -628,9 +653,11 @@ export default function ScanResultsPage() {
           )}
 
           {/* Footer note */}
-          <div className="p-2 text-center text-[11px] font-mono text-[#A29FC9] light:text-[#6E6893] italic">
-            {SIMULATION_DISCLAIMER}
-          </div>
+          {!scanResult?.isLiveApi && (
+            <div className="p-2 text-center text-[11px] font-mono text-[#A29FC9] light:text-[#6E6893] italic">
+              {SIMULATION_DISCLAIMER}
+            </div>
+          )}
         </main>
       </div>
     </div>

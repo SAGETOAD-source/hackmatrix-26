@@ -104,12 +104,20 @@ export default function CertificateCard({ sslStatus = {} }) {
         <h4 className="text-[11px] font-mono uppercase tracking-wider text-[#A29FC9] light:text-[#6E6893] mb-3">
           PKI Certificate Trust Path
         </h4>
-        <CertificateStepper
-          rootCA="Internet Security Research Group (ISRG Root X1)"
-          intermediateCA={issuer || "Let's Encrypt Authority R3"}
-          leafDomain={domain || "Target Destination"}
-          validTo={validTo}
-        />
+        {sslStatus.live ? (
+          <div className="p-4 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA] text-xs font-mono text-[#F2F0FF] light:text-[#1E1B4B] leading-relaxed">
+            Certificate for {domain || 'target host'} issued by {issuer || 'unknown issuer'}.
+            {typeof sslStatus.daysRemaining === 'number' ? ` ${sslStatus.daysRemaining} days remaining.` : ''}
+            {' '}Handshake {sslStatus.authorized ? 'verified against the system trust store.' : 'could NOT be verified against the system trust store.'}
+          </div>
+        ) : (
+          <CertificateStepper
+            rootCA="Internet Security Research Group (ISRG Root X1)"
+            intermediateCA={issuer || "Let's Encrypt Authority R3"}
+            leafDomain={domain || "Target Destination"}
+            validTo={validTo}
+          />
+        )}
       </div>
 
       {/* Grid details */}
@@ -117,15 +125,17 @@ export default function CertificateCard({ sslStatus = {} }) {
         <InfoItem label="Issuer Authority" value={issuer} />
         <InfoItem label="Issued Timestamp" value={validFrom} />
         <InfoItem label="Expiration Timestamp" value={validTo} />
-        <InfoItem label="Key Length & Cipher" value={keySize ? `${keySize} bits` : 'RSA 2048 bits'} />
-        <InfoItem label="Signature Hash Algorithm" value={signatureAlgorithm || 'SHA256withRSA'} />
+        <InfoItem label="Key Length & Cipher" value={keySize ? `${keySize} bits` : sslStatus.live ? 'Not measured' : 'RSA 2048 bits'} />
+        <InfoItem label="Signature Hash Algorithm" value={signatureAlgorithm || (sslStatus.live ? 'Not measured' : 'SHA256withRSA')} />
       </div>
 
       {/* Verification flags */}
       <div className="pt-3 border-t border-[#2A2650] light:border-[#E2DEFA] flex flex-wrap items-center gap-5">
         <BooleanIndicator label="SAN Hostname Validated" value={sanMatch} />
-        <BooleanIndicator label="Certificate Transparency Logged" value={ctLogged} />
-        <BooleanIndicator label="Chain Root Trusted" value={hasSSL} />
+        {ctLogged !== null && ctLogged !== undefined && (
+          <BooleanIndicator label="Certificate Transparency Logged" value={ctLogged} />
+        )}
+        <BooleanIndicator label="Chain Root Trusted" value={sslStatus.live ? sslStatus.authorized : hasSSL} />
       </div>
     </div>
   )

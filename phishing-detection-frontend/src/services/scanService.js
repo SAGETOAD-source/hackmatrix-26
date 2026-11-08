@@ -5,6 +5,106 @@ import { isAuthenticated } from './authService.js'
 
 const LATEST_SCAN_KEY = 'latest_scan_result'
 
+function normalizeHeaders(h) {
+  if (Array.isArray(h)) return h
+  if (!h || typeof h !== 'object' || h.error) return []
+  const rows = [
+    ['Strict-Transport-Security', h.hsts ? 'Enabled' : null, 'WARN'],
+    ['Content-Security-Policy', h.csp ? 'Set' : null, 'FAIL'],
+    ['X-Frame-Options', h.xFrameOptions, 'WARN'],
+    ['X-Content-Type-Options', h.xContentTypeOptions, 'FAIL'],
+    ['Referrer-Policy', h.referrerPolicy, 'WARN'],
+  ]
+  return rows.map(([name, value, sev]) => ({
+    name,
+    present: Boolean(value),
+    value: value || 'Not set',
+    severity: value ? 'PASS' : sev,
+  }))
+}
+
+function shannonEntropy(s) {
+  if (!s) return 0
+  const f = {}
+  for (const c of s) f[c] = (f[c] || 0) + 1
+  let e = 0
+  for (const k in f) {
+    const p = f[k] / s.length
+    e -= p * Math.log2(p)
+  }
+  return Number(e.toFixed(2))
+}
+
+const RISKY_TLDS = new Set(['xyz','top','tk','ml','ga','cf','gq','click','link','work','zip','country','kim','loan'])
+const SHORTENERS = new Set(['bit.ly','tinyurl.com','t.co','goo.gl','ow.ly','is.gd','buff.ly','cutt.ly','rebrand.ly'])
+const LURE_WORDS = ['login','verify','secure','account','update','banking','confirm','signin','password','wallet']
+
+function buildUrlCharacteristics(backendChars, targetUrl) {
+  const b = backendChars && typeof backendChars === 'object' ? backendChars : {}
+  let u = null
+  try {
+    u = new URL(/^https?:\/\//i.test(targetUrl) ? targetUrl : `https://${targetUrl}`)
+  } catch {
+    u = null
+  }
+  const host = u ? u.hostname.toLowerCase() : ''
+  const path = u ? u.pathname : ''
+  const query = u ? u.search.replace(/^\?/, '') : ''
+  const tld = host.split('.').pop()
+  const lure = LURE_WORDS.filter((k) => targetUrl.toLowerCase().includes(k))
+  return {
+    urlLength: b.urlLength ?? targetUrl.length,
+    domainLength: b.domainLength ?? host.length,
+    dotCount: (host.match(/\./g) || []).length,
+    hyphenCount: (host.match(/-/g) || []).length,
+    specialCharCount: (targetUrl.match(/[^a-zA-Z0-9.:/]/g) || []).length,
+    subdomainCount: b.subdomainCount ?? Math.max(0, host.split('.').length - 2),
+    hasIPAddress: b.hasIpAddress ?? /^(\d{1,3}\.){3}\d{1,3}$/.test(host),
+    hasAtSymbol: b.hasAtSymbol ?? targetUrl.includes('@'),
+    hasSuspiciousEncoding: /%[0-9a-f]{2}/i.test(targetUrl),
+    isHTTPS: b.hasHttps ?? (u ? u.protocol === 'https:' : false),
+    pathLength: path.length,
+    queryParamCount: query ? query.split('&').length : 0,
+    suspiciousTLD: b.hasSuspiciousTld ?? RISKY_TLDS.has(tld),
+    domainEntropy: shannonEntropy(host),
+    hasPunycode: host.includes('xn--'),
+    suspiciousPort: Boolean(u && u.port && !['80', '443'].includes(u.port)),
+    isURLShortener: b.isShortened ?? SHORTENERS.has(host),
+    suspiciousKeywords: Array.isArray(b.matchedKeywords) ? b.matchedKeywords : lure,
+  }
+}
+
+function normalizeSsl(t, domain) {
+  if (!t || typeof t !== 'object') return { hasSSL: false, domain }
+  if (typeof t.hasSSL === 'boolean') return { ...t, domain: t.domain || domain }
+  const hasCert = ['valid', 'expired', 'untrusted'].includes(t.status)
+  return {
+    hasSSL: hasCert,
+    protocol: 'TLS',
+    live: true,
+    authorized: Boolean(t.authorized),
+    daysRemaining: typeof t.daysRemaining === 'number' ? t.daysRemaining : null,
+    issuer: t.issuer || null,
+    validFrom: t.validFrom ? String(t.validFrom).slice(0, 10) : null,
+    validTo: t.validTo ? String(t.validTo).slice(0, 10) : null,
+    sanMatch: Boolean(t.authorized),
+    ctLogged: null,
+    grade: t.valid ? undefined : 'F',
+    domain,
+  }
+}
+
+function normalizeRecs(recs) {
+  if (!Array.isArray(recs)) return []
+  return recs.map((r) => {
+    if (r && typeof r === 'object') return r
+    const text = String(r)
+    const priority = /extreme caution|phishing campaign/i.test(text) ? 'HIGH' : /https|hsts|cleartext/i.test(text) ? 'MEDIUM' : 'LOW'
+    const title = priority === 'HIGH' ? 'Immediate action' : priority === 'MEDIUM' ? 'Recommended hardening' : 'Further verification'
+    return { title, description: text, priority }
+  })
+}
+
 /**
  * Normalizes live backend scan record to the standard frontend result schema
  * @param {object} scan The scan record from backend (GET /api/v1/scans/:id)
@@ -75,16 +175,16 @@ function normalizeLiveScan(scan, targetUrl) {
       ? scan.confidence
       : 0.94,
     mlAnalysis: analysis.ml_analysis || null,
-    urlCharacteristics: realUrlChars,
-    sslStatus: analysis.ssl_status || analysis.sslStatus || analysis.certificate || null,
-    httpHeaders: analysis.http_headers || analysis.httpHeaders || null,
+    urlCharacteristics: buildUrlCharacteristics(realUrlChars, scan.url || targetUrl),
+    sslStatus: normalizeSsl(analysis.ssl_status || analysis.sslStatus || analysis.certificate, domain),
+    httpHeaders: normalizeHeaders(analysis.http_headers || analysis.httpHeaders),
     dns: analysis.dns || null,
     suspiciousIndicators: analysis.suspicious_indicators || analysis.findings || [],
-    recommendations: analysis.recommendations || [
+    recommendations: normalizeRecs(analysis.recommendations || [
       'Analyze SSL/TLS certificate chain for unauthorized root authorities.',
       'Check URL against commercial and open-source threat intelligence feeds.',
       'Inspect HTTP response headers for missing HSTS, CSP, and X-Frame-Options.',
-    ],
+    ]),
     componentScores: analysis.component_scores || {
       lexical: analysis.lexical_score ?? Math.min(riskScore ?? 0, 85),
       tls: analysis.tls_score ?? Math.min(riskScore ?? 0, 70),
