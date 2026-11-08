@@ -1,0 +1,23 @@
+[
+  {
+    "indicator": "paypal-secure-login.account-verify.xyz",
+    "indicator_type": "domain",
+    "source": "ThreatLens demo seed",
+    "severity": "high",
+    "description": "Demo entry for the live demonstration: PayPal brand impersonation on a throwaway domain. Not from an external feed."
+  },
+  {
+    "indicator": "paypal.com.account-verification-notice.top",
+    "indicator_type": "domain",
+    "source": "ThreatLens demo seed",
+    "severity": "high",
+    "description": "Demo entry: PayPal lookalike with brand name used as a subdomain. Not from an external feed."
+  },
+  {
+    "indicator": "cloud-storage-temporary-share.top",
+    "indicator_type": "domain",
+    "source": "ThreatLens demo seed",
+    "severity": "medium",
+    "description": "Demo entry: fake file-sharing lure domain. Not from an external feed."
+  }
+]
