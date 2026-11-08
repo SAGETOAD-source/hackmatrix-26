@@ -59,15 +59,19 @@ async function scanAndWait(url, token) {
   if (listed.scan) {
     scanId = listed.scan.id;
     const a = listed.scan.analysis || {};
-    const ti = a.componentScores && a.componentScores.threatIntel;
+    const cs = a.component_scores || a.componentScores || {};
+    const ti = cs.threatIntel;
+    const hit = (a.findings || []).some((f) => /Known Malicious Indicator/i.test(f.title || ""));
     ok("threat intel component fires for listed domain (=100)", ti === 100, `threatIntel=${ti}`);
+    ok("'Known Malicious Indicator Match' finding is present", hit);
     ok("listed domain verdict is Phishing", listed.scan.verdict === "Phishing", `${listed.scan.verdict} (${listed.scan.risk_score})`);
   }
 
   const clean = await scanAndWait("https://google.com", token);
   ok("scan of google.com completes", !!clean.scan, clean.error || "");
   if (clean.scan) {
-    const ti = clean.scan.analysis && clean.scan.analysis.componentScores && clean.scan.analysis.componentScores.threatIntel;
+    const cleanCs = (clean.scan.analysis && (clean.scan.analysis.component_scores || clean.scan.analysis.componentScores)) || {};
+    const ti = cleanCs.threatIntel;
     ok("threat intel does NOT fire for google.com (=0)", ti === 0, `threatIntel=${ti}`);
     ok("google.com verdict is Safe", clean.scan.verdict === "Safe", `${clean.scan.verdict} (${clean.scan.risk_score})`);
   }
