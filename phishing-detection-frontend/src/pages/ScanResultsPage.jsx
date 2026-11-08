@@ -264,7 +264,7 @@ export default function ScanResultsPage() {
                           {isPending ? 'PROCESSING TICKET' : `${scanResult.verdict || scanResult.prediction} VERDICT`}
                         </span>
                         <span className="text-[11px] font-mono text-[#9EACC2] light:text-[#64748B]">
-                          Model Confidence: {Math.round((scanResult.confidence || 0.95) * 100)}%
+                          {scanResult.mlAnalysis?.model ? `Model (${scanResult.mlAnalysis.model})` : 'Model'} Confidence: {Math.round((scanResult.confidence || 0.95) * 100)}%
                         </span>
                       </div>
 

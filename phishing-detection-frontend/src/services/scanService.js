@@ -67,11 +67,14 @@ function normalizeLiveScan(scan, targetUrl) {
     verdict,
     riskScore: riskScore ?? 0,
     riskLevel,
-    confidence: typeof analysis.confidence === 'number'
+    confidence: typeof analysis.ml_analysis?.confidence === 'number'
+      ? analysis.ml_analysis.confidence
+      : typeof analysis.confidence === 'number'
       ? analysis.confidence
       : typeof scan.confidence === 'number'
       ? scan.confidence
       : 0.94,
+    mlAnalysis: analysis.ml_analysis || null,
     urlCharacteristics: realUrlChars,
     sslStatus: analysis.ssl_status || analysis.sslStatus || analysis.certificate || null,
     httpHeaders: analysis.http_headers || analysis.httpHeaders || null,
