@@ -14,9 +14,7 @@ Tiers: low_risk < 0.554 | suspicious >= 0.554 | likely_phishing >= 0.660
     .venv\Scripts\python.exe -m pip install -r requirements.txt
     .venv\Scripts\python.exe -m uvicorn app.main:app --port 8000
 
-Needs these files, which are NOT in git: models/ensemble.joblib (~49 MB),
-models/ensemble_meta.json, data/reference/top-1m.csv (Tranco, https://tranco-list.eu).
-Get them from Krishnendu, or retrain (below).
+The model artifacts (`models/ensemble.joblib`, `models/ensemble_meta.json`) and the Tranco reference dataset (`data/reference/top-1m.csv`) ARE included in the repository, so a fresh clone works without extra downloads (see Retrain below if you wish to rebuild them).
 
 ## API
 - GET  /health
