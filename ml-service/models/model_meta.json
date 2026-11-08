@@ -1,77 +1,122 @@
 {
-  "selected_model": "RandomForest",
-  "feature_names": [
-    "url_length",
-    "domain_length",
-    "num_dots",
-    "num_hyphens",
-    "num_subdomains",
-    "num_digits",
-    "num_special_chars",
-    "has_ip_address",
-    "is_https",
-    "suspicious_keyword_count",
-    "has_at_symbol",
-    "is_shortened",
-    "num_path_segments",
-    "query_param_count",
+  "best_model": "random_forest",
+  "threshold": 0.5459,
+  "features": [
+    "url_len",
+    "host_len",
+    "path_len",
+    "query_len",
+    "domain_len",
+    "tld_len",
+    "n_subdomains",
+    "dots_host",
+    "hyphens_host",
+    "hyphens_url",
+    "underscores",
+    "digits_host",
+    "digit_ratio",
+    "letter_ratio",
+    "special_ratio",
+    "path_depth",
+    "n_params",
+    "n_equals",
+    "n_percent",
+    "has_at",
+    "has_port",
+    "is_ip_host",
+    "has_punycode",
     "suspicious_tld",
-    "domain_entropy",
-    "has_punycode"
+    "is_shortener",
+    "kw_count",
+    "kw_in_host",
+    "entropy_url",
+    "entropy_host",
+    "rank_log",
+    "in_top_1k",
+    "in_top_10k",
+    "in_top_100k",
+    "in_top_1m"
   ],
-  "num_features": 17,
-  "random_seed": 42,
-  "training_samples": 16000,
-  "testing_samples": 4000,
-  "dataset_total": 20000,
-  "evaluation": {
+  "results": {
     "logistic_regression": {
-      "model_name": "LogisticRegression",
-      "accuracy": 0.9968,
-      "precision": 1.0,
-      "recall": 0.9935,
-      "f1_score": 0.9967,
-      "roc_auc": 1.0,
-      "confusion_matrix": {
-        "true_negatives": 2000,
-        "false_positives": 0,
-        "false_negatives": 13,
-        "true_positives": 1987
+      "threshold": 0.5413,
+      "val_f1": 0.5536,
+      "test_at_0.5": {
+        "precision": 0.4396,
+        "recall": 0.7284,
+        "f1": 0.5483,
+        "roc_auc": 0.7886,
+        "pr_auc": 0.5349
+      },
+      "test_at_thr": {
+        "precision": 0.477,
+        "recall": 0.6473,
+        "f1": 0.5492,
+        "roc_auc": 0.7886,
+        "pr_auc": 0.5349
+      },
+      "per_source": {
+        "malicious_phish": {
+          "precision": 0.3341,
+          "recall": 0.4793,
+          "f1": 0.3938,
+          "roc_auc": 0.75,
+          "pr_auc": 0.3022
+        },
+        "phiusiil": {
+          "precision": 0.5964,
+          "recall": 0.7744,
+          "f1": 0.6739,
+          "roc_auc": 0.7932,
+          "pr_auc": 0.8066
+        }
+      },
+      "confusion": {
+        "TN": 84930,
+        "FP": 26651,
+        "FN": 13244,
+        "TP": 24305
       }
     },
     "random_forest": {
-      "model_name": "RandomForest",
-      "accuracy": 0.9985,
-      "precision": 0.9995,
-      "recall": 0.9975,
-      "f1_score": 0.9985,
-      "roc_auc": 1.0,
-      "confusion_matrix": {
-        "true_negatives": 1999,
-        "false_positives": 1,
-        "false_negatives": 5,
-        "true_positives": 1995
+      "threshold": 0.5459,
+      "val_f1": 0.6674,
+      "test_at_0.5": {
+        "precision": 0.5723,
+        "recall": 0.7775,
+        "f1": 0.6593,
+        "roc_auc": 0.8844,
+        "pr_auc": 0.7601
+      },
+      "test_at_thr": {
+        "precision": 0.662,
+        "recall": 0.6798,
+        "f1": 0.6708,
+        "roc_auc": 0.8844,
+        "pr_auc": 0.7601
+      },
+      "per_source": {
+        "malicious_phish": {
+          "precision": 0.4979,
+          "recall": 0.5654,
+          "f1": 0.5295,
+          "roc_auc": 0.8602,
+          "pr_auc": 0.5367
+        },
+        "phiusiil": {
+          "precision": 0.8113,
+          "recall": 0.7664,
+          "f1": 0.7882,
+          "roc_auc": 0.8831,
+          "pr_auc": 0.8898
+        }
+      },
+      "confusion": {
+        "TN": 98549,
+        "FP": 13032,
+        "FN": 12022,
+        "TP": 25527
       }
     }
-  },
-  "feature_importances": {
-    "num_path_segments": 0.2461,
-    "url_length": 0.2408,
-    "num_digits": 0.1654,
-    "num_special_chars": 0.1376,
-    "num_dots": 0.0943,
-    "is_https": 0.0422,
-    "num_subdomains": 0.0294,
-    "has_ip_address": 0.0156,
-    "domain_length": 0.013,
-    "query_param_count": 0.0068,
-    "domain_entropy": 0.0057,
-    "num_hyphens": 0.0016,
-    "suspicious_keyword_count": 0.0008,
-    "suspicious_tld": 0.0007,
-    "has_punycode": 0.0001,
-    "has_at_symbol": 0.0,
-    "is_shortened": 0.0
-  },
-  "trained_at": "2026-11-08T06:06:44Z"
+  }
 }
