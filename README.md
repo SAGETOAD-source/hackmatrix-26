@@ -419,8 +419,8 @@ ThreatLens is architected for straightforward independent cloud deployment:
 | Role / Contribution | Member |
 |---|---|
 | **AI / Machine Learning Architecture** | **Krishnendu** |
-| *Full-Stack / Backend / Security Analysis* | *Hackmatrix-26 Team (Add names)* |
-| *Frontend UI / UX & Visualizations* | *Hackmatrix-26 Team (Add names)* |
+| *Full-Stack / Backend / Security Analysis* | **Nisat** |
+| *Frontend UI / UX & Visualizations* | **Harshit & Sabita** |
 
 ---
 
