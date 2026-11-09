@@ -405,10 +405,30 @@ ThreatLens is architected for straightforward independent cloud deployment:
 
 ---
 
-## 🖼️ Screenshots
+---
 
-<!-- Add screenshots here -->
-> *Add screenshots here (Scan Results, 5-Pillar Score Breakdown, Radar Chart, Brand Impersonation Warning, Threat Intelligence Table).*
+## 🖼️ Application Screenshots
+
+### 1. ThreatLens — Landing Page
+<img src="./hackmatrix-screenshots/01-overview.png" width="700" alt="ThreatLens Landing Page"/>
+
+### 2. Security Operations Center Dashboard
+<img src="./hackmatrix-screenshots/02-dashboard.png" width="700" alt="SOC Dashboard"/>
+
+### 3. URL Threat Scanner
+<img src="./hackmatrix-screenshots/03-scanner1.png" width="700" alt="URL Threat Scanner"/>
+
+### 4. Threat Scanner — Detection Interface
+<img src="./hackmatrix-screenshots/03-scanner2.png" width="700" alt="Threat Detection Interface"/>
+
+### 5. Demonstration Attack Vectors
+<img src="./hackmatrix-screenshots/03-scanner3.png" width="700" alt="Attack Vectors"/>
+
+### 6. Detailed Phishing Inspection Report
+<img src="./hackmatrix-screenshots/04-inspection-report.png" width="700" alt="Phishing Inspection Report"/>
+
+### 7. Historical Scan Records
+<img src="./hackmatrix-screenshots/05-scan-history.png" width="700" alt="Historical Scan Records"/>
 
 ---
 
