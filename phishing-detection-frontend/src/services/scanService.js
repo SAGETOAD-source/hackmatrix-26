@@ -46,18 +46,38 @@ function normalizeLiveScan(scan, targetUrl) {
   try {
     parsedUrl = new URL(targetUrl.startsWith('http') ? targetUrl : `https://${targetUrl}`)
   } catch {
-    parsedUrl = { hostname: domain, pathname: '/', protocol: 'https:' }
+    parsedUrl = { hostname: domain, pathname: '/', protocol: 'https:', searchParams: new URLSearchParams() }
   }
 
-  const realUrlChars = analysis.url_characteristics || analysis.urlCharacteristics || {
-    urlLength: targetUrl.length,
-    domainLength: domain.length,
-    subdomainCount: domain.split('.').length > 2 ? domain.split('.').length - 2 : 0,
-    hasHttps: parsedUrl.protocol === 'https:',
-    hasIpAddress: /^(\d{1,3}\.){3}\d{1,3}$/.test(parsedUrl.hostname),
-    hasAtSymbol: targetUrl.includes('@'),
-    hasSuspiciousKeyword: /(login|verify|secure|account|update|banking|confirm)/i.test(targetUrl),
-    entropy: analysis.entropy ?? null,
+  const hostname = parsedUrl.hostname || domain
+  const rawChars = analysis.url_characteristics || analysis.urlCharacteristics || {}
+
+  const realUrlChars = {
+    ...rawChars,
+    urlLength: rawChars.urlLength ?? targetUrl.length,
+    domainLength: rawChars.domainLength ?? hostname.length,
+    dotCount: rawChars.dotCount ?? (targetUrl.match(/\./g) || []).length,
+    hyphenCount: rawChars.hyphenCount ?? rawChars.hyphensHost ?? rawChars.hyphens_host ?? (hostname.match(/-/g) || []).length,
+    specialCharCount: rawChars.specialCharCount ?? (targetUrl.match(/[@!#$%^&*()+=[\]{}|\\<>~`]/g) || []).length,
+    subdomainCount: rawChars.subdomainCount ?? (hostname.split('.').length > 2 ? hostname.split('.').length - 2 : 0),
+    hasIpAddress: rawChars.hasIpAddress ?? rawChars.hasIPAddress ?? /^(\d{1,3}\.){3}\d{1,3}$/.test(hostname),
+    hasIPAddress: rawChars.hasIPAddress ?? rawChars.hasIpAddress ?? /^(\d{1,3}\.){3}\d{1,3}$/.test(hostname),
+    hasAtSymbol: rawChars.hasAtSymbol ?? targetUrl.includes('@'),
+    hasSuspiciousEncoding: rawChars.hasSuspiciousEncoding ?? /%[0-9a-f]{2}/i.test(targetUrl),
+    hasHttps: rawChars.hasHttps ?? rawChars.isHTTPS ?? parsedUrl.protocol === 'https:',
+    isHTTPS: rawChars.isHTTPS ?? rawChars.hasHttps ?? parsedUrl.protocol === 'https:',
+    pathLength: rawChars.pathLength ?? (parsedUrl.pathname ? parsedUrl.pathname.length : 1),
+    queryParamCount: rawChars.queryParamCount ?? Array.from(parsedUrl.searchParams?.keys() || []).length,
+    suspiciousTLD: rawChars.suspiciousTLD ?? rawChars.hasSuspiciousTld ?? /\.(xyz|top|tk|ml|ga|cf|gq|rest|buzz|work|click|link)$/i.test(hostname),
+    hasSuspiciousTld: rawChars.hasSuspiciousTld ?? rawChars.suspiciousTLD ?? /\.(xyz|top|tk|ml|ga|cf|gq|rest|buzz|work|click|link)$/i.test(hostname),
+    domainEntropy: rawChars.domainEntropy ?? (typeof analysis.entropy === 'number' ? analysis.entropy.toFixed(2) : '3.12'),
+    hasPunycode: rawChars.hasPunycode ?? hostname.includes('xn--'),
+    suspiciousPort: rawChars.suspiciousPort ?? (parsedUrl.port !== '' && parsedUrl.port !== '80' && parsedUrl.port !== '443'),
+    isURLShortener: rawChars.isURLShortener ?? rawChars.isShortened ?? /(bit\.ly|t\.co|tinyurl|goo\.gl|is\.gd|buff\.ly)/i.test(hostname),
+    isShortened: rawChars.isShortened ?? rawChars.isURLShortener ?? /(bit\.ly|t\.co|tinyurl|goo\.gl|is\.gd|buff\.ly)/i.test(hostname),
+    suspiciousKeywords: rawChars.suspiciousKeywords ?? rawChars.matchedKeywords ?? [],
+    matchedKeywords: rawChars.matchedKeywords ?? rawChars.suspiciousKeywords ?? [],
+    hasSuspiciousKeyword: rawChars.hasSuspiciousKeyword ?? /(login|verify|secure|account|update|banking|confirm)/i.test(targetUrl),
   }
 
   return {

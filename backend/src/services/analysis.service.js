@@ -99,19 +99,34 @@ function analyzeUrlStructure(urlObj, rawUrl) {
     rawLower.includes(kw)
   );
 
+  const hyphensHost = (hostname.match(/-/g) || []).length;
+  const hyphensUrl = (rawUrl.match(/-/g) || []).length;
+  const dotCount = (rawUrl.match(/\./g) || []).length;
+  const specialCharCount = (rawUrl.match(/[@!#$%^&*()+=[\]{}|\\<>~`]/g) || []).length;
+
   return {
     urlLength: rawUrl.length,
     domainLength: hostname.length,
     subdomainCount,
     hasHttps: urlObj.protocol === "https:",
+    isHTTPS: urlObj.protocol === "https:",
     hasIpAddress,
+    hasIPAddress: hasIpAddress,
     hasAtSymbol,
     isShortened,
+    isURLShortener: isShortened,
     hasSuspiciousTld,
+    suspiciousTLD: hasSuspiciousTld,
     tld,
     matchedKeywords,
     hasSuspiciousKeyword: matchedKeywords.length > 0,
     pathSegments: pathname.split("/").filter(Boolean).length,
+    hyphenCount: hyphensHost,
+    hyphensHost,
+    hyphensUrl,
+    dotCount,
+    specialCharCount,
+    hasPunycode: hostname.includes("xn--"),
   };
 }
 
@@ -436,6 +451,14 @@ function calculateUnifiedRiskScore({
       severity: "high",
     });
   }
+  if (urlChars.hyphenCount >= 3) {
+    lexicalScore += 20;
+    findings.push({
+      title: "Excessive Domain Hyphens",
+      description: `Domain contains ${urlChars.hyphenCount} hyphens, commonly observed in brand impersonation and typo-squatting lures.`,
+      severity: "medium",
+    });
+  }
   lexicalScore = Math.min(100, lexicalScore);
   componentScores.lexical = lexicalScore;
   componentScores.domainLexical = lexicalScore;
@@ -643,11 +666,22 @@ async function analyzeUrl(rawUrl) {
         domainLength: urlChars.domainLength,
         subdomainCount: urlChars.subdomainCount,
         hasHttps: urlChars.hasHttps,
+        isHTTPS: urlChars.hasHttps,
         hasIpAddress: urlChars.hasIpAddress,
+        hasIPAddress: urlChars.hasIpAddress,
         hasAtSymbol: urlChars.hasAtSymbol,
         hasSuspiciousKeyword: urlChars.hasSuspiciousKeyword,
         matchedKeywords: urlChars.matchedKeywords,
         isShortened: urlChars.isShortened,
+        isURLShortener: urlChars.isShortened,
+        hyphenCount: urlChars.hyphenCount,
+        hyphensHost: urlChars.hyphensHost,
+        hyphensUrl: urlChars.hyphensUrl,
+        dotCount: urlChars.dotCount,
+        specialCharCount: urlChars.specialCharCount,
+        pathLength: urlChars.pathSegments,
+        suspiciousTLD: urlChars.hasSuspiciousTld,
+        hasPunycode: urlChars.hasPunycode,
       },
       ssl_status: tlsStatus,
       certificate: tlsStatus,

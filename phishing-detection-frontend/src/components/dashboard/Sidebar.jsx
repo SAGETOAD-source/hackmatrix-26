@@ -26,6 +26,20 @@ export default function Sidebar({
   const mobileOpen = isControlledMobile ? propMobileOpen : internalMobileOpen
   const setMobileOpen = isControlledMobile ? propSetMobileOpen : setInternalMobileOpen
 
+  const [isDesktop, setIsDesktop] = useState(() => (typeof window !== 'undefined' ? window.innerWidth >= 768 : true))
+
+  useEffect(() => {
+    const handleResize = () => {
+      const desktop = window.innerWidth >= 768
+      setIsDesktop(desktop)
+      if (desktop) {
+        setMobileOpen(false)
+      }
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [setMobileOpen])
+
   const [apiActive, setApiActive] = useState(() => isApiMode())
 
   useEffect(() => {
@@ -142,29 +156,26 @@ export default function Sidebar({
               )}
             </Link>
 
-            {/* Desktop Collapse Toggle (Desktop only) */}
-            {!mobileOpen && (
+            {/* Desktop Collapse Toggle / Mobile Close Button (Mutually exclusive) */}
+            {isDesktop ? (
               <button
                 type="button"
                 onClick={() => setCollapsed(!collapsed)}
-                aria-label="Toggle Sidebar"
-                className="hidden md:inline-flex items-center justify-center p-1.5 rounded-lg text-[#A4B8B5] hover:text-[#F5F7F6] light:hover:text-[#101C22] hover:bg-[#1E4047] light:hover:bg-[#D8EFE9] transition-colors cursor-pointer"
+                aria-label={collapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
+                className="inline-flex items-center justify-center p-1.5 rounded-lg text-[#A4B8B5] hover:text-[#F5F7F6] light:hover:text-[#101C22] hover:bg-[#1E4047] light:hover:bg-[#D8EFE9] transition-colors cursor-pointer"
               >
                 {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
               </button>
-            )}
-
-            {/* Mobile Close Button (Mobile open drawer only) */}
-            {mobileOpen && (
+            ) : mobileOpen ? (
               <button
                 type="button"
                 onClick={() => setMobileOpen(false)}
                 aria-label="Close Navigation Drawer"
-                className="inline-flex md:hidden items-center justify-center p-1.5 rounded-lg text-[#A4B8B5] hover:text-[#F5F7F6] light:hover:text-[#101C22] hover:bg-[#1E4047] light:hover:bg-[#D8EFE9] transition-colors cursor-pointer"
+                className="inline-flex items-center justify-center p-1.5 rounded-lg text-[#A4B8B5] hover:text-[#F5F7F6] light:hover:text-[#101C22] hover:bg-[#1E4047] light:hover:bg-[#D8EFE9] transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4 text-[#55B9AD]" />
               </button>
-            )}
+            ) : null}
           </div>
 
           {/* Navigation Sections */}

@@ -442,16 +442,20 @@ export default function ScanResultsPage() {
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 text-xs font-mono">
                   {scanResult.urlCharacteristics && [
-                    { label: 'URL Length', value: `${scanResult.urlCharacteristics.urlLength} chars` },
-                    { label: 'Domain Length', value: `${scanResult.urlCharacteristics.domainLength} chars` },
-                    { label: 'Dot Count', value: scanResult.urlCharacteristics.dotCount },
-                    { label: 'Hyphen Count', value: scanResult.urlCharacteristics.hyphenCount },
-                    { label: 'Special Chars', value: scanResult.urlCharacteristics.specialCharCount },
-                    { label: 'Subdomains', value: scanResult.urlCharacteristics.subdomainCount },
+                    { label: 'URL Length', value: `${scanResult.urlCharacteristics.urlLength ?? scanResult.url?.length ?? 0} chars` },
+                    { label: 'Domain Length', value: `${scanResult.urlCharacteristics.domainLength ?? scanResult.domain?.length ?? 0} chars` },
+                    { label: 'Dot Count', value: scanResult.urlCharacteristics.dotCount ?? (scanResult.url?.match(/\./g) || []).length },
+                    {
+                      label: 'Hyphen Count',
+                      value: scanResult.urlCharacteristics.hyphenCount ?? (scanResult.domain?.match(/-/g) || []).length ?? 0,
+                      flag: (scanResult.urlCharacteristics.hyphenCount ?? (scanResult.domain?.match(/-/g) || []).length ?? 0) >= 3,
+                    },
+                    { label: 'Special Chars', value: scanResult.urlCharacteristics.specialCharCount ?? (scanResult.url?.match(/[@!#$%^&*()+=[\]{}|\\<>~`]/g) || []).length },
+                    { label: 'Subdomains', value: scanResult.urlCharacteristics.subdomainCount ?? (scanResult.domain ? Math.max(0, scanResult.domain.split('.').length - 2) : 0) },
                     {
                       label: 'Raw IP Host',
-                      value: scanResult.urlCharacteristics.hasIPAddress ? 'Detected' : 'No',
-                      flag: scanResult.urlCharacteristics.hasIPAddress,
+                      value: (scanResult.urlCharacteristics.hasIPAddress ?? scanResult.urlCharacteristics.hasIpAddress) ? 'Detected' : 'No',
+                      flag: scanResult.urlCharacteristics.hasIPAddress ?? scanResult.urlCharacteristics.hasIpAddress,
                     },
                     {
                       label: '@ Symbol',
@@ -465,17 +469,17 @@ export default function ScanResultsPage() {
                     },
                     {
                       label: 'Transport HTTPS',
-                      value: scanResult.urlCharacteristics.isHTTPS ? 'Active' : 'Insecure HTTP',
-                      flag: !scanResult.urlCharacteristics.isHTTPS,
+                      value: (scanResult.urlCharacteristics.isHTTPS ?? scanResult.urlCharacteristics.hasHttps) ? 'Active' : 'Insecure HTTP',
+                      flag: !(scanResult.urlCharacteristics.isHTTPS ?? scanResult.urlCharacteristics.hasHttps),
                     },
-                    { label: 'Path Length', value: `${scanResult.urlCharacteristics.pathLength} chars` },
-                    { label: 'Query Params', value: scanResult.urlCharacteristics.queryParamCount },
+                    { label: 'Path Length', value: `${scanResult.urlCharacteristics.pathLength ?? 1} chars` },
+                    { label: 'Query Params', value: scanResult.urlCharacteristics.queryParamCount ?? 0 },
                     {
                       label: 'Abuse TLD',
-                      value: scanResult.urlCharacteristics.suspiciousTLD ? 'Flagged (.xyz/.top)' : 'Standard',
-                      flag: scanResult.urlCharacteristics.suspiciousTLD,
+                      value: (scanResult.urlCharacteristics.suspiciousTLD ?? scanResult.urlCharacteristics.hasSuspiciousTld) ? 'Flagged (.xyz/.top)' : 'Standard',
+                      flag: scanResult.urlCharacteristics.suspiciousTLD ?? scanResult.urlCharacteristics.hasSuspiciousTld,
                     },
-                    { label: 'Shannon Entropy', value: `${scanResult.urlCharacteristics.domainEntropy} bits` },
+                    { label: 'Shannon Entropy', value: `${scanResult.urlCharacteristics.domainEntropy ?? '3.12'} bits` },
                     {
                       label: 'Punycode IDN',
                       value: scanResult.urlCharacteristics.hasPunycode ? 'Present (xn--)' : 'None',
@@ -488,16 +492,18 @@ export default function ScanResultsPage() {
                     },
                     {
                       label: 'Shortener',
-                      value: scanResult.urlCharacteristics.isURLShortener ? 'Yes' : 'Direct Host',
-                      flag: scanResult.urlCharacteristics.isURLShortener,
+                      value: (scanResult.urlCharacteristics.isURLShortener ?? scanResult.urlCharacteristics.isShortened) ? 'Yes' : 'Direct Host',
+                      flag: scanResult.urlCharacteristics.isURLShortener ?? scanResult.urlCharacteristics.isShortened,
                     },
                     {
                       label: 'Lure Keyword',
                       value:
-                        scanResult.urlCharacteristics.suspiciousKeywords?.length > 0
+                        (scanResult.urlCharacteristics.suspiciousKeywords?.length > 0
                           ? scanResult.urlCharacteristics.suspiciousKeywords[0]
-                          : 'None',
-                      flag: scanResult.urlCharacteristics.suspiciousKeywords?.length > 0,
+                          : scanResult.urlCharacteristics.matchedKeywords?.length > 0
+                          ? scanResult.urlCharacteristics.matchedKeywords[0]
+                          : 'None'),
+                      flag: (scanResult.urlCharacteristics.suspiciousKeywords?.length > 0 || scanResult.urlCharacteristics.matchedKeywords?.length > 0),
                     },
                   ].map((feat, idx) => (
                     <div

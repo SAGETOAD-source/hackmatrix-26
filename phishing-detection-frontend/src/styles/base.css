@@ -151,6 +151,18 @@ code, pre, kbd, samp,
   font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
+/* Prevent unwanted browser hyphenation breaks inside URLs and technical identifiers */
+.font-mono,
+code,
+kbd,
+pre,
+.break-all,
+.break-words {
+  hyphens: none;
+  -webkit-hyphens: none;
+  -ms-hyphens: none;
+}
+
 /* Text Selection in Violet */
 ::selection {
   background-color: rgba(124, 92, 255, 0.45);

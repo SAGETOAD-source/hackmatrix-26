@@ -11,6 +11,15 @@ export default function TopNavbar({ onSearch, searchQuery = '', collapsed, setCo
   const [user, setUser] = useState(() => getStoredUser())
   const [authed, setAuthed] = useState(() => isAuthenticated())
   const [apiActive, setApiActive] = useState(() => isApiMode())
+  const [isDesktop, setIsDesktop] = useState(() => (typeof window !== 'undefined' ? window.innerWidth >= 768 : true))
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 768)
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   useEffect(() => {
     const handleAuthChange = () => {
@@ -43,15 +52,17 @@ export default function TopNavbar({ onSearch, searchQuery = '', collapsed, setCo
       <header className="sticky top-0 z-30 h-16 transition-colors duration-200 border-b bg-[#101C22]/90 light:bg-white/90 backdrop-blur-md border-[#24454C] light:border-[#C2E2DA] flex items-center justify-between px-3 sm:px-6">
         {/* Mobile Navigation Trigger & Search Bar */}
         <div className="flex items-center space-x-2.5 sm:space-x-3 flex-1 max-w-md">
-          {/* Mobile hamburger menu button */}
-          <button
-            type="button"
-            onClick={handleMobileMenuClick}
-            aria-label="Open Navigation Menu"
-            className="md:hidden inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-lg text-[#A4B8B5] hover:text-[#F5F7F6] light:text-[#4B6B67] light:hover:text-[#101C22] bg-[#18343A] light:bg-[#D8EFE9] border border-[#24454C] light:border-[#C2E2DA] hover:bg-[#1E4047] transition-colors cursor-pointer shrink-0"
-          >
-            <Menu className="w-4 h-4 text-[#55B9AD]" />
-          </button>
+          {/* Mobile hamburger menu button (Mobile only) */}
+          {!isDesktop && (
+            <button
+              type="button"
+              onClick={handleMobileMenuClick}
+              aria-label="Open Navigation Menu"
+              className="inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-lg text-[#A4B8B5] hover:text-[#F5F7F6] light:text-[#4B6B67] light:hover:text-[#101C22] bg-[#18343A] light:bg-[#D8EFE9] border border-[#24454C] light:border-[#C2E2DA] hover:bg-[#1E4047] transition-colors cursor-pointer shrink-0"
+            >
+              <Menu className="w-4 h-4 text-[#55B9AD]" />
+            </button>
+          )}
 
           {/* Search Bar */}
           <div className="relative flex-1 group">

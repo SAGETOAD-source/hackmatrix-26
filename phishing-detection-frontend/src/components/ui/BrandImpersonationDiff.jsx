@@ -29,7 +29,10 @@ export default function BrandImpersonationDiff({
           </div>
           <div className="text-[var(--text-primary)] break-all pt-1 font-semibold">
             {suspDomain.split('').map((char, i) => {
-              const isMismatch = !legitDomain.includes(char) || char === '1' || char === '-'
+              const isMismatch =
+                !legitDomain.includes(char) ||
+                (char === '-' && !legitDomain.includes('-')) ||
+                (char === '1' && !legitDomain.includes('1') && legitDomain.includes('l'))
               return (
                 <span
                   key={i}

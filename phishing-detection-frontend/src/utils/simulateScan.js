@@ -96,8 +96,19 @@ export function calculateEntropy(str) {
  * @returns {{ valid: boolean, error: string|null }}
  */
 export function isValidUrl(urlString) {
+  if (!urlString || typeof urlString !== 'string') {
+    return { valid: false, error: 'Target URL or domain is required.' };
+  }
+  const trimmed = urlString.trim();
+  const withProtocol = trimmed.startsWith('http://') || trimmed.startsWith('https://')
+    ? trimmed
+    : `https://${trimmed}`;
+
   try {
-    const url = new URL(urlString);
+    const url = new URL(withProtocol);
+    if (!url.hostname || !url.hostname.includes('.')) {
+      return { valid: false, error: 'Please enter a valid hostname or domain name (e.g., example.com).' };
+    }
     if (url.protocol !== 'http:' && url.protocol !== 'https:') {
       return { valid: false, error: 'Only http and https schemes are accepted.' };
     }
@@ -117,7 +128,11 @@ export function isValidUrl(urlString) {
  * @returns {object} Simulated scan result
  */
 export function simulateScan(urlString) {
-  const parsed = new URL(urlString);
+  const trimmed = (urlString || '').trim();
+  const withProtocol = trimmed.startsWith('http://') || trimmed.startsWith('https://')
+    ? trimmed
+    : `https://${trimmed}`;
+  const parsed = new URL(withProtocol);
 
   // ── Extract basic parts ─────────────────────────────────────────────────
   const domain = parsed.hostname;
@@ -202,6 +217,15 @@ export function simulateScan(urlString) {
       title: 'Excessive Subdomains',
       severity: 'MEDIUM',
       description: `The domain contains ${subdomainCount} subdomains, which is often used to obscure the true destination.`,
+    });
+  }
+
+  if (hyphenCount >= 3) {
+    rawScore += 16;
+    indicators.push({
+      title: 'Excessive Hyphens in Domain',
+      severity: 'MEDIUM',
+      description: `Domain contains ${hyphenCount} hyphens. Attackers frequently chain keywords with hyphens (e.g. "secure-account-verify") to create convincing spoofed domains.`,
     });
   }
 
