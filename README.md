@@ -432,6 +432,17 @@ ThreatLens is architected for straightforward independent cloud deployment:
 
 ---
 
+### AI Tools & Development Assistance
+
+We used modern AI-powered tools and development resources to improve the website development process, UI design, coding, and problem-solving.
+
+- **Google Antigravity** – AI-assisted development and coding.
+- **React Bits** – Reusable animated React UI components and visual effects.
+- **Claude AI** – Used for CSS styling and improving the website's UI design to make it more attractive, modern, and user-friendly.
+- **ChatGPT** – Assistance with logic development, troubleshooting, and documentation.
+
+---
+
 ## 👥 Team & Acknowledgements
 
 **Built for Hackmatrix-26**
