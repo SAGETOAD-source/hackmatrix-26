@@ -33,6 +33,8 @@
 
 ## 📑 Table of Contents
 
+## 📑 Table of Contents
+
 - [📌 Overview](#-overview)
 - [⚡ Quick Start (Local, 3 Terminals)](#-quick-start-local-3-terminals)
 - [🏗️ System Architecture](#️-system-architecture)
@@ -44,9 +46,9 @@
 - [🔐 Environment Variables](#-environment-variables)
 - [🚀 Cloud Deployment Guide](#-cloud-deployment-guide)
 - [🖼️ Screenshots](#️-screenshots)
+- [🤖 AI Tools & Development Assistance](#-ai-tools--development-assistance)
 - [👥 Team & Acknowledgements](#-team--acknowledgements)
 - [🎯 Judge Quick Recap](#-judge-quick-recap)
-
 ---
 
 ## 📌 Overview
@@ -432,7 +434,7 @@ ThreatLens is architected for straightforward independent cloud deployment:
 
 ---
 
-### AI Tools & Development Assistance
+### 🤖 AI Tools & Development Assistance
 
 We used modern AI-powered tools and development resources to improve the website development process, UI design, coding, and problem-solving.
 
