@@ -19,7 +19,7 @@
   transform: translate(-50%, -50%);
   width: 600px;
   height: 320px;
-  background: radial-gradient(ellipse at center, rgba(124, 92, 255, 0.18), transparent 70%);
+  background: radial-gradient(ellipse at center, rgba(22, 125, 131, 0.16), transparent 70%);
   filter: blur(80px);
   pointer-events: none;
   z-index: var(--z-negative);
@@ -32,7 +32,7 @@
   border-radius: var(--radius-lg);
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.75rem;
-  box-shadow: var(--shadow-xl), 0 0 30px -5px rgba(124, 92, 255, 0.25);
+  box-shadow: var(--shadow-xl), 0 0 20px -5px rgba(22, 125, 131, 0.2);
   overflow: hidden;
 }
 
@@ -41,7 +41,7 @@
   align-items: center;
   justify-content: space-between;
   padding: var(--space-2) var(--space-3);
-  background-color: rgba(28, 25, 54, 0.6);
+  background-color: rgba(24, 52, 58, 0.6);
   border-bottom: 1px solid var(--border-subtle);
 }
 

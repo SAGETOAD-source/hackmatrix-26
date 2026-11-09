@@ -63,12 +63,12 @@
 .tab-button.active::after,
 [role="tab"][aria-selected="true"]::after {
   background-color: var(--brand-primary);
-  box-shadow: 0 0 10px rgba(124, 92, 255, 0.6);
+  box-shadow: 0 0 8px rgba(22, 125, 131, 0.4);
 }
 
 [data-theme="light"] .tab-button.active::after,
 .light .tab-button.active::after {
   background-color: var(--brand-primary);
-  box-shadow: 0 0 8px rgba(124, 92, 255, 0.4);
+  box-shadow: 0 0 6px rgba(22, 125, 131, 0.3);
 }
 

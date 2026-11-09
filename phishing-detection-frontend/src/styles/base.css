@@ -36,19 +36,19 @@ body,
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  /* Crisp Visible Multi-Layer Technical Grid */
+  /* Crisp Visible Multi-Layer Technical Grid in Ocean Teal */
   background-image:
     /* Layer 1: Ambient Top & Bottom Radial Glows */
-    radial-gradient(ellipse 90% 60% at 50% -20%, rgba(124, 92, 255, 0.25), transparent 70%),
-    radial-gradient(ellipse 70% 50% at 50% 120%, rgba(167, 139, 255, 0.15), transparent 70%),
+    radial-gradient(ellipse 90% 60% at 50% -20%, rgba(22, 125, 131, 0.20), transparent 70%),
+    radial-gradient(ellipse 70% 50% at 50% 120%, rgba(85, 185, 173, 0.12), transparent 70%),
     /* Layer 2: Grid Intersection Coordinate Dots */
-    radial-gradient(circle at 1px 1px, rgba(167, 139, 255, 0.6) 1.5px, transparent 0),
+    radial-gradient(circle at 1px 1px, rgba(85, 185, 173, 0.5) 1.5px, transparent 0),
     /* Layer 3: Major Grid Lines (128px) */
-    linear-gradient(to right, rgba(124, 92, 255, 0.25) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(124, 92, 255, 0.25) 1px, transparent 1px),
+    linear-gradient(to right, rgba(85, 185, 173, 0.15) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(85, 185, 173, 0.15) 1px, transparent 1px),
     /* Layer 4: Minor Grid Lines (32px) */
-    linear-gradient(to right, rgba(124, 92, 255, 0.12) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(124, 92, 255, 0.12) 1px, transparent 1px);
+    linear-gradient(to right, rgba(85, 185, 173, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(85, 185, 173, 0.06) 1px, transparent 1px);
   background-size:
     100% 100%,
     100% 100%,
@@ -67,13 +67,13 @@ body,
 .light #root {
   background-color: var(--bg-base);
   background-image:
-    radial-gradient(ellipse 90% 60% at 50% -20%, rgba(124, 92, 255, 0.14), transparent 70%),
-    radial-gradient(ellipse 70% 50% at 50% 120%, rgba(167, 139, 255, 0.08), transparent 70%),
-    radial-gradient(circle at 1px 1px, rgba(124, 92, 255, 0.45) 1.5px, transparent 0),
-    linear-gradient(to right, rgba(124, 92, 255, 0.20) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(124, 92, 255, 0.20) 1px, transparent 1px),
-    linear-gradient(to right, rgba(124, 92, 255, 0.08) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(124, 92, 255, 0.08) 1px, transparent 1px);
+    radial-gradient(ellipse 90% 60% at 50% -20%, rgba(22, 125, 131, 0.12), transparent 70%),
+    radial-gradient(ellipse 70% 50% at 50% 120%, rgba(85, 185, 173, 0.06), transparent 70%),
+    radial-gradient(circle at 1px 1px, rgba(22, 125, 131, 0.35) 1.5px, transparent 0),
+    linear-gradient(to right, rgba(22, 125, 131, 0.15) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(22, 125, 131, 0.15) 1px, transparent 1px),
+    linear-gradient(to right, rgba(22, 125, 131, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(22, 125, 131, 0.06) 1px, transparent 1px);
   background-size:
     100% 100%,
     100% 100%,
@@ -86,8 +86,10 @@ body,
 }
 
 /* Ensure Page Container Does Not Hide the Background Grid */
+.min-h-screen.bg-\[\#101C22\],
 .min-h-screen.bg-\[\#0B0A14\],
 .min-h-screen.bg-\[\#080F1E\],
+.min-h-screen.bg-\[\#E0F2ED\],
 .min-h-screen.bg-\[\#F5F7FC\],
 .min-h-screen.bg-\[\#F7F5FF\],
 div[class*="min-h-screen"][class*="bg-"] {
@@ -108,15 +110,15 @@ body::before {
   background-repeat: repeat;
 }
 
-/* Typography Hierarchy with clamp() */
+/* Typography Hierarchy with Inter */
 h1, h2, h3, h4, h5, h6,
 .font-heading,
 .font-display {
-  font-family: 'Space Grotesk', 'Inter', -apple-system, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   color: var(--text-primary);
-  letter-spacing: -0.025em;
-  font-weight: 700;
-  line-height: 1.15;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+  line-height: 1.25;
   margin-top: 0;
 }
 

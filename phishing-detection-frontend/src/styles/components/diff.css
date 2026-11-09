@@ -14,7 +14,7 @@
 }
 
 .diff-target-token-flagged {
-  background-color: rgba(255, 77, 109, 0.2);
+  background-color: rgba(239, 100, 100, 0.2);
   color: var(--malicious);
   border-bottom: 2px solid var(--malicious);
   border-radius: var(--radius-xs);
@@ -23,7 +23,7 @@
 }
 
 .diff-canonical-token-match {
-  background-color: rgba(198, 255, 61, 0.15);
+  background-color: rgba(85, 185, 173, 0.15);
   color: var(--brand-accent);
   border-bottom: 2px solid var(--brand-accent);
   border-radius: var(--radius-xs);
@@ -34,6 +34,6 @@
 [data-theme="light"] .diff-canonical-token-match,
 .light .diff-canonical-token-match {
   color: var(--brand-accent);
-  background-color: rgba(94, 143, 0, 0.12);
+  background-color: rgba(22, 125, 131, 0.12);
 }
 

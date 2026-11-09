@@ -33,9 +33,9 @@ function getVerdictType(riskLevel) {
 }
 
 function getScoreColor(score) {
-  if (score >= 70) return 'text-[#FF4D6D]'
-  if (score >= 40) return 'text-[#FFB020]'
-  return 'text-[#34E0A1]'
+  if (score >= 70) return 'text-[#EF6464]'
+  if (score >= 40) return 'text-[#E9B65B]'
+  return 'text-[#55B9AD]'
 }
 
 export default function ScanHistoryPage() {
@@ -165,7 +165,7 @@ export default function ScanHistoryPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0B0A14] light:bg-[#F7F5FF] text-[#F2F0FF] light:text-[#1E1B4B] transition-colors duration-200 flex">
+    <div className="min-h-screen bg-[#101C22] light:bg-[#E0F2ED] text-[#F5F7F6] light:text-[#101C22] transition-colors duration-200 flex">
       <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
 
       <div className={`flex-1 flex flex-col min-h-screen transition-all duration-200 ${collapsed ? 'ml-0 md:ml-18' : 'ml-0 md:ml-60'}`}>
@@ -176,14 +176,14 @@ export default function ScanHistoryPage() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <div className="flex items-center space-x-2">
-                <span className="text-xs font-mono font-semibold uppercase tracking-wider text-[#A78BFF]">
+                <span className="text-xs font-mono font-semibold uppercase tracking-wider text-[#55B9AD]">
                   AUDIT LOG ARCHIVE
                 </span>
               </div>
-              <h1 className="font-heading text-2xl sm:text-3xl font-extrabold tracking-tight text-[#F2F0FF] light:text-[#1E1B4B] mt-0.5">
+              <h1 className="font-heading text-2xl sm:text-3xl font-extrabold tracking-tight text-[#F5F7F6] light:text-[#101C22] mt-0.5">
                 Security Scan History & Archive
               </h1>
-              <p className="text-xs text-[#A29FC9] light:text-[#6E6893] mt-1">
+              <p className="text-xs text-[#A4B8B5] light:text-[#4B6B67] mt-1">
                 Historical record of audited targets, lexical feature scores, and classification telemetry.
               </p>
             </div>
@@ -215,7 +215,7 @@ export default function ScanHistoryPage() {
                 variant="outline"
                 size="sm"
                 icon={Trash2}
-                className="text-[#FF4D6D] hover:bg-[#FF4D6D]/10 hover:border-[#FF4D6D]/40"
+                className="text-[#EF6464] hover:bg-[#EF6464]/10 hover:border-[#EF6464]/40"
               >
                 Clear Archive
               </Button>
@@ -234,7 +234,7 @@ export default function ScanHistoryPage() {
 
           {/* History Error Banner */}
           {historyError && (
-            <div className="p-4 rounded-xl bg-[#FF4D6D]/10 border border-[#FF4D6D]/30 text-[#FF4D6D] text-xs flex items-center justify-between gap-3 font-mono">
+            <div className="p-4 rounded-xl bg-[#EF6464]/10 border border-[#EF6464]/30 text-[#EF6464] text-xs flex items-center justify-between gap-3 font-mono">
               <div className="flex items-center space-x-2">
                 <AlertTriangle className="w-4 h-4 shrink-0" />
                 <span>{historyError}</span>
@@ -242,7 +242,7 @@ export default function ScanHistoryPage() {
               <button
                 type="button"
                 onClick={loadHistory}
-                className="px-2.5 py-1 rounded bg-[#FF4D6D] hover:bg-[#FF4D6D]/90 text-white font-semibold text-xs"
+                className="px-2.5 py-1 rounded bg-[#EF6464] hover:bg-[#EF6464]/90 text-white font-semibold text-xs"
               >
                 Retry
               </button>
@@ -250,17 +250,17 @@ export default function ScanHistoryPage() {
           )}
 
           {/* Filter, Search & Sort Toolbar */}
-          <div className="p-4 sm:p-5 rounded-2xl bg-[#14122A] light:bg-white border border-[#2A2650] light:border-[#E2DEFA] shadow-sm space-y-3 font-mono">
+          <div className="p-4 sm:p-5 rounded-2xl bg-[#18343A] light:bg-white border border-[#24454C] light:border-[#C2E2DA] shadow-sm space-y-3 font-mono">
             <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
               {/* Search input */}
               <div className="md:col-span-5 relative group">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#A29FC9] group-focus-within:text-[#A78BFF] transition-colors" />
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#A4B8B5] group-focus-within:text-[#55B9AD] transition-colors" />
                 <input
                   type="text"
                   placeholder="Filter by domain or URL string..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 rounded-xl text-xs bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA] text-[#F2F0FF] light:text-[#1E1B4B] placeholder-[#A29FC9]/60 focus:outline-none focus:border-[#7C5CFF]"
+                  className="w-full pl-9 pr-3 py-2 rounded-xl text-xs bg-[#101C22] light:bg-[#E0F2ED] border border-[#24454C] light:border-[#C2E2DA] text-[#F5F7F6] light:text-[#101C22] placeholder-[#A4B8B5]/60 focus:outline-none focus:border-[#167D83]"
                 />
               </div>
 
@@ -269,7 +269,7 @@ export default function ScanHistoryPage() {
                 <select
                   value={riskFilter}
                   onChange={(e) => setRiskFilter(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl text-xs bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA] text-[#F2F0FF] light:text-[#1E1B4B] focus:outline-none focus:border-[#7C5CFF]"
+                  className="w-full px-3 py-2 rounded-xl text-xs bg-[#101C22] light:bg-[#E0F2ED] border border-[#24454C] light:border-[#C2E2DA] text-[#F5F7F6] light:text-[#101C22] focus:outline-none focus:border-[#167D83]"
                 >
                   <option value="ALL">All Risk Levels</option>
                   <option value="CRITICAL">Critical Phishing</option>
@@ -284,7 +284,7 @@ export default function ScanHistoryPage() {
                 <select
                   value={predictionFilter}
                   onChange={(e) => setPredictionFilter(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl text-xs bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA] text-[#F2F0FF] light:text-[#1E1B4B] focus:outline-none focus:border-[#7C5CFF]"
+                  className="w-full px-3 py-2 rounded-xl text-xs bg-[#101C22] light:bg-[#E0F2ED] border border-[#24454C] light:border-[#C2E2DA] text-[#F5F7F6] light:text-[#101C22] focus:outline-none focus:border-[#167D83]"
                 >
                   <option value="ALL">All Verdicts</option>
                   <option value="PHISHING">Phishing</option>
@@ -298,7 +298,7 @@ export default function ScanHistoryPage() {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl text-xs bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA] text-[#F2F0FF] light:text-[#1E1B4B] focus:outline-none focus:border-[#7C5CFF]"
+                  className="w-full px-3 py-2 rounded-xl text-xs bg-[#101C22] light:bg-[#E0F2ED] border border-[#24454C] light:border-[#C2E2DA] text-[#F5F7F6] light:text-[#101C22] focus:outline-none focus:border-[#167D83]"
                 >
                   <option value="NEWEST">Newest First</option>
                   <option value="OLDEST">Oldest First</option>
@@ -309,7 +309,7 @@ export default function ScanHistoryPage() {
             </div>
 
             {/* Active filter count indicator */}
-            <div className="flex items-center justify-between text-[11px] text-[#A29FC9] light:text-[#6E6893] pt-2 border-t border-[#2A2650]/60 light:border-[#E2DEFA]">
+            <div className="flex items-center justify-between text-[11px] text-[#A4B8B5] light:text-[#4B6B67] pt-2 border-t border-[#24454C]/60 light:border-[#C2E2DA]">
               <span>Showing {filteredScans.length} of {scans.length} historical audit records</span>
               {(search || riskFilter !== 'ALL' || predictionFilter !== 'ALL') && (
                 <button
@@ -319,7 +319,7 @@ export default function ScanHistoryPage() {
                     setRiskFilter('ALL')
                     setPredictionFilter('ALL')
                   }}
-                  className="text-[#A78BFF] light:text-[#7C5CFF] hover:underline cursor-pointer"
+                  className="text-[#55B9AD] light:text-[#167D83] hover:underline cursor-pointer"
                 >
                   Reset Filters
                 </button>
@@ -328,10 +328,10 @@ export default function ScanHistoryPage() {
           </div>
 
           {/* Table Container */}
-          <div className="rounded-2xl bg-[#14122A] light:bg-white border border-[#2A2650] light:border-[#E2DEFA] shadow-sm overflow-hidden">
+          <div className="rounded-2xl bg-[#18343A] light:bg-white border border-[#24454C] light:border-[#C2E2DA] shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs font-mono">
-                <thead className="bg-[#0B0A14]/70 light:bg-[#F7F5FF] text-[10px] uppercase text-[#A29FC9] light:text-[#6E6893] border-b border-[#2A2650] light:border-[#E2DEFA]">
+                <thead className="bg-[#101C22]/70 light:bg-[#E0F2ED] text-[10px] uppercase text-[#A4B8B5] light:text-[#4B6B67] border-b border-[#24454C] light:border-[#C2E2DA]">
                   <tr>
                     <th className="py-3 px-5">Target Resource</th>
                     <th className="py-3 px-5">Score</th>
@@ -340,7 +340,7 @@ export default function ScanHistoryPage() {
                     <th className="py-3 px-5 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#2A2650]/60 light:divide-[#E2DEFA]">
+                <tbody className="divide-y divide-[#24454C]/60 light:divide-[#C2E2DA]">
                   {filteredScans.length > 0 ? (
                     filteredScans.map((scan) => {
                       const verdict = getVerdictType(scan.riskLevel)
@@ -349,22 +349,22 @@ export default function ScanHistoryPage() {
                       return (
                         <tr
                           key={scan.id}
-                          className="hover:bg-[#1C1936]/40 light:hover:bg-[#F7F5FF] transition-colors"
+                          className="hover:bg-[#1E4047]/40 light:hover:bg-[#E0F2ED] transition-colors"
                         >
                           <td className="py-3.5 px-5 max-w-xs md:max-w-sm">
-                            <div className="font-semibold text-xs text-[#F2F0FF] light:text-[#1E1B4B] truncate">
+                            <div className="font-semibold text-xs text-[#F5F7F6] light:text-[#101C22] truncate">
                               {scan.domain}
                             </div>
-                            <div className="text-[11px] text-[#A29FC9] light:text-[#6E6893] truncate flex items-center space-x-1.5 mt-0.5">
+                            <div className="text-[11px] text-[#A4B8B5] light:text-[#4B6B67] truncate flex items-center space-x-1.5 mt-0.5">
                               <span className="truncate" title={scan.url}>{scan.url}</span>
                               <button
                                 type="button"
                                 onClick={() => handleCopyUrl(scan.id, scan.url)}
                                 title="Copy URL"
-                                className="text-[#A29FC9] hover:text-[#F2F0FF] p-0.5 shrink-0 cursor-pointer"
+                                className="text-[#A4B8B5] hover:text-[#F5F7F6] p-0.5 shrink-0 cursor-pointer"
                               >
                                 {copiedId === scan.id ? (
-                                  <Check className="w-3 h-3 text-[#34E0A1]" />
+                                  <Check className="w-3 h-3 text-[#55B9AD]" />
                                 ) : (
                                   <Copy className="w-3 h-3" />
                                 )}
@@ -376,7 +376,7 @@ export default function ScanHistoryPage() {
                             <span className={`font-bold text-sm ${scoreColor}`}>
                               {scan.riskScore}
                             </span>
-                            <span className="text-[10px] text-[#A29FC9] light:text-[#6E6893]">/100</span>
+                            <span className="text-[10px] text-[#A4B8B5] light:text-[#4B6B67]">/100</span>
                           </td>
 
                           <td className="py-3.5 px-5 whitespace-nowrap">
@@ -385,14 +385,14 @@ export default function ScanHistoryPage() {
                             </Badge>
                           </td>
 
-                          <td className="py-3.5 px-5 text-[11px] text-[#A29FC9] light:text-[#6E6893] whitespace-nowrap">
+                          <td className="py-3.5 px-5 text-[11px] text-[#A4B8B5] light:text-[#4B6B67] whitespace-nowrap">
                             {scan.timestamp || 'Just now'}
                           </td>
 
                           <td className="py-3.5 px-5 text-right whitespace-nowrap space-x-2">
                             <Link
                               to={`/results?url=${encodeURIComponent(scan.url)}`}
-                              className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-[#0B0A14] light:bg-white hover:bg-[#1C1936] light:hover:bg-[#F2EDFF] border border-[#2A2650] light:border-[#E2DEFA] text-[11px] text-[#A78BFF] light:text-[#7C5CFF] transition-all"
+                              className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-[#101C22] light:bg-white hover:bg-[#1E4047] light:hover:bg-[#D8EFE9] border border-[#24454C] light:border-[#C2E2DA] text-[11px] text-[#55B9AD] light:text-[#167D83] transition-all"
                             >
                               <Eye className="w-3 h-3" />
                               <span>View</span>
@@ -402,7 +402,7 @@ export default function ScanHistoryPage() {
                               type="button"
                               onClick={() => handleDeleteItem(scan.id)}
                               title="Delete record"
-                              className="p-1 rounded-lg text-[#A29FC9] hover:text-[#FF4D6D] hover:bg-[#FF4D6D]/10 transition-colors cursor-pointer"
+                              className="p-1 rounded-lg text-[#A4B8B5] hover:text-[#EF6464] hover:bg-[#EF6464]/10 transition-colors cursor-pointer"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
@@ -412,7 +412,7 @@ export default function ScanHistoryPage() {
                     })
                   ) : (
                     <tr>
-                      <td colSpan="5" className="py-12 text-center text-xs text-[#A29FC9] light:text-[#6E6893]">
+                      <td colSpan="5" className="py-12 text-center text-xs text-[#A4B8B5] light:text-[#4B6B67]">
                         No matching scan records found in the archive.
                       </td>
                     </tr>
@@ -425,24 +425,24 @@ export default function ScanHistoryPage() {
           {/* Clear Confirmation Modal */}
           {showClearModal && (
             <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-              <div className="p-6 rounded-2xl bg-[#14122A] light:bg-white border border-[#2A2650] light:border-[#E2DEFA] max-w-sm w-full space-y-4 font-mono shadow-2xl">
+              <div className="p-6 rounded-2xl bg-[#18343A] light:bg-white border border-[#24454C] light:border-[#C2E2DA] max-w-sm w-full space-y-4 font-mono shadow-2xl">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2 text-[#FF4D6D]">
+                  <div className="flex items-center space-x-2 text-[#EF6464]">
                     <AlertTriangle className="w-4 h-4" />
-                    <h3 className="font-bold text-xs uppercase tracking-wider text-[#F2F0FF] light:text-[#1E1B4B]">
+                    <h3 className="font-bold text-xs uppercase tracking-wider text-[#F5F7F6] light:text-[#101C22]">
                       Confirm Log Clear
                     </h3>
                   </div>
                   <button
                     type="button"
                     onClick={() => setShowClearModal(false)}
-                    className="text-[#A29FC9] hover:text-[#F2F0FF]"
+                    className="text-[#A4B8B5] hover:text-[#F5F7F6]"
                   >
                     <X className="w-4 h-4" />
                   </button>
                 </div>
 
-                <p className="text-xs text-[#A29FC9] light:text-[#6E6893] leading-relaxed">
+                <p className="text-xs text-[#A4B8B5] light:text-[#4B6B67] leading-relaxed">
                   Are you sure you want to clear all {scans.length} historical audit telemetry records? This action cannot be reversed.
                 </p>
 
@@ -457,7 +457,7 @@ export default function ScanHistoryPage() {
                   <button
                     type="button"
                     onClick={handleConfirmClear}
-                    className="px-3 py-1.5 rounded-lg bg-[#FF4D6D] hover:bg-[#FF4D6D]/90 text-white font-semibold text-xs cursor-pointer"
+                    className="px-3 py-1.5 rounded-lg bg-[#EF6464] hover:bg-[#EF6464]/90 text-white font-semibold text-xs cursor-pointer"
                   >
                     Clear All
                   </button>
@@ -467,7 +467,7 @@ export default function ScanHistoryPage() {
           )}
 
           {/* Disclaimer Footer */}
-          <div className="p-2 text-center text-[11px] font-mono text-[#A29FC9] light:text-[#6E6893] italic">
+          <div className="p-2 text-center text-[11px] font-mono text-[#A4B8B5] light:text-[#4B6B67] italic">
             {SIMULATION_DISCLAIMER}
           </div>
         </main>

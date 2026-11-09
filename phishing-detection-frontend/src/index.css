@@ -73,8 +73,8 @@
   --color-warning: var(--suspicious);
   --color-danger: var(--malicious);
 
-  /* Typography */
+  /* Typography - Clean Inter Hierarchy */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-display: 'Space Grotesk', 'Inter', -apple-system, sans-serif;
+  --font-display: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }

@@ -45,7 +45,7 @@ export default function Tabs({
             {isActive && (
               <motion.div
                 layoutId="activeTabUnderline"
-                className="absolute bottom-0 left-0 right-0 h-0.5 bg-[var(--brand-primary)] shadow-[0_0_12px_rgba(124,92,255,0.8)]"
+                className="absolute bottom-0 left-0 right-0 h-0.5 bg-[var(--brand-primary)] shadow-[0_0_8px_rgba(22,125,131,0.5)]"
                 transition={{ type: 'spring', stiffness: 380, damping: 30 }}
               />
             )}

@@ -38,8 +38,8 @@
   font-weight: 600;
   padding: 4px 10px;
   border-radius: var(--radius-sm);
-  background-color: rgba(52, 224, 161, 0.1);
+  background-color: rgba(85, 185, 173, 0.1);
   color: var(--safe);
-  border: 1px solid rgba(52, 224, 161, 0.3);
+  border: 1px solid rgba(85, 185, 173, 0.3);
 }
 

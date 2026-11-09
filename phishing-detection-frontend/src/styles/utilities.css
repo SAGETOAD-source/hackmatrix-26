@@ -26,7 +26,7 @@
 }
 
 .uv-glow-sm {
-  box-shadow: 0 0 16px -3px rgba(124, 92, 255, 0.25);
+  box-shadow: 0 0 16px -3px rgba(22, 125, 131, 0.25);
 }
 
 .lime-glow {
@@ -58,25 +58,25 @@
 /* Dot Grid & Technical Grid Patterns */
 .dot-grid {
   background-image:
-    radial-gradient(circle at 1px 1px, rgba(167, 139, 255, 0.5) 1.5px, transparent 0),
-    linear-gradient(to right, rgba(124, 92, 255, 0.18) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(124, 92, 255, 0.18) 1px, transparent 1px);
+    radial-gradient(circle at 1px 1px, rgba(85, 185, 173, 0.4) 1.5px, transparent 0),
+    linear-gradient(to right, rgba(22, 125, 131, 0.12) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(22, 125, 131, 0.12) 1px, transparent 1px);
   background-size: 32px 32px;
 }
 
 [data-theme="light"] .dot-grid,
 .light .dot-grid {
   background-image:
-    radial-gradient(circle at 1px 1px, rgba(124, 92, 255, 0.4) 1.5px, transparent 0),
-    linear-gradient(to right, rgba(124, 92, 255, 0.14) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(124, 92, 255, 0.14) 1px, transparent 1px);
+    radial-gradient(circle at 1px 1px, rgba(22, 125, 131, 0.3) 1.5px, transparent 0),
+    linear-gradient(to right, rgba(22, 125, 131, 0.10) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(22, 125, 131, 0.10) 1px, transparent 1px);
   background-size: 32px 32px;
 }
 
 .tech-grid {
   background-image:
-    linear-gradient(to right, rgba(124, 92, 255, 0.22) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(124, 92, 255, 0.22) 1px, transparent 1px);
+    linear-gradient(to right, rgba(85, 185, 173, 0.15) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(85, 185, 173, 0.15) 1px, transparent 1px);
   background-size: 32px 32px;
 }
 

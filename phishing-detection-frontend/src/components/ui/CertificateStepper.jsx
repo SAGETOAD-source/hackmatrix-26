@@ -50,7 +50,7 @@ export default function CertificateStepper({ certificate = {} }) {
           return (
             <div key={idx} className="relative group">
               {/* Glowing Node Dot */}
-              <div className="absolute -left-6 sm:-left-8 top-1.5 w-5 h-5 rounded-full bg-[var(--bg-surface)] border-2 border-[var(--brand-primary)] flex items-center justify-center shadow-[0_0_10px_rgba(124,92,255,0.6)]">
+              <div className="absolute -left-6 sm:-left-8 top-1.5 w-5 h-5 rounded-full bg-[var(--bg-surface)] border-2 border-[var(--brand-primary)] flex items-center justify-center shadow-[0_0_8px_rgba(85,185,173,0.35)]">
                 <div className="w-1.5 h-1.5 rounded-full bg-[var(--brand-accent)]" />
               </div>
 

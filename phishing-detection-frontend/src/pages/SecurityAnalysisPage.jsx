@@ -193,7 +193,7 @@ export default function SecurityAnalysisPage() {
   const dns = analysisData?.dns
 
   return (
-    <div className="min-h-screen bg-[#0B0A14] light:bg-[#F7F5FF] text-[#F2F0FF] light:text-[#1E1B4B] transition-colors duration-200 flex">
+    <div className="min-h-screen bg-[#101C22] light:bg-[#E0F2ED] text-[#F5F7F6] light:text-[#101C22] transition-colors duration-200 flex">
       <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
 
       <div
@@ -207,24 +207,24 @@ export default function SecurityAnalysisPage() {
           {/* Header Title */}
           <div>
             <div className="flex items-center space-x-2">
-              <span className="text-xs font-mono font-semibold uppercase tracking-wider text-[#A78BFF]">
+              <span className="text-xs font-mono font-semibold uppercase tracking-wider text-[#55B9AD]">
                 INFRASTRUCTURE RECONNAISSANCE
               </span>
             </div>
-            <h1 className="font-heading text-2xl sm:text-3xl font-extrabold tracking-tight text-[#F2F0FF] light:text-[#1E1B4B] mt-0.5">
+            <h1 className="font-heading text-2xl sm:text-3xl font-extrabold tracking-tight text-[#F5F7F6] light:text-[#101C22] mt-0.5">
               Security & Transport Audit Console
             </h1>
-            <p className="text-xs text-[#A29FC9] light:text-[#6E6893] mt-1">
+            <p className="text-xs text-[#A4B8B5] light:text-[#4B6B67] mt-1">
               Deep-dive inspection across cryptographic TLS certificates, passive HTTP headers, authoritative DNS records, and redirect chains.
             </p>
           </div>
 
           {/* Mode & Operational Notice Banner */}
-          <div className="p-3.5 rounded-xl bg-[#14122A] light:bg-white border border-[#2A2650] light:border-[#E2DEFA] text-xs text-[#A29FC9] light:text-[#6E6893] flex items-start sm:items-center justify-between gap-3 shadow-xs">
+          <div className="p-3.5 rounded-xl bg-[#18343A] light:bg-white border border-[#24454C] light:border-[#C2E2DA] text-xs text-[#A4B8B5] light:text-[#4B6B67] flex items-start sm:items-center justify-between gap-3 shadow-xs">
             <div className="flex items-start sm:items-center space-x-2.5">
-              <AlertTriangle className="w-4 h-4 text-[#FFB020] shrink-0 mt-0.5 sm:mt-0" />
+              <AlertTriangle className="w-4 h-4 text-[#E9B65B] shrink-0 mt-0.5 sm:mt-0" />
               <span>
-                <strong className="text-[#F2F0FF] light:text-[#1E1B4B] font-semibold font-mono">
+                <strong className="text-[#F5F7F6] light:text-[#101C22] font-semibold font-mono">
                   {analysisData?.isLiveApi ? 'LIVE BACKEND AUDIT:' : 'SIMULATED DEMONSTRATION ENGINE:'}
                 </strong>{' '}
                 {analysisData?.isLiveApi
@@ -239,7 +239,7 @@ export default function SecurityAnalysisPage() {
 
           {/* Analysis Error Banner with Retry */}
           {analysisError && (
-            <div className="p-3.5 rounded-xl bg-[#FF4D6D]/10 border border-[#FF4D6D]/30 text-[#FF4D6D] text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2 font-mono">
+            <div className="p-3.5 rounded-xl bg-[#EF6464]/10 border border-[#EF6464]/30 text-[#EF6464] text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2 font-mono">
               <div className="flex items-center space-x-2">
                 <XCircle className="w-4 h-4 shrink-0" />
                 <span><strong>Analysis Error:</strong> {analysisError}</span>
@@ -247,7 +247,7 @@ export default function SecurityAnalysisPage() {
               <button
                 type="button"
                 onClick={() => handleAnalyze(targetInput)}
-                className="px-2.5 py-1 rounded bg-[#FF4D6D] hover:bg-[#FF4D6D]/90 text-white font-semibold text-xs flex items-center space-x-1 cursor-pointer"
+                className="px-2.5 py-1 rounded bg-[#EF6464] hover:bg-[#EF6464]/90 text-white font-semibold text-xs flex items-center space-x-1 cursor-pointer"
               >
                 <RefreshCw className="w-3 h-3" />
                 <span>Retry</span>
@@ -256,7 +256,7 @@ export default function SecurityAnalysisPage() {
           )}
 
           {/* Domain Query Bar & Sample Pickers */}
-          <div className="p-5 sm:p-6 rounded-2xl bg-[#14122A] light:bg-white border border-[#2A2650] light:border-[#E2DEFA] shadow-md space-y-4">
+          <div className="p-5 sm:p-6 rounded-2xl bg-[#18343A] light:bg-white border border-[#24454C] light:border-[#C2E2DA] shadow-md space-y-4">
             <form
               onSubmit={(e) => {
                 e.preventDefault()
@@ -265,13 +265,13 @@ export default function SecurityAnalysisPage() {
               className="flex flex-col sm:flex-row gap-2.5"
             >
               <div className="relative flex-1 group">
-                <Terminal className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A29FC9] group-focus-within:text-[#A78BFF] transition-colors" />
+                <Terminal className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A4B8B5] group-focus-within:text-[#55B9AD] transition-colors" />
                 <input
                   type="text"
                   value={targetInput}
                   onChange={(e) => setTargetInput(e.target.value)}
                   placeholder="Enter target domain or URL (e.g. github.com, paypal.com.verify.xyz)..."
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl text-xs font-mono bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA] text-[#F2F0FF] light:text-[#1E1B4B] placeholder-[#A29FC9]/60 focus:outline-none focus:border-[#7C5CFF] focus:ring-2 focus:ring-[#7C5CFF]/20 transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl text-xs font-mono bg-[#101C22] light:bg-[#E0F2ED] border border-[#24454C] light:border-[#C2E2DA] text-[#F5F7F6] light:text-[#101C22] placeholder-[#A4B8B5]/60 focus:outline-none focus:border-[#167D83] focus:ring-2 focus:ring-[#167D83]/20 transition-all"
                 />
               </div>
 
@@ -288,28 +288,28 @@ export default function SecurityAnalysisPage() {
             </form>
 
             {/* Quick Target Chips */}
-            <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-[#2A2650] light:border-[#E2DEFA] text-xs font-mono">
-              <span className="text-[#A29FC9] light:text-[#6E6893] text-[11px] mr-1">
+            <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-[#24454C] light:border-[#C2E2DA] text-xs font-mono">
+              <span className="text-[#A4B8B5] light:text-[#4B6B67] text-[11px] mr-1">
                 Preset Hosts:
               </span>
               <button
                 type="button"
                 onClick={() => handlePresetSelect('github.com')}
-                className="px-2.5 py-1 rounded-lg bg-[#0B0A14] light:bg-[#F7F5FF] hover:bg-[#1C1936] text-[#34E0A1] border border-[#2A2650] light:border-[#E2DEFA] transition-all cursor-pointer text-[11px]"
+                className="px-2.5 py-1 rounded-lg bg-[#101C22] light:bg-[#E0F2ED] hover:bg-[#1E4047] text-[#55B9AD] border border-[#24454C] light:border-[#C2E2DA] transition-all cursor-pointer text-[11px]"
               >
                 github.com (Clean EV/OV)
               </button>
               <button
                 type="button"
                 onClick={() => handlePresetSelect('http://paypal.com.account-verification-notice.xyz')}
-                className="px-2.5 py-1 rounded-lg bg-[#0B0A14] light:bg-[#F7F5FF] hover:bg-[#1C1936] text-[#FF4D6D] border border-[#2A2650] light:border-[#E2DEFA] transition-all cursor-pointer text-[11px]"
+                className="px-2.5 py-1 rounded-lg bg-[#101C22] light:bg-[#E0F2ED] hover:bg-[#1E4047] text-[#EF6464] border border-[#24454C] light:border-[#C2E2DA] transition-all cursor-pointer text-[11px]"
               >
                 paypal.xyz (Phish/No TLS)
               </button>
               <button
                 type="button"
                 onClick={() => handlePresetSelect('https://cloud-storage-temporary-share-98.top')}
-                className="px-2.5 py-1 rounded-lg bg-[#0B0A14] light:bg-[#F7F5FF] hover:bg-[#1C1936] text-[#FFB020] border border-[#2A2650] light:border-[#E2DEFA] transition-all cursor-pointer text-[11px]"
+                className="px-2.5 py-1 rounded-lg bg-[#101C22] light:bg-[#E0F2ED] hover:bg-[#1E4047] text-[#E9B65B] border border-[#24454C] light:border-[#C2E2DA] transition-all cursor-pointer text-[11px]"
               >
                 cloud-storage.top (Suspicious DV)
               </button>
@@ -317,29 +317,29 @@ export default function SecurityAnalysisPage() {
           </div>
 
           {isAnalyzing ? (
-            <div className="p-12 text-center rounded-2xl bg-[#14122A] light:bg-white border border-[#2A2650] light:border-[#E2DEFA] shadow-md space-y-3 font-mono">
-              <Loader2 className="w-8 h-8 text-[#C6FF3D] light:text-[#5E8F00] animate-spin mx-auto" />
-              <h3 className="font-heading font-bold text-[#F2F0FF] light:text-[#1E1B4B] text-base">
+            <div className="p-12 text-center rounded-2xl bg-[#18343A] light:bg-white border border-[#24454C] light:border-[#C2E2DA] shadow-md space-y-3 font-mono">
+              <Loader2 className="w-8 h-8 text-[#55B9AD] light:text-[#11786D] animate-spin mx-auto" />
+              <h3 className="font-heading font-bold text-[#F5F7F6] light:text-[#101C22] text-base">
                 Initiating Socket Handshake Simulation...
               </h3>
-              <p className="text-xs text-[#A29FC9] light:text-[#6E6893]">
+              <p className="text-xs text-[#A4B8B5] light:text-[#4B6B67]">
                 Evaluating cipher suites, DNS resource records, and security headers.
               </p>
             </div>
           ) : (
             <div key={(analysisData?.domain || 'unknown') + '-' + rawId} className="space-y-6">
               {/* 1. SSL/TLS CERTIFICATE CARD */}
-              <div className="p-6 rounded-2xl bg-[#14122A] light:bg-white border border-[#2A2650] light:border-[#E2DEFA] shadow-md space-y-5">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#2A2650] light:border-[#E2DEFA] pb-4">
+              <div className="p-6 rounded-2xl bg-[#18343A] light:bg-white border border-[#24454C] light:border-[#C2E2DA] shadow-md space-y-5">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#24454C] light:border-[#C2E2DA] pb-4">
                   <div className="flex items-center space-x-3">
-                    <div className="w-9 h-9 rounded-xl bg-[#7C5CFF]/15 border border-[#7C5CFF]/30 text-[#A78BFF] flex items-center justify-center">
+                    <div className="w-9 h-9 rounded-xl bg-[#167D83]/15 border border-[#167D83]/30 text-[#55B9AD] flex items-center justify-center">
                       <Lock className="w-4 h-4" />
                     </div>
                     <div>
-                      <h2 className="font-heading font-bold text-xs uppercase tracking-wider text-[#F2F0FF] light:text-[#1E1B4B]">
+                      <h2 className="font-heading font-bold text-xs uppercase tracking-wider text-[#F5F7F6] light:text-[#101C22]">
                         1. SSL/TLS Certificate Posture
                       </h2>
-                      <span className="text-[11px] font-mono text-[#A29FC9] light:text-[#6E6893]">
+                      <span className="text-[11px] font-mono text-[#A4B8B5] light:text-[#4B6B67]">
                         Target Host: {analysisData?.domain || targetInput}
                       </span>
                     </div>
@@ -352,7 +352,7 @@ export default function SecurityAnalysisPage() {
                         {cert?.validityBadge?.label || cert?.status || 'Active'}
                       </Badge>
 
-                      <span className="px-2.5 py-0.5 rounded-lg bg-[#0B0A14] light:bg-[#EDE9FE] text-[#A78BFF] light:text-[#7C5CFF] text-[11px] font-bold border border-[#2A2650] light:border-[#D4CDFA]">
+                      <span className="px-2.5 py-0.5 rounded-lg bg-[#101C22] light:bg-[#D1EBE5] text-[#55B9AD] light:text-[#167D83] text-[11px] font-bold border border-[#24454C] light:border-[#B9DFD6]">
                         Days Left: {cert?.daysRemaining ?? 'N/A'}
                       </span>
                     </div>
@@ -366,7 +366,7 @@ export default function SecurityAnalysisPage() {
                 {/* PKI Certificate Stepper Visual Trust Chain */}
                 {cert && (
                   <div>
-                    <h4 className="text-[11px] font-mono uppercase tracking-wider text-[#A29FC9] light:text-[#6E6893] mb-3">
+                    <h4 className="text-[11px] font-mono uppercase tracking-wider text-[#A4B8B5] light:text-[#4B6B67] mb-3">
                       Certificate Trust Path
                     </h4>
                     <CertificateStepper
@@ -380,61 +380,61 @@ export default function SecurityAnalysisPage() {
 
                 {cert ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs font-mono">
-                    <div className="p-3.5 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA]">
-                      <span className="text-[10px] uppercase text-[#A29FC9] block mb-1">Status</span>
-                      <span className="font-bold text-[#F2F0FF] light:text-[#1E1B4B]">{cert.status || 'Active'}</span>
+                    <div className="p-3.5 rounded-xl bg-[#101C22] light:bg-[#E0F2ED] border border-[#24454C] light:border-[#C2E2DA]">
+                      <span className="text-[10px] uppercase text-[#A4B8B5] block mb-1">Status</span>
+                      <span className="font-bold text-[#F5F7F6] light:text-[#101C22]">{cert.status || 'Active'}</span>
                     </div>
-                    <div className="p-3.5 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA]">
-                      <span className="text-[10px] uppercase text-[#A29FC9] block mb-1">Certificate Issuer</span>
-                      <span className="font-bold text-[#F2F0FF] light:text-[#1E1B4B] truncate block" title={cert.issuer}>
+                    <div className="p-3.5 rounded-xl bg-[#101C22] light:bg-[#E0F2ED] border border-[#24454C] light:border-[#C2E2DA]">
+                      <span className="text-[10px] uppercase text-[#A4B8B5] block mb-1">Certificate Issuer</span>
+                      <span className="font-bold text-[#F5F7F6] light:text-[#101C22] truncate block" title={cert.issuer}>
                         {cert.issuer || 'Information Not Provided'}
                       </span>
                     </div>
-                    <div className="p-3.5 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA]">
-                      <span className="text-[10px] uppercase text-[#A29FC9] block mb-1">Subject Common Name</span>
-                      <span className="font-bold text-[#F2F0FF] light:text-[#1E1B4B] truncate block" title={cert.subject}>
+                    <div className="p-3.5 rounded-xl bg-[#101C22] light:bg-[#E0F2ED] border border-[#24454C] light:border-[#C2E2DA]">
+                      <span className="text-[10px] uppercase text-[#A4B8B5] block mb-1">Subject Common Name</span>
+                      <span className="font-bold text-[#F5F7F6] light:text-[#101C22] truncate block" title={cert.subject}>
                         {cert.subject || `CN=${analysisData?.domain}`}
                       </span>
                     </div>
-                    <div className="p-3.5 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA]">
-                      <span className="text-[10px] uppercase text-[#A29FC9] block mb-1">Valid From</span>
-                      <span className="text-[#F2F0FF] light:text-[#1E1B4B]">{cert.validFrom || 'N/A'}</span>
+                    <div className="p-3.5 rounded-xl bg-[#101C22] light:bg-[#E0F2ED] border border-[#24454C] light:border-[#C2E2DA]">
+                      <span className="text-[10px] uppercase text-[#A4B8B5] block mb-1">Valid From</span>
+                      <span className="text-[#F5F7F6] light:text-[#101C22]">{cert.validFrom || 'N/A'}</span>
                     </div>
-                    <div className="p-3.5 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA]">
-                      <span className="text-[10px] uppercase text-[#A29FC9] block mb-1">Expiry Horizon</span>
-                      <span className="text-[#F2F0FF] light:text-[#1E1B4B]">{cert.expiryDate || 'N/A'}</span>
+                    <div className="p-3.5 rounded-xl bg-[#101C22] light:bg-[#E0F2ED] border border-[#24454C] light:border-[#C2E2DA]">
+                      <span className="text-[10px] uppercase text-[#A4B8B5] block mb-1">Expiry Horizon</span>
+                      <span className="text-[#F5F7F6] light:text-[#101C22]">{cert.expiryDate || 'N/A'}</span>
                     </div>
-                    <div className="p-3.5 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA]">
-                      <span className="text-[10px] uppercase text-[#A29FC9] block mb-1">Key Length & Hash</span>
-                      <span className="text-[#F2F0FF] light:text-[#1E1B4B]">
+                    <div className="p-3.5 rounded-xl bg-[#101C22] light:bg-[#E0F2ED] border border-[#24454C] light:border-[#C2E2DA]">
+                      <span className="text-[10px] uppercase text-[#A4B8B5] block mb-1">Key Length & Hash</span>
+                      <span className="text-[#F5F7F6] light:text-[#101C22]">
                         {cert.keySize || 'N/A'} {cert.signatureAlgorithm ? `/ ${cert.signatureAlgorithm}` : ''}
                       </span>
                     </div>
                   </div>
                 ) : (
-                  <div className="p-4 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA] text-xs font-mono text-[#A29FC9]">
+                  <div className="p-4 rounded-xl bg-[#101C22] light:bg-[#E0F2ED] border border-[#24454C] light:border-[#C2E2DA] text-xs font-mono text-[#A4B8B5]">
                     No cryptographic TLS/SSL certificate parameters detected or reported for this target host.
                   </div>
                 )}
               </div>
 
               {/* 2. HTTP SECURITY HEADERS */}
-              <div className="p-6 rounded-2xl bg-[#14122A] light:bg-white border border-[#2A2650] light:border-[#E2DEFA] shadow-md space-y-4">
-                <div className="flex items-center justify-between border-b border-[#2A2650] light:border-[#E2DEFA] pb-4">
+              <div className="p-6 rounded-2xl bg-[#18343A] light:bg-white border border-[#24454C] light:border-[#C2E2DA] shadow-md space-y-4">
+                <div className="flex items-center justify-between border-b border-[#24454C] light:border-[#C2E2DA] pb-4">
                   <div className="flex items-center space-x-3">
-                    <div className="w-9 h-9 rounded-xl bg-[#7C5CFF]/15 border border-[#7C5CFF]/30 text-[#A78BFF] flex items-center justify-center">
+                    <div className="w-9 h-9 rounded-xl bg-[#167D83]/15 border border-[#167D83]/30 text-[#55B9AD] flex items-center justify-center">
                       <Shield className="w-4 h-4" />
                     </div>
                     <div>
-                      <h2 className="font-heading font-bold text-xs uppercase tracking-wider text-[#F2F0FF] light:text-[#1E1B4B]">
+                      <h2 className="font-heading font-bold text-xs uppercase tracking-wider text-[#F5F7F6] light:text-[#101C22]">
                         2. HTTP Security Response Headers
                       </h2>
-                      <span className="text-[11px] font-mono text-[#A29FC9] light:text-[#6E6893]">
+                      <span className="text-[11px] font-mono text-[#A4B8B5] light:text-[#4B6B67]">
                         OWASP Defensive Header Hygiene Audit
                       </span>
                     </div>
                   </div>
-                  <span className="px-2.5 py-0.5 rounded-lg text-[10px] font-mono font-bold uppercase border bg-[#0B0A14] light:bg-[#F7F5FF] border-[#2A2650] light:border-[#E2DEFA] text-[#A29FC9]">
+                  <span className="px-2.5 py-0.5 rounded-lg text-[10px] font-mono font-bold uppercase border bg-[#101C22] light:bg-[#E0F2ED] border-[#24454C] light:border-[#C2E2DA] text-[#A4B8B5]">
                     Headers Audited: {analysisData?.httpHeaders?.length || 0}
                   </span>
                 </div>
@@ -448,10 +448,10 @@ export default function SecurityAnalysisPage() {
                       return (
                         <div
                           key={idx}
-                          className="p-3.5 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA] space-y-1.5"
+                          className="p-3.5 rounded-xl bg-[#101C22] light:bg-[#E0F2ED] border border-[#24454C] light:border-[#C2E2DA] space-y-1.5"
                         >
                           <div className="flex items-center justify-between">
-                            <span className="font-bold text-xs text-[#F2F0FF] light:text-[#1E1B4B]">
+                            <span className="font-bold text-xs text-[#F5F7F6] light:text-[#101C22]">
                               {hdr?.name || `Header #${idx + 1}`}
                             </span>
                             <Badge verdict={isGood ? 'safe' : isWarn ? 'suspicious' : 'malicious'} size="sm">
@@ -459,12 +459,12 @@ export default function SecurityAnalysisPage() {
                             </Badge>
                           </div>
                           {hdr?.explanation && (
-                            <p className="text-[11px] text-[#A29FC9] light:text-[#6E6893] leading-relaxed">
+                            <p className="text-[11px] text-[#A4B8B5] light:text-[#4B6B67] leading-relaxed">
                               {hdr.explanation}
                             </p>
                           )}
                           {hdr?.recommendation && (
-                            <div className="text-[11px] text-[#A78BFF] light:text-[#7C5CFF] pt-1">
+                            <div className="text-[11px] text-[#55B9AD] light:text-[#167D83] pt-1">
                               <span className="font-semibold">Remediation:</span> {hdr.recommendation}
                             </div>
                           )}
@@ -473,24 +473,24 @@ export default function SecurityAnalysisPage() {
                     })}
                   </div>
                 ) : (
-                  <div className="p-4 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA] text-xs font-mono text-[#A29FC9]">
+                  <div className="p-4 rounded-xl bg-[#101C22] light:bg-[#E0F2ED] border border-[#24454C] light:border-[#C2E2DA] text-xs font-mono text-[#A4B8B5]">
                     No HTTP security response header records (HSTS, CSP, X-Frame-Options) were returned for this target.
                   </div>
                 )}
               </div>
 
               {/* 3. DNS INFORMATION */}
-              <div className="p-6 rounded-2xl bg-[#14122A] light:bg-white border border-[#2A2650] light:border-[#E2DEFA] shadow-md space-y-4">
-                <div className="flex items-center justify-between border-b border-[#2A2650] light:border-[#E2DEFA] pb-4">
+              <div className="p-6 rounded-2xl bg-[#18343A] light:bg-white border border-[#24454C] light:border-[#C2E2DA] shadow-md space-y-4">
+                <div className="flex items-center justify-between border-b border-[#24454C] light:border-[#C2E2DA] pb-4">
                   <div className="flex items-center space-x-3">
-                    <div className="w-9 h-9 rounded-xl bg-[#7C5CFF]/15 border border-[#7C5CFF]/30 text-[#A78BFF] flex items-center justify-center">
+                    <div className="w-9 h-9 rounded-xl bg-[#167D83]/15 border border-[#167D83]/30 text-[#55B9AD] flex items-center justify-center">
                       <Globe className="w-4 h-4" />
                     </div>
                     <div>
-                      <h2 className="font-heading font-bold text-xs uppercase tracking-wider text-[#F2F0FF] light:text-[#1E1B4B]">
+                      <h2 className="font-heading font-bold text-xs uppercase tracking-wider text-[#F5F7F6] light:text-[#101C22]">
                         3. DNS Zone Records & Infrastructure
                       </h2>
-                      <span className="text-[11px] font-mono text-[#A29FC9] light:text-[#6E6893]">
+                      <span className="text-[11px] font-mono text-[#A4B8B5] light:text-[#4B6B67]">
                         Authoritative Resource Records
                       </span>
                     </div>
@@ -504,55 +504,55 @@ export default function SecurityAnalysisPage() {
 
                 {dns ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
-                    <div className="p-3.5 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA]">
-                      <span className="text-[10px] uppercase text-[#A29FC9] block mb-1">A Record (IPv4)</span>
-                      <span className="text-[#F2F0FF] light:text-[#1E1B4B] font-bold block truncate">
+                    <div className="p-3.5 rounded-xl bg-[#101C22] light:bg-[#E0F2ED] border border-[#24454C] light:border-[#C2E2DA]">
+                      <span className="text-[10px] uppercase text-[#A4B8B5] block mb-1">A Record (IPv4)</span>
+                      <span className="text-[#F5F7F6] light:text-[#101C22] font-bold block truncate">
                         {dns.aRecord?.length > 0 ? dns.aRecord.join(', ') : 'Not Configured / None'}
                       </span>
                     </div>
-                    <div className="p-3.5 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA]">
-                      <span className="text-[10px] uppercase text-[#A29FC9] block mb-1">AAAA Record (IPv6)</span>
-                      <span className="text-[#F2F0FF] light:text-[#1E1B4B] font-bold block truncate">
+                    <div className="p-3.5 rounded-xl bg-[#101C22] light:bg-[#E0F2ED] border border-[#24454C] light:border-[#C2E2DA]">
+                      <span className="text-[10px] uppercase text-[#A4B8B5] block mb-1">AAAA Record (IPv6)</span>
+                      <span className="text-[#F5F7F6] light:text-[#101C22] font-bold block truncate">
                         {dns.aaaaRecord?.length > 0 ? dns.aaaaRecord.join(', ') : 'Not Configured / None'}
                       </span>
                     </div>
-                    <div className="p-3.5 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA]">
-                      <span className="text-[10px] uppercase text-[#A29FC9] block mb-1">MX Records (Mail Exchanger)</span>
-                      <span className="text-[#F2F0FF] light:text-[#1E1B4B] block truncate">
+                    <div className="p-3.5 rounded-xl bg-[#101C22] light:bg-[#E0F2ED] border border-[#24454C] light:border-[#C2E2DA]">
+                      <span className="text-[10px] uppercase text-[#A4B8B5] block mb-1">MX Records (Mail Exchanger)</span>
+                      <span className="text-[#F5F7F6] light:text-[#101C22] block truncate">
                         {dns.mxRecord?.length > 0 ? dns.mxRecord.join(', ') : 'Not Configured / None'}
                       </span>
                     </div>
-                    <div className="p-3.5 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA]">
-                      <span className="text-[10px] uppercase text-[#A29FC9] block mb-1">Authoritative NS (Nameservers)</span>
-                      <span className="text-[#F2F0FF] light:text-[#1E1B4B] block truncate">
+                    <div className="p-3.5 rounded-xl bg-[#101C22] light:bg-[#E0F2ED] border border-[#24454C] light:border-[#C2E2DA]">
+                      <span className="text-[10px] uppercase text-[#A4B8B5] block mb-1">Authoritative NS (Nameservers)</span>
+                      <span className="text-[#F5F7F6] light:text-[#101C22] block truncate">
                         {dns.nsRecord?.length > 0 ? dns.nsRecord.join(', ') : 'Not Configured / None'}
                       </span>
                     </div>
                   </div>
                 ) : (
-                  <div className="p-4 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA] text-xs font-mono text-[#A29FC9]">
+                  <div className="p-4 rounded-xl bg-[#101C22] light:bg-[#E0F2ED] border border-[#24454C] light:border-[#C2E2DA] text-xs font-mono text-[#A4B8B5]">
                     No DNS zone resource records were returned for this target host.
                   </div>
                 )}
               </div>
 
               {/* 4. REDIRECT CHAIN & TRAJECTORY */}
-              <div className="p-6 rounded-2xl bg-[#14122A] light:bg-white border border-[#2A2650] light:border-[#E2DEFA] shadow-md space-y-4">
-                <div className="flex items-center justify-between border-b border-[#2A2650] light:border-[#E2DEFA] pb-4">
+              <div className="p-6 rounded-2xl bg-[#18343A] light:bg-white border border-[#24454C] light:border-[#C2E2DA] shadow-md space-y-4">
+                <div className="flex items-center justify-between border-b border-[#24454C] light:border-[#C2E2DA] pb-4">
                   <div className="flex items-center space-x-3">
-                    <div className="w-9 h-9 rounded-xl bg-[#7C5CFF]/15 border border-[#7C5CFF]/30 text-[#A78BFF] flex items-center justify-center">
+                    <div className="w-9 h-9 rounded-xl bg-[#167D83]/15 border border-[#167D83]/30 text-[#55B9AD] flex items-center justify-center">
                       <ArrowRight className="w-4 h-4" />
                     </div>
                     <div>
-                      <h2 className="font-heading font-bold text-xs uppercase tracking-wider text-[#F2F0FF] light:text-[#1E1B4B]">
+                      <h2 className="font-heading font-bold text-xs uppercase tracking-wider text-[#F5F7F6] light:text-[#101C22]">
                         4. Redirect Chain & Hop Trajectory
                       </h2>
-                      <span className="text-[11px] font-mono text-[#A29FC9] light:text-[#6E6893]">
+                      <span className="text-[11px] font-mono text-[#A4B8B5] light:text-[#4B6B67]">
                         HTTP Status Hop Trajectory
                       </span>
                     </div>
                   </div>
-                  <span className="px-2.5 py-0.5 rounded-lg text-[10px] font-mono font-bold uppercase border bg-[#0B0A14] light:bg-[#F7F5FF] border-[#2A2650] light:border-[#E2DEFA] text-[#A29FC9]">
+                  <span className="px-2.5 py-0.5 rounded-lg text-[10px] font-mono font-bold uppercase border bg-[#101C22] light:bg-[#E0F2ED] border-[#24454C] light:border-[#C2E2DA] text-[#A4B8B5]">
                     Hops: {analysisData?.redirects?.length || 0}
                   </span>
                 </div>
@@ -560,40 +560,40 @@ export default function SecurityAnalysisPage() {
                 {analysisData?.redirects && analysisData.redirects.length > 0 ? (
                   <div className="space-y-2 text-xs font-mono">
                     {analysisData.redirects.map((hop, idx) => (
-                      <div key={idx} className="p-3 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA] flex items-center justify-between">
-                        <span className="text-[#F2F0FF] light:text-[#1E1B4B] truncate max-w-md">
+                      <div key={idx} className="p-3 rounded-xl bg-[#101C22] light:bg-[#E0F2ED] border border-[#24454C] light:border-[#C2E2DA] flex items-center justify-between">
+                        <span className="text-[#F5F7F6] light:text-[#101C22] truncate max-w-md">
                           {typeof hop === 'string' ? hop : hop.url || `Hop ${idx + 1}`}
                         </span>
-                        <span className="text-[#A78BFF] light:text-[#7C5CFF] font-bold">
+                        <span className="text-[#55B9AD] light:text-[#167D83] font-bold">
                           {typeof hop === 'object' && hop.statusCode ? hop.statusCode : '301 / 302'}
                         </span>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="p-3.5 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA] text-xs font-mono text-[#A29FC9]">
+                  <div className="p-3.5 rounded-xl bg-[#101C22] light:bg-[#E0F2ED] border border-[#24454C] light:border-[#C2E2DA] text-xs font-mono text-[#A4B8B5]">
                     Direct connection established (0 intermediate hops) or redirect trajectory was not reported by host probes.
                   </div>
                 )}
               </div>
 
               {/* 5. SECURITY FINDINGS */}
-              <div className="p-6 rounded-2xl bg-[#14122A] light:bg-white border border-[#2A2650] light:border-[#E2DEFA] shadow-md space-y-4">
-                <div className="flex items-center justify-between border-b border-[#2A2650] light:border-[#E2DEFA] pb-4">
+              <div className="p-6 rounded-2xl bg-[#18343A] light:bg-white border border-[#24454C] light:border-[#C2E2DA] shadow-md space-y-4">
+                <div className="flex items-center justify-between border-b border-[#24454C] light:border-[#C2E2DA] pb-4">
                   <div className="flex items-center space-x-3">
-                    <div className="w-9 h-9 rounded-xl bg-[#7C5CFF]/15 border border-[#7C5CFF]/30 text-[#A78BFF] flex items-center justify-center">
+                    <div className="w-9 h-9 rounded-xl bg-[#167D83]/15 border border-[#167D83]/30 text-[#55B9AD] flex items-center justify-center">
                       <ShieldAlert className="w-4 h-4" />
                     </div>
                     <div>
-                      <h2 className="font-heading font-bold text-xs uppercase tracking-wider text-[#F2F0FF] light:text-[#1E1B4B]">
+                      <h2 className="font-heading font-bold text-xs uppercase tracking-wider text-[#F5F7F6] light:text-[#101C22]">
                         5. Security Findings & Technical Recommendations
                       </h2>
-                      <span className="text-[11px] font-mono text-[#A29FC9] light:text-[#6E6893]">
+                      <span className="text-[11px] font-mono text-[#A4B8B5] light:text-[#4B6B67]">
                         Prioritized Defensive Remediation Matrix
                       </span>
                     </div>
                   </div>
-                  <span className="px-2.5 py-0.5 rounded-lg text-[10px] font-mono font-bold uppercase border bg-[#0B0A14] light:bg-[#F7F5FF] border-[#2A2650] light:border-[#E2DEFA] text-[#A29FC9]">
+                  <span className="px-2.5 py-0.5 rounded-lg text-[10px] font-mono font-bold uppercase border bg-[#101C22] light:bg-[#E0F2ED] border-[#24454C] light:border-[#C2E2DA] text-[#A4B8B5]">
                     Findings: {analysisData?.findings?.length || 0}
                   </span>
                 </div>
@@ -608,10 +608,10 @@ export default function SecurityAnalysisPage() {
                       return (
                         <div
                           key={finding?.id || idx}
-                          className="p-4 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA] space-y-2"
+                          className="p-4 rounded-xl bg-[#101C22] light:bg-[#E0F2ED] border border-[#24454C] light:border-[#C2E2DA] space-y-2"
                         >
                           <div className="flex items-center justify-between">
-                            <span className="font-bold text-xs text-[#F2F0FF] light:text-[#1E1B4B]">
+                            <span className="font-bold text-xs text-[#F5F7F6] light:text-[#101C22]">
                               {finding?.title || 'Security Finding'}
                             </span>
                             <Badge verdict={verdict} size="sm">
@@ -619,12 +619,12 @@ export default function SecurityAnalysisPage() {
                             </Badge>
                           </div>
                           {finding?.description && (
-                            <p className="text-[11px] text-[#A29FC9] light:text-[#6E6893] leading-relaxed">
+                            <p className="text-[11px] text-[#A4B8B5] light:text-[#4B6B67] leading-relaxed">
                               {finding.description}
                             </p>
                           )}
                           {finding?.recommendedAction && (
-                            <div className="text-[11px] text-[#34E0A1] light:text-[#059669] pt-1">
+                            <div className="text-[11px] text-[#55B9AD] light:text-[#059669] pt-1">
                               <span className="font-semibold">Recommended Fix:</span> {finding.recommendedAction}
                             </div>
                           )}
@@ -633,7 +633,7 @@ export default function SecurityAnalysisPage() {
                     })}
                   </div>
                 ) : (
-                  <div className="p-4 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA] text-xs font-mono text-[#A29FC9]">
+                  <div className="p-4 rounded-xl bg-[#101C22] light:bg-[#E0F2ED] border border-[#24454C] light:border-[#C2E2DA] text-xs font-mono text-[#A4B8B5]">
                     No active vulnerabilities, TLS anomalies, or critical findings detected for this host.
                   </div>
                 )}
@@ -642,7 +642,7 @@ export default function SecurityAnalysisPage() {
           )}
 
           {/* Demonstration Notice Footer */}
-          <div className="p-2 text-center text-[11px] font-mono text-[#A29FC9] light:text-[#6E6893] italic">
+          <div className="p-2 text-center text-[11px] font-mono text-[#A4B8B5] light:text-[#4B6B67] italic">
             {SIMULATION_DISCLAIMER}
           </div>
         </main>

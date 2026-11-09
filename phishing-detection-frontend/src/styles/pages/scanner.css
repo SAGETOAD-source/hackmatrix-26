@@ -61,13 +61,13 @@
 }
 
 .stage-item.stage-active {
-  background-color: rgba(124, 92, 255, 0.12);
-  border-color: var(--brand-primary);
-  box-shadow: 0 0 20px -3px rgba(124, 92, 255, 0.3);
+  background-color: rgba(22, 125, 131, 0.15);
+  border-color: var(--brand-glow);
+  box-shadow: 0 0 16px -3px rgba(22, 125, 131, 0.3);
 }
 
 .stage-item.stage-complete {
-  background-color: rgba(52, 224, 161, 0.06);
-  border-color: rgba(52, 224, 161, 0.3);
+  background-color: rgba(85, 185, 173, 0.08);
+  border-color: rgba(85, 185, 173, 0.35);
 }
 

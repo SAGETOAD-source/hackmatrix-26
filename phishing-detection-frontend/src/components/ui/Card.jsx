@@ -15,7 +15,7 @@ export default function Card({
     elevated: 'bg-[var(--bg-elevated)] border-[var(--border-subtle)] shadow-lg',
     glass: 'uv-glass border-[var(--border-subtle)]',
     interactive:
-      'bg-[var(--bg-surface)] border-[var(--border-subtle)] hover:border-[var(--brand-primary)] hover:-translate-y-0.5 hover:shadow-[0_12px_30px_-10px_rgba(124,92,255,0.2)] cursor-pointer',
+      'bg-[var(--bg-surface)] border-[var(--border-subtle)] hover:border-[var(--brand-glow)] hover:-translate-y-0.5 hover:shadow-[0_8px_24px_-8px_rgba(22,125,131,0.25)] cursor-pointer',
   }
 
   const glowStyle = glow ? 'uv-glow border-[var(--brand-primary)]/40' : ''

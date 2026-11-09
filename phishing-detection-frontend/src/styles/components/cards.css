@@ -28,7 +28,7 @@
 .card:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-card-hover);
-  border-color: rgba(124, 92, 255, 0.4);
+  border-color: rgba(85, 185, 173, 0.35);
 }
 
 /* Staggered Card Entrance Animation */

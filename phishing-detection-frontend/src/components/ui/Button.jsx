@@ -25,15 +25,15 @@ export default function Button({
 
   const variantStyles = {
     primary:
-      'btn-primary bg-[var(--brand-accent)] text-[var(--brand-accent-text)] hover:shadow-[0_0_20px_-3px_rgba(198,255,61,0.5)] active:brightness-95 font-semibold',
+      'btn-primary bg-[#167D83] text-[#F5F7F6] hover:bg-[#1a8e95] hover:shadow-sm active:brightness-95 font-semibold',
     secondary:
-      'btn-secondary bg-[var(--bg-elevated)] text-[var(--text-primary)] border border-[var(--border-subtle)] hover:border-[var(--brand-primary)] hover:shadow-[0_0_15px_-3px_rgba(124,92,255,0.3)] hover:text-white',
+      'btn-secondary bg-[#18343A] text-[#F5F7F6] border border-[#24454C] hover:border-[#55B9AD]/40 hover:bg-[#1E4047]',
     outline:
-      'btn-outline bg-transparent text-[var(--text-primary)] border border-[var(--border-subtle)] hover:border-[var(--brand-primary)] hover:bg-[var(--brand-primary)]/10',
+      'btn-outline bg-transparent text-[#F5F7F6] border border-[#24454C] hover:border-[#167D83] hover:bg-[#167D83]/10',
     ghost:
-      'btn-ghost bg-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]',
+      'btn-ghost bg-transparent text-[#A4B8B5] hover:text-[#F5F7F6] hover:bg-[#18343A]',
     danger:
-      'btn-danger bg-[var(--verdict-malicious)] text-white hover:brightness-110 shadow-[0_0_15px_-3px_rgba(255,77,109,0.4)]',
+      'btn-danger bg-[#EF6464] text-white hover:bg-[#dc5050] shadow-sm',
   }
 
   const isDisabled = disabled || loading

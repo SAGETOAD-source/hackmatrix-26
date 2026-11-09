@@ -6,11 +6,10 @@
 /* Modal Backdrop */
 .modal-backdrop,
 .fixed.inset-0.bg-black\/75,
-.fixed.inset-0.bg-black\/70,
-.fixed.inset-0.bg-black\/60 {
-  background-color: rgba(11, 10, 20, 0.8) !important;
-  backdrop-filter: blur(12px) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
+.fixed.inset-0.bg-black\/70 {
+  background-color: rgba(16, 28, 34, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   z-index: var(--z-modal-backdrop);
 }
 
@@ -41,7 +40,7 @@
 .light .modal-content {
   background-color: var(--bg-surface) !important;
   border-color: var(--border-subtle) !important;
-  box-shadow: var(--shadow-xl), 0 0 30px -5px rgba(124, 92, 255, 0.2) !important;
+  box-shadow: var(--shadow-xl), 0 0 24px -5px rgba(22, 125, 131, 0.2) !important;
 }
 
 /* Toast Notifications */

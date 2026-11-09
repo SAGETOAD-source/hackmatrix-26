@@ -1,46 +1,47 @@
 /**
  * Themes Configuration
- * Light theme tokens, high contrast adaptations, and forced-colors accessibility.
+ * Ocean Teal Light theme tokens, high contrast adaptations, and forced-colors accessibility.
  */
 
 /* Light Theme Variables */
 [data-theme="light"],
 .light {
   /* Surfaces and Canvas Layers */
-  --bg-base: #F7F5FF;          /* Warm off-white pearl */
+  --bg-base: #E0F2ED;          /* Light surface: #E0F2ED */
   --bg-surface: #FFFFFF;       /* Pure white */
-  --bg-elevated: #F0EDFF;      /* Soft lilac tint */
-  --border-subtle: #E2DEFA;    /* Soft lavender boundary */
-  --border-focus: #7C5CFF;
+  --bg-elevated: #F0FAF7;      /* Pale teal tint */
+  --border-subtle: #C2E2DA;    /* Pale teal border */
+  --border-focus: #167D83;
 
   /* Typography */
-  --text-primary: #1E1B4B;     /* Deep indigo */
-  --text-muted: #6E6893;       /* Dusk violet */
+  --text-primary: #101C22;     /* Deep teal dark text */
+  --text-muted: #4B6B67;       /* Muted teal gray */
 
-  /* Brand Violet */
-  --brand-primary: #7C5CFF;
-  --brand-glow: #6340EB;
-  --brand-accent: #5E8F00;     /* Darkened Acid Lime for 5.8:1 WCAG AA contrast */
+  /* Ocean Teal Brand */
+  --brand-primary: #167D83;
+  --brand-glow: #116065;
+  --brand-accent: #167D83;
   --brand-accent-text: #FFFFFF;
+  --light-surface: #E0F2ED;
 
-  /* Verdict Colors (WCAG AA compliant in light mode) */
-  --safe: #059669;
-  --suspicious: #B45309;
-  --malicious: #BE123C;
-  --unknown: #6E6893;
+  /* Verdict Colors in light mode */
+  --safe: #11786D;
+  --suspicious: #C58315;
+  --malicious: #D64242;
+  --unknown: #5E7A77;
 
   /* Shadows in Light Mode */
-  --shadow-sm: 0 1px 3px rgba(30, 27, 75, 0.08);
-  --shadow-md: 0 4px 16px -2px rgba(30, 27, 75, 0.1);
-  --shadow-lg: 0 10px 30px -4px rgba(30, 27, 75, 0.12);
-  --shadow-xl: 0 20px 45px -8px rgba(30, 27, 75, 0.15);
-  --shadow-card: 0 4px 16px -2px rgba(30, 27, 75, 0.06);
-  --shadow-card-hover: 0 12px 28px -4px rgba(30, 27, 75, 0.12), 0 0 20px -3px rgba(124, 92, 255, 0.18);
-  --shadow-inner-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --shadow-sm: 0 1px 3px rgba(16, 28, 34, 0.08);
+  --shadow-md: 0 4px 14px -2px rgba(16, 28, 34, 0.1);
+  --shadow-lg: 0 10px 24px -4px rgba(16, 28, 34, 0.12);
+  --shadow-xl: 0 16px 36px -6px rgba(16, 28, 34, 0.15);
+  --shadow-card: 0 4px 16px -2px rgba(16, 28, 34, 0.06);
+  --shadow-card-hover: 0 8px 24px -4px rgba(16, 28, 34, 0.12), 0 0 16px -3px rgba(22, 125, 131, 0.15);
+  --shadow-inner-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.95);
 
   /* Scrollbar */
-  --scroll-thumb: #D4CDFA;
-  --scroll-thumb-hover: #7C5CFF;
+  --scroll-thumb: #C2E2DA;
+  --scroll-thumb-hover: #167D83;
 
   color-scheme: light;
 }
@@ -48,23 +49,23 @@
 /* System Preference Automatic Light Fallback (when no theme is manually forced) */
 @media (prefers-color-scheme: light) {
   :root:not([data-theme="dark"]):not(.dark) {
-    --bg-base: #F7F5FF;
+    --bg-base: #E0F2ED;
     --bg-surface: #FFFFFF;
-    --bg-elevated: #F0EDFF;
-    --border-subtle: #E2DEFA;
-    --border-focus: #7C5CFF;
-    --text-primary: #1E1B4B;
-    --text-muted: #6E6893;
-    --brand-primary: #7C5CFF;
-    --brand-glow: #6340EB;
-    --brand-accent: #5E8F00;
+    --bg-elevated: #F0FAF7;
+    --border-subtle: #C2E2DA;
+    --border-focus: #167D83;
+    --text-primary: #101C22;
+    --text-muted: #4B6B67;
+    --brand-primary: #167D83;
+    --brand-glow: #116065;
+    --brand-accent: #167D83;
     --brand-accent-text: #FFFFFF;
-    --safe: #059669;
-    --suspicious: #B45309;
-    --malicious: #BE123C;
-    --unknown: #6E6893;
-    --scroll-thumb: #D4CDFA;
-    --scroll-thumb-hover: #7C5CFF;
+    --safe: #11786D;
+    --suspicious: #C58315;
+    --malicious: #D64242;
+    --unknown: #5E7A77;
+    --scroll-thumb: #C2E2DA;
+    --scroll-thumb-hover: #167D83;
     color-scheme: light;
   }
 }
@@ -72,14 +73,14 @@
 /* High Contrast Mode (@media (prefers-contrast: more)) */
 @media (prefers-contrast: more) {
   :root {
-    --border-subtle: #4D4785;
-    --text-muted: #C5C2E6;
+    --border-subtle: #3A6168;
+    --text-muted: #D1E0DE;
   }
 
   [data-theme="light"],
   .light {
-    --border-subtle: #8A84B8;
-    --text-muted: #3D3966;
+    --border-subtle: #7A9F99;
+    --text-muted: #223835;
   }
 
   .cyber-card,
@@ -100,22 +101,13 @@
     --border-focus: Highlight;
     --text-primary: CanvasText;
     --text-muted: CanvasText;
+    --brand-primary: Highlight;
+    --brand-glow: Highlight;
     --brand-accent: Highlight;
     --brand-accent-text: HighlightText;
-    --safe: Highlight;
+    --safe: LinkText;
     --suspicious: Highlight;
     --malicious: Highlight;
-  }
-
-  .cyber-card,
-  .badge,
-  button,
-  input {
-    border: 1px solid ButtonBorder !important;
-  }
-
-  :focus-visible {
-    outline: 3px solid Highlight !important;
+    --unknown: CanvasText;
   }
 }
-

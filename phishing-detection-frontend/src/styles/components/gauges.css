@@ -31,17 +31,17 @@ svg circle[stroke-dasharray] {
 /* Verdict Drop Shadow Glows on the Gauge */
 [data-verdict="safe"] svg,
 .gauge-safe {
-  filter: drop-shadow(0 0 12px rgba(52, 224, 161, 0.45));
+  filter: drop-shadow(0 0 10px rgba(85, 185, 173, 0.35));
 }
 
 [data-verdict="suspicious"] svg,
 .gauge-suspicious {
-  filter: drop-shadow(0 0 12px rgba(255, 176, 32, 0.45));
+  filter: drop-shadow(0 0 10px rgba(233, 182, 91, 0.35));
 }
 
 [data-verdict="malicious"] svg,
 .gauge-malicious {
-  filter: drop-shadow(0 0 14px rgba(255, 77, 109, 0.55));
+  filter: drop-shadow(0 0 12px rgba(239, 100, 100, 0.4));
 }
 
 /* Gauge Center Text Display */

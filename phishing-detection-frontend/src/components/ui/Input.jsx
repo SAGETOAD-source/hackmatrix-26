@@ -36,7 +36,7 @@ const Input = forwardRef(function Input(
           ${Icon ? 'pl-10' : 'pl-3.5'}
           ${onClear && value ? 'pr-9' : 'pr-3.5'}
           ${isMono ? 'font-mono' : 'font-sans'}
-          focus:border-[var(--brand-primary)] focus:shadow-[0_0_15px_-2px_rgba(124,92,255,0.35)]
+          focus:border-[var(--brand-glow)] focus:ring-1 focus:ring-[var(--brand-glow)]/30
           disabled:opacity-50 disabled:cursor-not-allowed
           ${error ? 'border-[var(--verdict-malicious)] focus:border-[var(--verdict-malicious)]' : ''}
           ${className}`}

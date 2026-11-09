@@ -14,9 +14,9 @@ function getVerdict(riskLevel) {
 }
 
 function getScoreColor(score) {
-  if (score >= 70) return 'text-[#FF4D6D]'
-  if (score >= 40) return 'text-[#FFB020]'
-  return 'text-[#34E0A1]'
+  if (score >= 70) return 'text-[#EF6464]'
+  if (score >= 40) return 'text-[#E9B65B]'
+  return 'text-[#55B9AD]'
 }
 
 export default function RecentScanTable({ searchQuery = '' }) {
@@ -55,25 +55,25 @@ export default function RecentScanTable({ searchQuery = '' }) {
   })
 
   return (
-    <div className="rounded-2xl bg-[#14122A] light:bg-white border border-[#2A2650] light:border-[#E2DEFA] shadow-sm overflow-hidden">
+    <div className="rounded-2xl bg-[#18343A] light:bg-white border border-[#24454C] light:border-[#C2E2DA] shadow-sm overflow-hidden">
       {/* Header and Filter Tabs */}
-      <div className="p-5 border-b border-[#2A2650] light:border-[#E2DEFA] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="p-5 border-b border-[#24454C] light:border-[#C2E2DA] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center space-x-2.5">
-            <div className="w-7 h-7 rounded-lg bg-[#7C5CFF]/15 border border-[#7C5CFF]/30 flex items-center justify-center text-[#A78BFF]">
+            <div className="w-7 h-7 rounded-lg bg-[#167D83]/15 border border-[#167D83]/30 flex items-center justify-center text-[#55B9AD]">
               <Shield className="w-3.5 h-3.5" />
             </div>
-            <h3 className="font-heading font-bold text-sm tracking-wide text-[#F2F0FF] light:text-[#1E1B4B]">
+            <h3 className="font-heading font-bold text-sm tracking-wide text-[#F5F7F6] light:text-[#101C22]">
               Ingested Target Audit Feed
             </h3>
           </div>
-          <p className="text-xs text-[#A29FC9] light:text-[#6E6893] mt-1">
+          <p className="text-xs text-[#A4B8B5] light:text-[#4B6B67] mt-1">
             Chronological inspection records with composite risk scores and model verdicts
           </p>
         </div>
 
         {/* Filter buttons */}
-        <div className="flex items-center space-x-1 p-1 rounded-lg bg-[#0B0A14] light:bg-[#F2EDFF] border border-[#2A2650] light:border-[#E2DEFA] text-xs font-mono">
+        <div className="flex items-center space-x-1 p-1 rounded-lg bg-[#101C22] light:bg-[#D8EFE9] border border-[#24454C] light:border-[#C2E2DA] text-xs font-mono">
           {[
             { id: 'ALL', label: 'All' },
             { id: 'PHISHING', label: 'Phishing' },
@@ -85,8 +85,8 @@ export default function RecentScanTable({ searchQuery = '' }) {
               onClick={() => setFilter(tab.id)}
               className={`px-3 py-1 rounded-md text-[11px] font-semibold transition-all cursor-pointer ${
                 filter === tab.id
-                  ? 'bg-[#7C5CFF] text-[#F2F0FF] shadow-xs'
-                  : 'text-[#A29FC9] light:text-[#6E6893] hover:text-[#F2F0FF] light:hover:text-[#1E1B4B]'
+                  ? 'bg-[#167D83] text-[#F5F7F6] shadow-xs'
+                  : 'text-[#A4B8B5] light:text-[#4B6B67] hover:text-[#F5F7F6] light:hover:text-[#101C22]'
               }`}
             >
               {tab.label}
@@ -97,8 +97,8 @@ export default function RecentScanTable({ searchQuery = '' }) {
 
       {/* Table Content */}
       <div className="overflow-x-auto">
-        <table className="w-full text-left text-xs text-[#F2F0FF] light:text-[#1E1B4B]">
-          <thead className="bg-[#0B0A14]/70 light:bg-[#F7F5FF] uppercase tracking-wider text-[10px] font-mono text-[#A29FC9] light:text-[#6E6893] border-b border-[#2A2650] light:border-[#E2DEFA] font-semibold">
+        <table className="w-full text-left text-xs text-[#F5F7F6] light:text-[#101C22]">
+          <thead className="bg-[#101C22]/70 light:bg-[#E0F2ED] uppercase tracking-wider text-[10px] font-mono text-[#A4B8B5] light:text-[#4B6B67] border-b border-[#24454C] light:border-[#C2E2DA] font-semibold">
             <tr>
               <th className="py-3 px-5">Target Resource</th>
               <th className="py-3 px-5">Risk Score</th>
@@ -107,7 +107,7 @@ export default function RecentScanTable({ searchQuery = '' }) {
               <th className="py-3 px-5 text-right">Action</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#2A2650]/60 light:divide-[#E2DEFA] font-mono text-xs">
+          <tbody className="divide-y divide-[#24454C]/60 light:divide-[#C2E2DA] font-mono text-xs">
             {filteredScans.length > 0 ? (
               filteredScans.slice(0, 8).map((scan) => {
                 const verdict = getVerdict(scan.riskLevel)
@@ -116,13 +116,13 @@ export default function RecentScanTable({ searchQuery = '' }) {
                 return (
                   <tr
                     key={scan.id}
-                    className="hover:bg-[#1C1936]/50 light:hover:bg-[#F7F5FF] transition-colors"
+                    className="hover:bg-[#1E4047]/50 light:hover:bg-[#E0F2ED] transition-colors"
                   >
                     <td className="py-3.5 px-5 max-w-xs md:max-w-sm">
-                      <div className="font-semibold text-xs text-[#F2F0FF] light:text-[#1E1B4B] truncate">
+                      <div className="font-semibold text-xs text-[#F5F7F6] light:text-[#101C22] truncate">
                         {scan.domain}
                       </div>
-                      <div className="text-[11px] text-[#A29FC9] light:text-[#6E6893] truncate" title={scan.url}>
+                      <div className="text-[11px] text-[#A4B8B5] light:text-[#4B6B67] truncate" title={scan.url}>
                         {scan.url}
                       </div>
                     </td>
@@ -132,7 +132,7 @@ export default function RecentScanTable({ searchQuery = '' }) {
                         <span className={`font-bold text-sm font-mono ${scoreColor}`}>
                           {scan.riskScore}
                         </span>
-                        <span className="text-[10px] text-[#A29FC9] light:text-[#6E6893]">/100</span>
+                        <span className="text-[10px] text-[#A4B8B5] light:text-[#4B6B67]">/100</span>
                       </div>
                     </td>
 
@@ -142,14 +142,14 @@ export default function RecentScanTable({ searchQuery = '' }) {
                       </Badge>
                     </td>
 
-                    <td className="py-3.5 px-5 text-[11px] text-[#A29FC9] light:text-[#6E6893] whitespace-nowrap hidden md:table-cell">
+                    <td className="py-3.5 px-5 text-[11px] text-[#A4B8B5] light:text-[#4B6B67] whitespace-nowrap hidden md:table-cell">
                       {scan.timestamp || 'Just now'}
                     </td>
 
                     <td className="py-3.5 px-5 text-right whitespace-nowrap">
                       <Link
                         to={`/results?url=${encodeURIComponent(scan.url)}`}
-                        className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-[#0B0A14] light:bg-white hover:bg-[#1C1936] light:hover:bg-[#F2EDFF] border border-[#2A2650] light:border-[#E2DEFA] text-[11px] font-medium text-[#A78BFF] light:text-[#7C5CFF] transition-all"
+                        className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-[#101C22] light:bg-white hover:bg-[#1E4047] light:hover:bg-[#D8EFE9] border border-[#24454C] light:border-[#C2E2DA] text-[11px] font-medium text-[#55B9AD] light:text-[#167D83] transition-all"
                       >
                         <Eye className="w-3 h-3" />
                         <span>Audit</span>
@@ -160,7 +160,7 @@ export default function RecentScanTable({ searchQuery = '' }) {
               })
             ) : (
               <tr>
-                <td colSpan="5" className="py-10 text-center text-xs text-[#A29FC9] light:text-[#6E6893]">
+                <td colSpan="5" className="py-10 text-center text-xs text-[#A4B8B5] light:text-[#4B6B67]">
                   No matching telemetry records found for "{searchQuery}".
                 </td>
               </tr>

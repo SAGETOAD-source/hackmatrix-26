@@ -17,7 +17,7 @@ export default function DashboardPage() {
   const [searchQuery, setSearchQuery] = useState('')
 
   return (
-    <div className="min-h-screen bg-[#0B0A14] light:bg-[#F7F5FF] text-[#F2F0FF] light:text-[#1E1B4B] transition-colors duration-200 flex">
+    <div className="min-h-screen bg-[#101C22] light:bg-[#E0F2ED] text-[#F5F7F6] light:text-[#101C22] transition-colors duration-200 flex">
       {/* Collapsible Sidebar */}
       <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
 
@@ -38,11 +38,11 @@ export default function DashboardPage() {
         {/* Dashboard Content */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl w-full mx-auto">
           {/* Simulated Disclaimer Banner */}
-          <div className="p-3.5 rounded-xl bg-[#14122A] light:bg-white border border-[#2A2650] light:border-[#E2DEFA] flex items-center justify-between text-xs text-[#A29FC9] light:text-[#6E6893] shadow-xs">
+          <div className="p-3.5 rounded-xl bg-[#18343A] light:bg-white border border-[#24454C] light:border-[#C2E2DA] flex items-center justify-between text-xs text-[#A4B8B5] light:text-[#4B6B67] shadow-xs">
             <div className="flex items-center space-x-2.5">
-              <AlertCircle className="w-4 h-4 text-[#A78BFF] shrink-0" />
+              <AlertCircle className="w-4 h-4 text-[#55B9AD] shrink-0" />
               <span>
-                <strong className="text-[#F2F0FF] light:text-[#1E1B4B] font-semibold font-mono">SENTINEL SOC CONSOLE:</strong>{' '}
+                <strong className="text-[#F5F7F6] light:text-[#101C22] font-semibold font-mono">SENTINEL SOC CONSOLE:</strong>{' '}
                 Telemetry reflects real-time feature extraction distributions, RFC compliance checks, and triage queues.
               </span>
             </div>
@@ -55,14 +55,14 @@ export default function DashboardPage() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <div className="flex items-center space-x-2">
-                <span className="text-xs font-mono font-semibold uppercase tracking-wider text-[#A78BFF]">
+                <span className="text-xs font-mono font-semibold uppercase tracking-wider text-[#55B9AD]">
                   OPERATIONAL TELEMETRY
                 </span>
               </div>
-              <h1 className="font-heading text-2xl sm:text-3xl font-extrabold tracking-tight text-[#F2F0FF] light:text-[#1E1B4B] mt-0.5">
+              <h1 className="font-heading text-2xl sm:text-3xl font-extrabold tracking-tight text-[#F5F7F6] light:text-[#101C22] mt-0.5">
                 Security Operations Center Console
               </h1>
-              <p className="text-xs text-[#A29FC9] light:text-[#6E6893] mt-1">
+              <p className="text-xs text-[#A4B8B5] light:text-[#4B6B67] mt-1">
                 Aggregated URL ingestion telemetry, feature extraction distributions, and active triage queues.
               </p>
             </div>

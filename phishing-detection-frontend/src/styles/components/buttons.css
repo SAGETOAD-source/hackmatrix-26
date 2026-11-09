@@ -4,7 +4,11 @@
  */
 
 /* Base Button Reset & Layout */
-button,
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
 .btn,
 .cyber-btn-primary,
 .cyber-btn-secondary {
@@ -40,15 +44,15 @@ button[disabled],
   pointer-events: none;
 }
 
-/* Primary Button (Acid Lime Highlight) */
+/* Primary Button (Ocean Teal Primary Action: #167D83) */
 .cyber-btn-primary,
 button.btn-primary,
 button[type="submit"]:not([class*="secondary"]):not([class*="outline"]):not([class*="ghost"]) {
-  background-color: var(--brand-accent);
-  color: var(--brand-accent-text);
-  border-color: var(--brand-accent);
-  box-shadow: 0 2px 10px -2px rgba(198, 255, 61, 0.35);
-  font-weight: 700;
+  background-color: var(--brand-primary);
+  color: #F5F7F6;
+  border-color: var(--brand-primary);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  font-weight: 600;
 }
 
 /* Diagonal Shine Sweep Effect on Hover */
@@ -63,7 +67,7 @@ button.btn-primary::after {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0.25) 50%,
     transparent 100%
   );
   transform: rotate(25deg);
@@ -80,30 +84,32 @@ button.btn-primary:hover:not(:disabled)::after {
 
 .cyber-btn-primary:hover:not(:disabled),
 button.btn-primary:hover:not(:disabled) {
-  box-shadow: var(--shadow-lime-glow);
+  background-color: #1a8e95;
+  border-color: #1a8e95;
+  box-shadow: 0 4px 12px -2px rgba(22, 125, 131, 0.35);
   transform: translateY(-1px);
 }
 
-/* Secondary Button (Ultraviolet Wire & Subtle Fill) */
+/* Secondary Button (Teal Wire & Subtle Fill) */
 .cyber-btn-secondary,
 button.btn-secondary {
-  background-color: rgba(124, 92, 255, 0.12);
+  background-color: var(--bg-surface);
   color: var(--text-primary);
-  border: 1px solid rgba(124, 92, 255, 0.35);
+  border: 1px solid var(--border-subtle);
 }
 
 [data-theme="light"] .cyber-btn-secondary,
 .light .cyber-btn-secondary {
-  background-color: rgba(124, 92, 255, 0.08);
+  background-color: #FFFFFF;
   color: var(--brand-primary);
-  border-color: rgba(124, 92, 255, 0.25);
+  border-color: var(--border-subtle);
 }
 
 .cyber-btn-secondary:hover:not(:disabled),
 button.btn-secondary:hover:not(:disabled) {
-  background-color: rgba(124, 92, 255, 0.22);
-  border-color: var(--brand-primary);
-  box-shadow: 0 0 20px -3px rgba(124, 92, 255, 0.35);
+  background-color: var(--bg-elevated);
+  border-color: rgba(85, 185, 173, 0.4);
+  color: var(--text-primary);
   transform: translateY(-1px);
 }
 
@@ -116,7 +122,8 @@ button.btn-outline {
 
 button.btn-outline:hover:not(:disabled) {
   border-color: var(--brand-primary);
-  background-color: rgba(124, 92, 255, 0.08);
+  background-color: rgba(22, 125, 131, 0.12);
+  color: #F5F7F6;
 }
 
 button.btn-ghost {
@@ -127,21 +134,21 @@ button.btn-ghost {
 
 button.btn-ghost:hover:not(:disabled) {
   color: var(--text-primary);
-  background-color: rgba(124, 92, 255, 0.1);
+  background-color: rgba(24, 52, 58, 0.6);
 }
 
-/* Danger Button */
+/* Danger Button (Strictly Reserved for Destructive / Phishing Action) */
 .btn-danger,
 button.btn-danger {
   background-color: var(--verdict-malicious);
   color: #ffffff;
   border-color: var(--verdict-malicious);
-  box-shadow: 0 0 15px -3px rgba(255, 77, 109, 0.4);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .btn-danger:hover:not(:disabled) {
-  filter: brightness(1.1);
-  box-shadow: 0 0 20px -2px rgba(255, 77, 109, 0.6);
+  background-color: #dc5050;
+  box-shadow: 0 4px 12px -2px rgba(239, 100, 100, 0.4);
 }
 
 

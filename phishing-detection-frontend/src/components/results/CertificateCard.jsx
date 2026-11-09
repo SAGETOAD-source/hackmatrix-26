@@ -2,20 +2,20 @@ import { ShieldCheck, ShieldX, Check, X, Key, Lock } from 'lucide-react'
 import CertificateStepper from '../ui/CertificateStepper'
 
 const GRADE_COLORS = {
-  'A+': { bg: 'bg-[#34E0A1]/15', text: 'text-[#34E0A1] light:text-[#059669]', border: 'border-[#34E0A1]/35' },
-  A:    { bg: 'bg-[#34E0A1]/15', text: 'text-[#34E0A1] light:text-[#059669]', border: 'border-[#34E0A1]/35' },
-  B:    { bg: 'bg-[#FFB020]/15', text: 'text-[#FFB020] light:text-[#B45309]', border: 'border-[#FFB020]/35' },
-  C:    { bg: 'bg-[#FFB020]/15', text: 'text-[#FFB020] light:text-[#B45309]', border: 'border-[#FFB020]/35' },
-  F:    { bg: 'bg-[#FF4D6D]/15', text: 'text-[#FF4D6D] light:text-[#BE123C]', border: 'border-[#FF4D6D]/35' },
+  'A+': { bg: 'bg-[#55B9AD]/15', text: 'text-[#55B9AD] light:text-[#059669]', border: 'border-[#55B9AD]/35' },
+  A:    { bg: 'bg-[#55B9AD]/15', text: 'text-[#55B9AD] light:text-[#059669]', border: 'border-[#55B9AD]/35' },
+  B:    { bg: 'bg-[#E9B65B]/15', text: 'text-[#E9B65B] light:text-[#B45309]', border: 'border-[#E9B65B]/35' },
+  C:    { bg: 'bg-[#E9B65B]/15', text: 'text-[#E9B65B] light:text-[#B45309]', border: 'border-[#E9B65B]/35' },
+  F:    { bg: 'bg-[#EF6464]/15', text: 'text-[#EF6464] light:text-[#BE123C]', border: 'border-[#EF6464]/35' },
 }
 
 function InfoItem({ label, value }) {
   return (
     <div className="space-y-0.5">
-      <span className="block text-[10px] font-mono uppercase tracking-wider text-[#A29FC9] light:text-[#6E6893]">
+      <span className="block text-[10px] font-mono uppercase tracking-wider text-[#A4B8B5] light:text-[#4B6B67]">
         {label}
       </span>
-      <span className="block text-xs font-mono text-[#F2F0FF] light:text-[#1E1B4B] font-medium break-all">
+      <span className="block text-xs font-mono text-[#F5F7F6] light:text-[#101C22] font-medium break-all">
         {value || '—'}
       </span>
     </div>
@@ -26,11 +26,11 @@ function BooleanIndicator({ label, value }) {
   return (
     <div className="flex items-center gap-1.5 text-xs font-mono">
       {value ? (
-        <Check size={14} className="text-[#34E0A1] shrink-0" />
+        <Check size={14} className="text-[#55B9AD] shrink-0" />
       ) : (
-        <X size={14} className="text-[#FF4D6D] shrink-0" />
+        <X size={14} className="text-[#EF6464] shrink-0" />
       )}
-      <span className="text-[#F2F0FF] light:text-[#1E1B4B]">{label}</span>
+      <span className="text-[#F5F7F6] light:text-[#101C22]">{label}</span>
     </div>
   )
 }
@@ -52,14 +52,14 @@ export default function CertificateCard({ sslStatus = {} }) {
 
   if (!hasSSL) {
     return (
-      <div className="p-5 rounded-2xl bg-[#14122A] light:bg-white border border-[#2A2650] light:border-[#E2DEFA] border-l-4 border-l-[#FF4D6D] shadow-md">
+      <div className="p-5 rounded-2xl bg-[#18343A] light:bg-white border border-[#24454C] light:border-[#C2E2DA] border-l-4 border-l-[#EF6464] shadow-md">
         <div className="flex items-start gap-3">
-          <ShieldX size={22} className="text-[#FF4D6D] shrink-0 mt-0.5" />
+          <ShieldX size={22} className="text-[#EF6464] shrink-0 mt-0.5" />
           <div>
-            <h3 className="font-heading font-semibold text-sm text-[#F2F0FF] light:text-[#1E1B4B]">
+            <h3 className="font-heading font-semibold text-sm text-[#F5F7F6] light:text-[#101C22]">
               Missing Transport Encryption (Cleartext HTTP)
             </h3>
-            <p className="text-xs text-[#A29FC9] light:text-[#6E6893] mt-1.5 leading-relaxed">
+            <p className="text-xs text-[#A4B8B5] light:text-[#4B6B67] mt-1.5 leading-relaxed">
               Target host does not terminate valid TLS encryption. Credentials, session cookies, and request payloads are exposed in cleartext across the transit network.
             </p>
           </div>
@@ -71,18 +71,18 @@ export default function CertificateCard({ sslStatus = {} }) {
   const gradeStyle = GRADE_COLORS[grade] || GRADE_COLORS.F
 
   return (
-    <div className="p-6 rounded-2xl bg-[#14122A] light:bg-white border border-[#2A2650] light:border-[#E2DEFA] shadow-md space-y-6">
+    <div className="p-6 rounded-2xl bg-[#18343A] light:bg-white border border-[#24454C] light:border-[#C2E2DA] shadow-md space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between pb-4 border-b border-[#2A2650] light:border-[#E2DEFA]">
+      <div className="flex items-center justify-between pb-4 border-b border-[#24454C] light:border-[#C2E2DA]">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-[#7C5CFF]/15 border border-[#7C5CFF]/30 flex items-center justify-center text-[#A78BFF]">
+          <div className="w-8 h-8 rounded-lg bg-[#167D83]/15 border border-[#167D83]/30 flex items-center justify-center text-[#55B9AD]">
             <Lock size={16} />
           </div>
           <div>
-            <h3 className="font-heading font-bold text-xs uppercase tracking-wider text-[#F2F0FF] light:text-[#1E1B4B]">
+            <h3 className="font-heading font-bold text-xs uppercase tracking-wider text-[#F5F7F6] light:text-[#101C22]">
               Cryptographic Transport Audit
             </h3>
-            <span className="text-[11px] font-mono text-[#A29FC9] light:text-[#6E6893]">
+            <span className="text-[11px] font-mono text-[#A4B8B5] light:text-[#4B6B67]">
               Active Protocol: {protocol || 'TLS 1.3'}
             </span>
           </div>
@@ -91,7 +91,7 @@ export default function CertificateCard({ sslStatus = {} }) {
         {/* Grade badge */}
         {grade && (
           <div className="flex items-center space-x-2">
-            <span className="text-[10px] font-mono uppercase text-[#A29FC9] light:text-[#6E6893]">SSL Grade:</span>
+            <span className="text-[10px] font-mono uppercase text-[#A4B8B5] light:text-[#4B6B67]">SSL Grade:</span>
             <span className={`inline-flex items-center justify-center rounded-md px-2.5 py-0.5 text-xs font-mono font-bold border ${gradeStyle.bg} ${gradeStyle.text} ${gradeStyle.border}`}>
               {grade}
             </span>
@@ -101,7 +101,7 @@ export default function CertificateCard({ sslStatus = {} }) {
 
       {/* Visual PKI Trust Chain */}
       <div>
-        <h4 className="text-[11px] font-mono uppercase tracking-wider text-[#A29FC9] light:text-[#6E6893] mb-3">
+        <h4 className="text-[11px] font-mono uppercase tracking-wider text-[#A4B8B5] light:text-[#4B6B67] mb-3">
           PKI Certificate Trust Path
         </h4>
         <CertificateStepper
@@ -113,7 +113,7 @@ export default function CertificateCard({ sslStatus = {} }) {
       </div>
 
       {/* Grid details */}
-      <div className="p-4 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA] grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      <div className="p-4 rounded-xl bg-[#101C22] light:bg-[#E0F2ED] border border-[#24454C] light:border-[#C2E2DA] grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         <InfoItem label="Issuer Authority" value={issuer} />
         <InfoItem label="Issued Timestamp" value={validFrom} />
         <InfoItem label="Expiration Timestamp" value={validTo} />
@@ -122,7 +122,7 @@ export default function CertificateCard({ sslStatus = {} }) {
       </div>
 
       {/* Verification flags */}
-      <div className="pt-3 border-t border-[#2A2650] light:border-[#E2DEFA] flex flex-wrap items-center gap-5">
+      <div className="pt-3 border-t border-[#24454C] light:border-[#C2E2DA] flex flex-wrap items-center gap-5">
         <BooleanIndicator label="SAN Hostname Validated" value={sanMatch} />
         <BooleanIndicator label="Certificate Transparency Logged" value={ctLogged} />
         <BooleanIndicator label="Chain Root Trusted" value={hasSSL} />

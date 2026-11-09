@@ -142,7 +142,7 @@ export default function CommandPalette({ isOpen: controlledIsOpen, onClose: cont
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: -10 }}
             transition={{ duration: 0.15, ease: 'easeOut' }}
-            className="relative w-full max-w-xl rounded-2xl bg-[var(--bg-surface)] border border-[var(--brand-primary)]/40 shadow-[0_0_50px_rgba(124,92,255,0.25)] overflow-hidden z-10 card-highlight"
+            className="relative w-full max-w-xl rounded-2xl bg-[var(--bg-surface)] border border-[var(--brand-primary)]/40 shadow-[0_12px_40px_rgba(0,0,0,0.5)] overflow-hidden z-10 card-highlight"
           >
             {/* Search Header */}
             <div className="flex items-center px-4 py-3.5 border-b border-[var(--border-subtle)] gap-3 bg-[var(--bg-elevated)]">

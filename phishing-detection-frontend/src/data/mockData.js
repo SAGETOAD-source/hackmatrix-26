@@ -56,11 +56,11 @@ export const SCAN_ACTIVITY_DATA = [
 ]
 
 export const THREAT_DISTRIBUTION_DATA = [
-  { name: 'Credential Harvesting', value: 38, color: '#ef4444' },
-  { name: 'Fake Banking & Payment', value: 26, color: '#f97316' },
-  { name: 'Brand Impersonation', value: 18, color: '#eab308' },
-  { name: 'Malware Distribution', value: 11, color: '#8b5cf6' },
-  { name: 'Typosquatting & IDN', value: 7, color: '#06b6d4' },
+  { name: 'Credential Harvesting', value: 38, color: '#EF6464' },
+  { name: 'Fake Banking & Payment', value: 26, color: '#FF8096' },
+  { name: 'Brand Impersonation', value: 18, color: '#E9B65B' },
+  { name: 'Malware Distribution', value: 11, color: '#167D83' },
+  { name: 'Typosquatting & IDN', value: 7, color: '#55B9AD' },
 ]
 
 export const RECENT_SCANS = [

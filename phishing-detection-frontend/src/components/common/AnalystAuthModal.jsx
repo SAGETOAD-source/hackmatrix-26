@@ -167,43 +167,43 @@ export default function AnalystAuthModal({ isOpen, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fade-in">
-      <div className="relative w-full max-w-md bg-[#14122A] border border-[#2A2650] rounded-2xl shadow-2xl p-6 text-[#F2F0FF]">
+      <div className="relative w-full max-w-md bg-[#18343A] border border-[#24454C] rounded-2xl shadow-2xl p-6 text-[#F5F7F6]">
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-[#2A2650]">
+        <div className="flex items-center justify-between pb-4 border-b border-[#24454C]">
           <div className="flex items-center space-x-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#7C5CFF]/15 border border-[#7C5CFF]/30 flex items-center justify-center text-[#A78BFF]">
+            <div className="w-8 h-8 rounded-lg bg-[#167D83]/15 border border-[#167D83]/30 flex items-center justify-center text-[#55B9AD]">
               <Shield className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="font-heading text-sm font-semibold tracking-wide text-[#F2F0FF]">
+              <h2 className="font-heading text-sm font-semibold tracking-wide text-[#F5F7F6]">
                 Analyst Session & API Gateway
               </h2>
-              <p className="text-[11px] font-mono text-[#A29FC9]">
-                PhishGuard Sentinel Authentication
+              <p className="text-[11px] font-mono text-[#A4B8B5]">
+                ThreatLens Security Authentication
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
             aria-label="Close modal"
-            className="p-1 rounded-lg text-[#A29FC9] hover:text-[#F2F0FF] hover:bg-[#1C1936] transition-colors cursor-pointer"
+            className="p-1 rounded-lg text-[#A4B8B5] hover:text-[#F5F7F6] hover:bg-[#1E4047] transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Operating Mode Selector */}
-        <div className="mt-4 p-3 rounded-xl bg-[#0B0A14] border border-[#2A2650] flex items-center justify-between">
+        <div className="mt-4 p-3 rounded-xl bg-[#101C22] border border-[#24454C] flex items-center justify-between">
           <div className="flex items-center space-x-2.5">
-            <Radio className={`w-4 h-4 ${mode === 'api' ? 'text-[#34E0A1]' : 'text-[#FFB020]'}`} />
+            <Radio className={`w-4 h-4 ${mode === 'api' ? 'text-[#55B9AD]' : 'text-[#E9B65B]'}`} />
             <div>
-              <div className="text-xs font-semibold text-[#F2F0FF] flex items-center space-x-1.5">
+              <div className="text-xs font-semibold text-[#F5F7F6] flex items-center space-x-1.5">
                 <span>Active Engine:</span>
-                <span className={`font-mono uppercase font-bold ${mode === 'api' ? 'text-[#34E0A1]' : 'text-[#FFB020]'}`}>
+                <span className={`font-mono uppercase font-bold ${mode === 'api' ? 'text-[#55B9AD]' : 'text-[#E9B65B]'}`}>
                   {mode === 'api' ? 'Live API Gateway' : 'Demonstration Mode'}
                 </span>
               </div>
-              <div className="text-[10px] text-[#A29FC9]">
+              <div className="text-[10px] text-[#A4B8B5]">
                 {mode === 'api' ? 'Live PostgreSQL + Express API' : 'Client-side heuristic engine'}
               </div>
             </div>
@@ -211,37 +211,37 @@ export default function AnalystAuthModal({ isOpen, onClose }) {
           <button
             type="button"
             onClick={handleToggleMode}
-            className="flex items-center space-x-1 text-xs text-[#A78BFF] hover:text-[#F2F0FF] cursor-pointer"
+            className="flex items-center space-x-1 text-xs text-[#55B9AD] hover:text-[#F5F7F6] cursor-pointer"
           >
             {mode === 'api' ? (
-              <ToggleRight className="w-6 h-6 text-[#7C5CFF]" />
+              <ToggleRight className="w-6 h-6 text-[#167D83]" />
             ) : (
-              <ToggleLeft className="w-6 h-6 text-[#A29FC9]" />
+              <ToggleLeft className="w-6 h-6 text-[#A4B8B5]" />
             )}
             <span className="text-[11px] font-mono">Switch</span>
           </button>
         </div>
 
         {/* Backend Connectivity Status */}
-        <div className="mt-2.5 px-3.5 py-2 rounded-xl bg-[#0B0A14] border border-[#2A2650] flex items-center justify-between text-[11px] font-mono">
-          <div className="flex items-center space-x-2 text-[#A29FC9]">
-            <Server className="w-3.5 h-3.5 text-[#A78BFF]" />
+        <div className="mt-2.5 px-3.5 py-2 rounded-xl bg-[#101C22] border border-[#24454C] flex items-center justify-between text-[11px] font-mono">
+          <div className="flex items-center space-x-2 text-[#A4B8B5]">
+            <Server className="w-3.5 h-3.5 text-[#55B9AD]" />
             <span className="truncate max-w-[210px]">{getApiBaseUrl()}</span>
           </div>
           <div>
             {healthStatus === null ? (
-              <span className="text-[#FFB020] flex items-center space-x-1">
+              <span className="text-[#E9B65B] flex items-center space-x-1">
                 <Loader2 className="w-3 h-3 animate-spin" />
                 <span>Checking...</span>
               </span>
             ) : healthStatus?.isHealthy ? (
-              <span className="text-[#34E0A1] flex items-center space-x-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#34E0A1] animate-pulse"></span>
+              <span className="text-[#55B9AD] flex items-center space-x-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#55B9AD] animate-pulse"></span>
                 <span>Online</span>
               </span>
             ) : (
-              <span className="text-[#FF4D6D] flex items-center space-x-1" title={healthStatus?.error || 'Offline'}>
-                <span className="w-1.5 h-1.5 rounded-full bg-[#FF4D6D]"></span>
+              <span className="text-[#EF6464] flex items-center space-x-1" title={healthStatus?.error || 'Offline'}>
+                <span className="w-1.5 h-1.5 rounded-full bg-[#EF6464]"></span>
                 <span>Offline</span>
               </span>
             )}
@@ -250,13 +250,13 @@ export default function AnalystAuthModal({ isOpen, onClose }) {
 
         {/* Feedback Messages */}
         {error && (
-          <div className="mt-3 p-3 rounded-xl bg-[#FF4D6D]/10 border border-[#FF4D6D]/30 text-[#FF4D6D] text-xs flex items-start space-x-2 font-mono">
+          <div className="mt-3 p-3 rounded-xl bg-[#EF6464]/10 border border-[#EF6464]/30 text-[#EF6464] text-xs flex items-start space-x-2 font-mono">
             <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
             <span className="break-all">{error}</span>
           </div>
         )}
         {success && (
-          <div className="mt-3 p-3 rounded-xl bg-[#34E0A1]/10 border border-[#34E0A1]/30 text-[#34E0A1] text-xs flex items-center space-x-2 font-mono">
+          <div className="mt-3 p-3 rounded-xl bg-[#55B9AD]/10 border border-[#55B9AD]/30 text-[#55B9AD] text-xs flex items-center space-x-2 font-mono">
             <CheckCircle2 className="w-4 h-4 shrink-0" />
             <span>{success}</span>
           </div>
@@ -264,20 +264,20 @@ export default function AnalystAuthModal({ isOpen, onClose }) {
 
         {/* User Status / Forms */}
         {authed && currentUser ? (
-          <div className="mt-4 p-4 rounded-xl bg-[#0B0A14] border border-[#2A2650]">
+          <div className="mt-4 p-4 rounded-xl bg-[#101C22] border border-[#24454C]">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className="w-9 h-9 rounded-full bg-[#7C5CFF]/20 border border-[#7C5CFF]/40 flex items-center justify-center text-[#A78BFF]">
+                <div className="w-9 h-9 rounded-full bg-[#167D83]/20 border border-[#167D83]/40 flex items-center justify-center text-[#55B9AD]">
                   <User className="w-4 h-4" />
                 </div>
                 <div>
-                  <div className="text-xs font-semibold text-[#F2F0FF]">
+                  <div className="text-xs font-semibold text-[#F5F7F6]">
                     {currentUser.name || 'SecOps Analyst'}
                   </div>
-                  <div className="text-[11px] font-mono text-[#A29FC9]">
+                  <div className="text-[11px] font-mono text-[#A4B8B5]">
                     {currentUser.email}
                   </div>
-                  <div className="text-[10px] font-mono text-[#34E0A1] mt-0.5">
+                  <div className="text-[10px] font-mono text-[#55B9AD] mt-0.5">
                     Role: {currentUser.role || 'Analyst'} • Token Active
                   </div>
                 </div>
@@ -285,7 +285,7 @@ export default function AnalystAuthModal({ isOpen, onClose }) {
               <button
                 type="button"
                 onClick={handleLogout}
-                className="p-2 rounded-lg bg-[#FF4D6D]/10 hover:bg-[#FF4D6D]/20 text-[#FF4D6D] border border-[#FF4D6D]/30 text-xs flex items-center space-x-1 cursor-pointer"
+                className="p-2 rounded-lg bg-[#EF6464]/10 hover:bg-[#EF6464]/20 text-[#EF6464] border border-[#EF6464]/30 text-xs flex items-center space-x-1 cursor-pointer"
               >
                 <LogOut className="w-3.5 h-3.5" />
                 <span>Sign Out</span>
@@ -295,14 +295,14 @@ export default function AnalystAuthModal({ isOpen, onClose }) {
         ) : (
           <div className="mt-4">
             {/* Tabs */}
-            <div className="flex border-b border-[#2A2650] mb-3 text-xs font-mono">
+            <div className="flex border-b border-[#24454C] mb-3 text-xs font-mono">
               <button
                 type="button"
                 onClick={() => setTab('login')}
                 className={`flex-1 py-2 font-medium border-b-2 cursor-pointer transition-colors ${
                   tab === 'login'
-                    ? 'border-[#7C5CFF] text-[#C6FF3D]'
-                    : 'border-transparent text-[#A29FC9] hover:text-[#F2F0FF]'
+                    ? 'border-[#167D83] text-[#55B9AD]'
+                    : 'border-transparent text-[#A4B8B5] hover:text-[#F5F7F6]'
                 }`}
               >
                 Sign In
@@ -312,8 +312,8 @@ export default function AnalystAuthModal({ isOpen, onClose }) {
                 onClick={() => setTab('register')}
                 className={`flex-1 py-2 font-medium border-b-2 cursor-pointer transition-colors ${
                   tab === 'register'
-                    ? 'border-[#7C5CFF] text-[#C6FF3D]'
-                    : 'border-transparent text-[#A29FC9] hover:text-[#F2F0FF]'
+                    ? 'border-[#167D83] text-[#55B9AD]'
+                    : 'border-transparent text-[#A4B8B5] hover:text-[#F5F7F6]'
                 }`}
               >
                 Register Analyst
@@ -323,46 +323,46 @@ export default function AnalystAuthModal({ isOpen, onClose }) {
             <form onSubmit={tab === 'login' ? handleLogin : handleRegister} className="space-y-3">
               {tab === 'register' && (
                 <div>
-                  <label className="block text-[11px] font-mono text-[#A29FC9] mb-1">
+                  <label className="block text-[11px] font-mono text-[#A4B8B5] mb-1">
                     Analyst Full Name
                   </label>
                   <div className="relative">
-                    <User className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#A29FC9]" />
+                    <User className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#A4B8B5]" />
                     <input
                       type="text"
                       required
                       placeholder="Jane Doe"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full pl-8 pr-3 py-2 rounded-xl bg-[#0B0A14] border border-[#2A2650] text-xs text-[#F2F0FF] placeholder-[#A29FC9]/40 focus:outline-none focus:border-[#7C5CFF]"
+                      className="w-full pl-8 pr-3 py-2 rounded-xl bg-[#101C22] border border-[#24454C] text-xs text-[#F5F7F6] placeholder-[#A4B8B5]/40 focus:outline-none focus:border-[#167D83]"
                     />
                   </div>
                 </div>
               )}
 
               <div>
-                <label className="block text-[11px] font-mono text-[#A29FC9] mb-1">
+                <label className="block text-[11px] font-mono text-[#A4B8B5] mb-1">
                   Email Address
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#A29FC9]" />
+                  <Mail className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#A4B8B5]" />
                   <input
                     type="email"
                     required
                     placeholder="analyst@domain.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-8 pr-3 py-2 rounded-xl bg-[#0B0A14] border border-[#2A2650] text-xs text-[#F2F0FF] placeholder-[#A29FC9]/40 focus:outline-none focus:border-[#7C5CFF]"
+                    className="w-full pl-8 pr-3 py-2 rounded-xl bg-[#101C22] border border-[#24454C] text-xs text-[#F5F7F6] placeholder-[#A4B8B5]/40 focus:outline-none focus:border-[#167D83]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[11px] font-mono text-[#A29FC9] mb-1">
+                <label className="block text-[11px] font-mono text-[#A4B8B5] mb-1">
                   Password (min 8 chars)
                 </label>
                 <div className="relative">
-                  <Key className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#A29FC9]" />
+                  <Key className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#A4B8B5]" />
                   <input
                     type="password"
                     required
@@ -370,7 +370,7 @@ export default function AnalystAuthModal({ isOpen, onClose }) {
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-8 pr-3 py-2 rounded-xl bg-[#0B0A14] border border-[#2A2650] text-xs text-[#F2F0FF] placeholder-[#A29FC9]/40 focus:outline-none focus:border-[#7C5CFF]"
+                    className="w-full pl-8 pr-3 py-2 rounded-xl bg-[#101C22] border border-[#24454C] text-xs text-[#F5F7F6] placeholder-[#A4B8B5]/40 focus:outline-none focus:border-[#167D83]"
                   />
                 </div>
               </div>
@@ -391,7 +391,7 @@ export default function AnalystAuthModal({ isOpen, onClose }) {
                   type="button"
                   onClick={handleQuickAnalyst}
                   disabled={loading}
-                  className="w-full py-2 rounded-xl bg-[#0B0A14] hover:bg-[#1C1936] border border-[#2A2650] text-[#A29FC9] hover:text-[#F2F0FF] text-[11px] font-mono flex items-center justify-center space-x-1.5 transition-colors cursor-pointer"
+                  className="w-full py-2 rounded-xl bg-[#101C22] hover:bg-[#1E4047] border border-[#24454C] text-[#A4B8B5] hover:text-[#F5F7F6] text-[11px] font-mono flex items-center justify-center space-x-1.5 transition-colors cursor-pointer"
                 >
                   <span>1-Click Auto-Provision Analyst</span>
                 </button>
@@ -401,7 +401,7 @@ export default function AnalystAuthModal({ isOpen, onClose }) {
         )}
 
         {/* Footer */}
-        <div className="mt-5 pt-3 border-t border-[#2A2650] text-[10px] text-[#A29FC9] flex items-center justify-between font-mono">
+        <div className="mt-5 pt-3 border-t border-[#24454C] text-[10px] text-[#A4B8B5] flex items-center justify-between font-mono">
           <span>JWT Auth Protocol: Bearer</span>
           <span>RFC 7519 Compliant</span>
         </div>
