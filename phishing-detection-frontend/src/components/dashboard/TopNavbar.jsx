@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
-import { Search, Sun, Moon, User, Radio } from 'lucide-react'
+import { Search, Sun, Moon, User, Radio, Menu } from 'lucide-react'
 import { useTheme } from '../../context/ThemeContext'
 import AnalystAuthModal from '../common/AnalystAuthModal'
 import { getStoredUser, isAuthenticated } from '../../services/authService'
 import { isApiMode } from '../../services/api'
 
-export default function TopNavbar({ onSearch, searchQuery = '', collapsed, setCollapsed }) {
+export default function TopNavbar({ onSearch, searchQuery = '', collapsed, setCollapsed, onOpenMobileMenu }) {
   const { toggleTheme, isDark } = useTheme()
   const [authModalOpen, setAuthModalOpen] = useState(false)
   const [user, setUser] = useState(() => getStoredUser())
@@ -30,11 +30,30 @@ export default function TopNavbar({ onSearch, searchQuery = '', collapsed, setCo
     }
   }, [])
 
+  const handleMobileMenuClick = () => {
+    if (onOpenMobileMenu) {
+      onOpenMobileMenu()
+    } else {
+      window.dispatchEvent(new CustomEvent('phishguard:open-mobile-nav'))
+    }
+  }
+
   return (
     <>
-      <header className="sticky top-0 z-30 h-16 transition-colors duration-200 border-b bg-[#0B0A14]/90 light:bg-white/90 backdrop-blur-md border-[#2A2650] light:border-[#E2DEFA] flex items-center justify-between px-4 sm:px-6">
-        {/* Search Bar */}
-        <div className="flex items-center flex-1 max-w-md">
+      <header className="sticky top-0 z-30 h-16 transition-colors duration-200 border-b bg-[#0B0A14]/90 light:bg-white/90 backdrop-blur-md border-[#2A2650] light:border-[#E2DEFA] flex items-center justify-between px-3 sm:px-6">
+        {/* Mobile Navigation Trigger & Search Bar */}
+        <div className="flex items-center space-x-2.5 sm:space-x-3 flex-1 max-w-md">
+          {/* Mobile hamburger menu button */}
+          <button
+            type="button"
+            onClick={handleMobileMenuClick}
+            aria-label="Open Navigation Menu"
+            className="md:hidden flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-lg text-[#A29FC9] hover:text-[#F2F0FF] light:text-[#6E6893] light:hover:text-[#1E1B4B] bg-[#14122A] light:bg-[#F2EDFF] border border-[#2A2650] light:border-[#E2DEFA] hover:bg-[#1C1936] transition-colors cursor-pointer shrink-0"
+          >
+            <Menu className="w-4 h-4 text-[#A78BFF]" />
+          </button>
+
+          {/* Search Bar */}
           <div className="relative flex-1 group">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#A29FC9] group-focus-within:text-[#A78BFF] transition-colors" />
             <input
@@ -42,13 +61,13 @@ export default function TopNavbar({ onSearch, searchQuery = '', collapsed, setCo
               placeholder="Search threat telemetry, IOCs, domains..."
               value={searchQuery}
               onChange={(e) => onSearch && onSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-1.5 rounded-lg text-xs bg-[#14122A] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA] text-[#F2F0FF] light:text-[#1E1B4B] placeholder-[#A29FC9]/60 focus:outline-none focus:border-[#7C5CFF] focus:ring-1 focus:ring-[#7C5CFF]/30 transition-all"
+              className="w-full pl-9 pr-3 sm:pr-4 py-1.5 rounded-lg text-xs bg-[#14122A] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA] text-[#F2F0FF] light:text-[#1E1B4B] placeholder-[#A29FC9]/60 focus:outline-none focus:border-[#7C5CFF] focus:ring-1 focus:ring-[#7C5CFF]/30 transition-all"
             />
           </div>
         </div>
 
         {/* Right Tools and Profile */}
-        <div className="flex items-center space-x-2.5 ml-4">
+        <div className="flex items-center space-x-2 sm:space-x-2.5 ml-2 sm:ml-4">
           {/* Active Engine Mode Pill */}
           <button
             type="button"
@@ -64,11 +83,11 @@ export default function TopNavbar({ onSearch, searchQuery = '', collapsed, setCo
             <span>Engine: {apiActive ? 'Live Backend' : 'Simulation'}</span>
           </button>
 
-          {/* Theme Toggle with smooth UV styling */}
+          {/* Theme Toggle */}
           <button
             onClick={toggleTheme}
             aria-label="Toggle Theme"
-            className="p-1.5 rounded-lg text-[#A29FC9] light:text-[#6E6893] hover:text-[#F2F0FF] light:hover:text-[#1E1B4B] bg-[#14122A] light:bg-white hover:bg-[#1C1936] light:hover:bg-[#F2EDFF] border border-[#2A2650] light:border-[#E2DEFA] transition-all cursor-pointer"
+            className="p-1.5 sm:p-2 rounded-lg text-[#A29FC9] light:text-[#6E6893] hover:text-[#F2F0FF] light:hover:text-[#1E1B4B] bg-[#14122A] light:bg-white hover:bg-[#1C1936] light:hover:bg-[#F2EDFF] border border-[#2A2650] light:border-[#E2DEFA] transition-all cursor-pointer"
           >
             {isDark ? (
               <Sun className="w-4 h-4 text-[#C6FF3D]" />
@@ -83,7 +102,7 @@ export default function TopNavbar({ onSearch, searchQuery = '', collapsed, setCo
             onClick={() => setAuthModalOpen(true)}
             className="flex items-center space-x-2 pl-2 border-l border-[#2A2650] light:border-[#E2DEFA] cursor-pointer text-left hover:opacity-90 transition-opacity"
           >
-            <div className={`w-7 h-7 rounded-lg border flex items-center justify-center transition-colors ${
+            <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg border flex items-center justify-center transition-colors ${
               authed
                 ? 'bg-[#34E0A1]/15 border-[#34E0A1]/40 text-[#34E0A1]'
                 : 'bg-[#14122A] light:bg-[#F2EDFF] border-[#2A2650] light:border-[#E2DEFA] text-[#A78BFF]'
@@ -102,7 +121,7 @@ export default function TopNavbar({ onSearch, searchQuery = '', collapsed, setCo
         </div>
       </header>
 
-      {/* Analyst Auth Modal */}
+      {/* Analyst Session & Connection Modal */}
       <AnalystAuthModal
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}
