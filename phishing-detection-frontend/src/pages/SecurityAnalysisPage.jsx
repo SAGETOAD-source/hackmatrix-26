@@ -22,6 +22,7 @@ import { SIMULATION_DISCLAIMER } from '../data/mockData'
 import { fetchSecurityAnalysis } from '../services/securityService'
 import { isApiMode, getApiBaseUrl } from '../services/api'
 import { getSecurityAnalysis } from '../utils/securityAnalysisData'
+import { normalizeHttpHeaders, normalizeFindings } from '../utils/headerNormalization'
 
 /**
  * Normalizes any analysis payload (mock, live API, partial, or empty)
@@ -71,28 +72,7 @@ function normalizeAnalysisPayload(data, targetFallback = 'github.com') {
   }
 
   // Safe HTTP headers normalization
-  let headers = []
-  if (Array.isArray(data.httpHeaders)) {
-    headers = data.httpHeaders
-  } else if (Array.isArray(data.http_headers)) {
-    headers = data.http_headers
-  } else if (data.httpHeaders && typeof data.httpHeaders === 'object') {
-    headers = Object.entries(data.httpHeaders).map(([key, val]) => ({
-      name: key,
-      status: 'OBSERVED',
-      statusBadge: 'OBSERVED',
-      explanation: typeof val === 'string' ? val : JSON.stringify(val),
-      recommendation: 'Inspect header configuration for OWASP compliance.',
-    }))
-  } else if (data.http_headers && typeof data.http_headers === 'object') {
-    headers = Object.entries(data.http_headers).map(([key, val]) => ({
-      name: key,
-      status: 'OBSERVED',
-      statusBadge: 'OBSERVED',
-      explanation: typeof val === 'string' ? val : JSON.stringify(val),
-      recommendation: 'Inspect header configuration for OWASP compliance.',
-    }))
-  }
+  const headers = normalizeHttpHeaders(data.httpHeaders || data.http_headers)
 
   // Safe DNS normalization
   let dns = data.dns || null
@@ -143,21 +123,12 @@ function normalizeAnalysisPayload(data, targetFallback = 'github.com') {
     redirects = data.redirectChain
   } else if (Array.isArray(data.redirect_chain)) {
     redirects = data.redirect_chain
+  } else if (data.redirects && typeof data.redirects === 'object') {
+    redirects = Object.values(data.redirects)
   }
 
   // Safe findings normalization
-  let findings = []
-  if (Array.isArray(data.findings)) {
-    findings = data.findings
-  } else if (Array.isArray(data.suspiciousIndicators)) {
-    findings = data.suspiciousIndicators.map((item, idx) => ({
-      id: `ind-${idx}`,
-      title: item.title || 'Security Anomaly',
-      severity: item.severity || 'WARN',
-      description: item.description || '',
-      recommendedAction: item.remediation || 'Inspect destination posture.',
-    }))
-  }
+  const findings = normalizeFindings(data.findings || data.suspiciousIndicators)
 
   return {
     domain,

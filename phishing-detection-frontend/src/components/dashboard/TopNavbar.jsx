@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Search, Sun, Moon, User, Menu, Radio, Terminal } from 'lucide-react'
+import { Search, Sun, Moon, User, Radio } from 'lucide-react'
 import { useTheme } from '../../context/ThemeContext'
 import AnalystAuthModal from '../common/AnalystAuthModal'
 import { getStoredUser, isAuthenticated } from '../../services/authService'
@@ -33,37 +33,17 @@ export default function TopNavbar({ onSearch, searchQuery = '', collapsed, setCo
   return (
     <>
       <header className="sticky top-0 z-30 h-16 transition-colors duration-200 border-b bg-[#0B0A14]/90 light:bg-white/90 backdrop-blur-md border-[#2A2650] light:border-[#E2DEFA] flex items-center justify-between px-4 sm:px-6">
-        {/* Mobile Sidebar Toggle & Search Bar */}
+        {/* Search Bar */}
         <div className="flex items-center flex-1 max-w-md">
-          {setCollapsed && (
-            <button
-              type="button"
-              onClick={() => setCollapsed(!collapsed)}
-              aria-label="Toggle Navigation Menu"
-              className="md:hidden mr-2 p-1.5 rounded-lg text-[#A29FC9] hover:text-[#F2F0FF] bg-[#14122A] light:bg-[#F2EDFF] border border-[#2A2650] light:border-[#E2DEFA] cursor-pointer"
-            >
-              <Menu className="w-4 h-4" />
-            </button>
-          )}
-
           <div className="relative flex-1 group">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#A29FC9] group-focus-within:text-[#A78BFF] transition-colors" />
             <input
               type="text"
-              placeholder="Search threat telemetry, IOCs, domains (Ctrl+K)..."
+              placeholder="Search threat telemetry, IOCs, domains..."
               value={searchQuery}
               onChange={(e) => onSearch && onSearch(e.target.value)}
-              className="w-full pl-9 pr-14 py-1.5 rounded-lg text-xs bg-[#14122A] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA] text-[#F2F0FF] light:text-[#1E1B4B] placeholder-[#A29FC9]/60 focus:outline-none focus:border-[#7C5CFF] focus:ring-1 focus:ring-[#7C5CFF]/30 transition-all"
+              className="w-full pl-9 pr-4 py-1.5 rounded-lg text-xs bg-[#14122A] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA] text-[#F2F0FF] light:text-[#1E1B4B] placeholder-[#A29FC9]/60 focus:outline-none focus:border-[#7C5CFF] focus:ring-1 focus:ring-[#7C5CFF]/30 transition-all"
             />
-            <button
-              type="button"
-              onClick={() => window.dispatchEvent(new CustomEvent('phishguard:open-command-palette'))}
-              title="Quick Action Command Bar"
-              className="absolute right-2 top-1/2 -translate-y-1/2 hidden sm:flex items-center px-1.5 py-0.5 rounded bg-[#1C1936] light:bg-[#EDE9FE] border border-[#2A2650] light:border-[#D4CDFA] text-[10px] font-mono text-[#A29FC9] light:text-[#6E6893] cursor-pointer hover:border-[#7C5CFF]/60 transition-colors"
-            >
-              <Terminal className="w-2.5 h-2.5 mr-1 text-[#A78BFF]" />
-              <span>⌘K</span>
-            </button>
           </div>
         </div>
 

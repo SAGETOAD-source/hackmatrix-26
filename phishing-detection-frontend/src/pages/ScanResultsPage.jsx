@@ -32,6 +32,11 @@ import { SIMULATION_DISCLAIMER } from '../data/mockData'
 import { generateReportText, simulateScan } from '../utils/simulateScan'
 import { getLatestScan, setLatestScan } from '../services/scanService'
 import { getApiBaseUrl } from '../services/api'
+import {
+  normalizeHttpHeaders,
+  normalizeFindings,
+  normalizeRecommendations,
+} from '../utils/headerNormalization'
 
 function getInitialScan(urlParam) {
   const stored = getLatestScan()
@@ -142,6 +147,11 @@ export default function ScanResultsPage() {
 
   // Detect brand impersonation heuristic
   const isSpoofed = scanResult?.urlCharacteristics?.suspiciousKeywords?.length > 0 || (scanResult?.url && /paypal|apple|google|microsoft|amazon|netflix/i.test(scanResult.url))
+
+  // Safe normalization of collections to prevent runtime exceptions on object/null payloads
+  const httpHeaders = normalizeHttpHeaders(scanResult?.httpHeaders)
+  const suspiciousIndicators = normalizeFindings(scanResult?.suspiciousIndicators || scanResult?.findings)
+  const recommendations = normalizeRecommendations(scanResult?.recommendations)
 
   // Ambient Aurora color palette reflecting security posture
   const auroraStops = isPending
@@ -522,20 +532,28 @@ export default function ScanResultsPage() {
                         Passive HTTP Response Headers Audit
                       </h3>
                     </div>
-                    <span className="text-[11px] font-mono text-[#A29FC9] light:text-[#6E6893]">Hygiene Baseline</span>
+                    <span className="text-[11px] font-mono text-[#A29FC9] light:text-[#6E6893]">
+                      {httpHeaders.length > 0 ? `${httpHeaders.length} Headers Audited` : 'No Headers Detected'}
+                    </span>
                   </div>
 
-                  <div className="space-y-2">
-                    {scanResult.httpHeaders?.map((hdr, idx) => (
-                      <HeaderAuditRow
-                        key={idx}
-                        name={hdr.name}
-                        present={hdr.present}
-                        value={hdr.value}
-                        severity={hdr.severity}
-                      />
-                    ))}
-                  </div>
+                  {httpHeaders.length > 0 ? (
+                    <div className="space-y-2">
+                      {httpHeaders.map((hdr, idx) => (
+                        <HeaderAuditRow
+                          key={`${hdr.name}-${idx}`}
+                          name={hdr.name}
+                          present={hdr.present}
+                          value={hdr.value}
+                          severity={hdr.severity}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="p-4 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA] text-xs font-mono text-[#A29FC9] light:text-[#6E6893] text-center">
+                      No HTTP security response header records (HSTS, CSP, X-Frame-Options) were returned for this target host.
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -545,25 +563,26 @@ export default function ScanResultsPage() {
                   <div className="flex items-center space-x-2">
                     <AlertTriangle className="w-4 h-4 text-[#FFB020]" />
                     <h3 className="font-heading font-bold text-xs uppercase tracking-wider text-[#F2F0FF] light:text-[#1E1B4B]">
-                      Flagged Threat Indicators ({scanResult.suspiciousIndicators?.length || 0})
+                      Flagged Threat Indicators ({suspiciousIndicators.length})
                     </h3>
                   </div>
                   <span className="text-[11px] font-mono text-[#A29FC9] light:text-[#6E6893]">Evidence Matrix</span>
                 </div>
 
-                {scanResult.suspiciousIndicators?.length === 0 ? (
+                {suspiciousIndicators.length === 0 ? (
                   <div className="p-4 rounded-xl bg-[#34E0A1]/10 border border-[#34E0A1]/30 text-[#34E0A1] text-xs flex items-center space-x-2.5 font-mono">
                     <CheckCircle2 className="w-4 h-4 shrink-0" />
                     <span>Zero active suspicious indicators or high-entropy anomalies detected.</span>
                   </div>
                 ) : (
                   <div className="space-y-2.5">
-                    {scanResult.suspiciousIndicators?.map((indicator, idx) => (
+                    {suspiciousIndicators.map((indicator, idx) => (
                       <FindingCard
-                        key={idx}
+                        key={indicator.id || idx}
                         title={indicator.title}
                         severity={indicator.severity}
                         description={indicator.description}
+                        details={indicator.details}
                         icon={indicator.severity === 'CRITICAL' ? ShieldAlert : AlertTriangle}
                       />
                     ))}
@@ -580,49 +599,55 @@ export default function ScanResultsPage() {
                   </h3>
                 </div>
 
-                <div className="space-y-2.5">
-                  {scanResult.recommendations?.map((rec, idx) => {
-                    const isHigh = rec.priority === 'HIGH'
-                    const isMedium = rec.priority === 'MEDIUM'
+                {recommendations.length > 0 ? (
+                  <div className="space-y-2.5">
+                    {recommendations.map((rec, idx) => {
+                      const isHigh = rec.priority === 'HIGH'
+                      const isMedium = rec.priority === 'MEDIUM'
 
-                    return (
-                      <div
-                        key={idx}
-                        className="p-3.5 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA] flex items-start space-x-3 text-xs font-mono"
-                      >
+                      return (
                         <div
-                          className={`mt-0.5 p-1 rounded-lg shrink-0 ${
-                            isHigh
-                              ? 'bg-[#FF4D6D]/15 text-[#FF4D6D]'
-                              : isMedium
-                              ? 'bg-[#FFB020]/15 text-[#FFB020]'
-                              : 'bg-[#7C5CFF]/15 text-[#A78BFF]'
-                          }`}
+                          key={idx}
+                          className="p-3.5 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA] flex items-start space-x-3 text-xs font-mono"
                         >
-                          {isHigh ? (
-                            <XCircle className="w-4 h-4" />
-                          ) : (
-                            <AlertTriangle className="w-4 h-4" />
-                          )}
-                        </div>
-
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between gap-2 mb-1">
-                            <span className="font-bold text-xs text-[#F2F0FF] light:text-[#1E1B4B]">
-                              {rec.title}
-                            </span>
-                            <Badge verdict={isHigh ? 'malicious' : isMedium ? 'suspicious' : 'unknown'} size="sm">
-                              Priority: {rec.priority}
-                            </Badge>
+                          <div
+                            className={`mt-0.5 p-1 rounded-lg shrink-0 ${
+                              isHigh
+                                ? 'bg-[#FF4D6D]/15 text-[#FF4D6D]'
+                                : isMedium
+                                ? 'bg-[#FFB020]/15 text-[#FFB020]'
+                                : 'bg-[#7C5CFF]/15 text-[#A78BFF]'
+                            }`}
+                          >
+                            {isHigh ? (
+                              <XCircle className="w-4 h-4" />
+                            ) : (
+                              <AlertTriangle className="w-4 h-4" />
+                            )}
                           </div>
-                          <p className="text-[#A29FC9] light:text-[#6E6893] text-[11px] leading-relaxed">
-                            {rec.description}
-                          </p>
+
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between gap-2 mb-1">
+                              <span className="font-bold text-xs text-[#F2F0FF] light:text-[#1E1B4B]">
+                                {rec.title}
+                              </span>
+                              <Badge verdict={isHigh ? 'malicious' : isMedium ? 'suspicious' : 'unknown'} size="sm">
+                                Priority: {rec.priority}
+                              </Badge>
+                            </div>
+                            <p className="text-[#A29FC9] light:text-[#6E6893] text-[11px] leading-relaxed">
+                              {rec.description}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    )
-                  })}
-                </div>
+                      )
+                    })}
+                  </div>
+                ) : (
+                  <div className="p-4 rounded-xl bg-[#0B0A14] light:bg-[#F7F5FF] border border-[#2A2650] light:border-[#E2DEFA] text-xs font-mono text-[#A29FC9] light:text-[#6E6893] text-center">
+                    No defensive recommendations required for this destination.
+                  </div>
+                )}
               </div>
             </div>
           )}

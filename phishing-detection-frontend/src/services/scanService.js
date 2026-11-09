@@ -2,6 +2,11 @@ import { apiClient, isApiMode } from './api.js'
 import { simulateScan } from '../utils/simulateScan.js'
 import { saveScanToHistory } from '../utils/scanStorage.js'
 import { isAuthenticated } from './authService.js'
+import {
+  normalizeHttpHeaders,
+  normalizeFindings,
+  normalizeRecommendations,
+} from '../utils/headerNormalization.js'
 
 const LATEST_SCAN_KEY = 'latest_scan_result'
 
@@ -77,14 +82,14 @@ function normalizeLiveScan(scan, targetUrl) {
     mlAnalysis: analysis.ml_analysis || null,
     urlCharacteristics: realUrlChars,
     sslStatus: analysis.ssl_status || analysis.sslStatus || analysis.certificate || null,
-    httpHeaders: analysis.http_headers || analysis.httpHeaders || null,
+    httpHeaders: normalizeHttpHeaders(analysis.http_headers || analysis.httpHeaders || scan.http_headers || scan.httpHeaders),
     dns: analysis.dns || null,
-    suspiciousIndicators: analysis.suspicious_indicators || analysis.findings || [],
-    recommendations: analysis.recommendations || [
+    suspiciousIndicators: normalizeFindings(analysis.suspicious_indicators || analysis.findings || scan.suspicious_indicators || scan.findings),
+    recommendations: normalizeRecommendations(analysis.recommendations || scan.recommendations || [
       'Analyze SSL/TLS certificate chain for unauthorized root authorities.',
       'Check URL against commercial and open-source threat intelligence feeds.',
       'Inspect HTTP response headers for missing HSTS, CSP, and X-Frame-Options.',
-    ],
+    ]),
     componentScores: analysis.component_scores || {
       lexical: analysis.lexical_score ?? Math.min(riskScore ?? 0, 85),
       tls: analysis.tls_score ?? Math.min(riskScore ?? 0, 70),
